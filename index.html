@@ -71,14 +71,14 @@ em{font-style:inherit;color:var(--pasion)}
 /* ---------- el regalo: una sola ilustración ---------- */
 .regalo{position:relative;width:340px;height:380px;margin-top:-3vh;animation:llega 1.2s var(--ease) both;z-index:2}
 @keyframes llega{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
-.flota{position:absolute;inset:0;animation:respira 5s ease-in-out 1.2s infinite}
+.flota{position:absolute;inset:0}
 @keyframes respira{50%{transform:translateY(-3px)}}
 .abriendo .flota{animation:none}
 .sombra{position:absolute;left:24px;width:290px;bottom:16px;height:40px;border-radius:50%;background:radial-gradient(closest-side,#000e,transparent);animation:sombra 1.2s var(--ease) both}
 @keyframes sombra{from{transform:scale(.6);opacity:0}to{transform:none;opacity:1}}
-.caja3d{position:absolute;inset:0;width:100%;height:100%;overflow:visible;filter:drop-shadow(0 22px 20px #000c)}
+.caja3d{position:absolute;inset:0;width:100%;height:100%;overflow:visible;filter:none}
 .suspenso .caja3d{animation:latidoSvg var(--latido,1s) ease-out infinite}
-@keyframes latidoSvg{0%,100%{filter:drop-shadow(0 22px 20px #000c)}12%{filter:drop-shadow(0 22px 20px #000c) drop-shadow(0 0 26px #d4142a88)}}
+@keyframes latidoSvg{0%,100%{filter:none}12%{filter:drop-shadow(0 0 22px #d4142a66)}}
 .caja3d g{transition:transform .6s var(--ease),opacity .45s}
 @media (min-width:700px) and (min-height:720px){.regalo{scale:1.25}}
 @media (max-width:440px){.regalo{scale:1}}
@@ -87,13 +87,13 @@ em{font-style:inherit;color:var(--pasion)}
 /* etiqueta: cuelga del moño y se mece desde el ojal */
 #etiqueta{transform-box:view-box;transform-origin:306px 178px;animation:mece 4.5s ease-in-out infinite}
 @keyframes mece{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(3deg)}}
-#etiqueta .cara{transition:opacity .35s}
+#etiqueta .cara{transition:opacity 0s .25s}
 #etiqueta .atras{opacity:0}
 #etiqueta.volteada .frente{opacity:0}
 #etiqueta.volteada .atras{opacity:1}
-#etiqueta.volteada .cuerpo-tag{animation:gira .7s var(--fold)}
+#etiqueta.volteada .cuerpo-tag,#etiqueta.vuelta .cuerpo-tag{animation:volteaTag .5s cubic-bezier(.4,0,.2,1)}
 .cuerpo-tag{transform-box:fill-box;transform-origin:center}
-@keyframes gira{50%{transform:scaleX(.05)}}
+@keyframes volteaTag{50%{transform:scaleX(.04)}}
 
 /* candado */
 #candadoSvg,#ruedasWin{transition:transform .5s cubic-bezier(.5,0,.75,0),opacity .35s}
@@ -152,17 +152,24 @@ em{font-style:inherit;color:var(--pasion)}
 
 
 /* ===== ajustes tras la revisión ===== */
-#etiqueta{transform-origin:109px 177px;animation:meceT 5s ease-in-out infinite;cursor:pointer;pointer-events:all}
-@keyframes meceT{0%,100%{transform:rotate(-1.2deg)}50%{transform:rotate(1deg)}}
+#etiqueta{transform-box:view-box;transform-origin:96px 170px;animation:meceT 4.2s ease-in-out infinite;cursor:pointer;pointer-events:all}
+@keyframes meceT{0%,100%{transform:rotate(5deg)}50%{transform:rotate(-4deg)}}
+.lazo3 .loop{transform-box:view-box;animation:lazoVivo 5s ease-in-out infinite}
+.lazo3 .loop-a{transform-origin:176px 129px}.lazo3 .loop-b{transform-origin:176px 129px;animation-delay:-2.5s}
+@keyframes lazoVivo{0%,100%{transform:rotate(0) scale(1)}50%{transform:rotate(-1.6deg) scale(1.025)}}
+.lazo3 .cola{transform-box:view-box;transform-origin:172px 130px;animation:colaViva 4.2s ease-in-out infinite}
+.lazo3 .cola-b{transform-origin:178px 130px;animation-delay:-1.4s}
+@keyframes colaViva{0%,100%{transform:rotate(1.5deg)}50%{transform:rotate(-1.5deg)}}
+@media (prefers-reduced-motion:reduce){.lazo3 .loop,.lazo3 .cola{animation:none}}
 .sin-tapa #etiqueta{animation:inercia 1s cubic-bezier(.3,0,.4,1) forwards}
-@keyframes inercia{0%{transform:rotate(0)}25%{transform:rotate(-10deg)}100%{transform:rotate(24deg)}}
+@keyframes inercia{0%{transform:rotate(0)}25%{transform:rotate(-14deg)}100%{transform:rotate(30deg)}}
 #ruedasWin{top:260px}
 .g-arco{transform-origin:192px 248px}
 #candadoSvg{transform-origin:160px 240px}
 #ruedasWin{transform-origin:44px -20px}
 .cae-candado #candadoSvg,.cae-candado #ruedasWin,.cae-candado #zonas{opacity:1;transition:none;animation:caeCand .6s cubic-bezier(.5,0,.75,0) forwards}
 @keyframes caeCand{0%{transform:none}60%{transform:translateY(44px) rotate(7deg)}78%{transform:translateY(36px) rotate(5deg)}100%{transform:translateY(44px) rotate(6deg)}}
-.rib-v{transform-box:view-box;transform-origin:160px 178px;transition:transform .5s cubic-bezier(.5,0,.75,0)}
+.rib-v{transform-box:view-box;transform-origin:174px 178px;transition:transform .5s cubic-bezier(.5,0,.75,0)}
 .sin-liston .rib-caja,.sin-liston .rib-v{opacity:1;transform:scaleY(0)}
 .sombra-tapa{transition:opacity .4s .2s}.sin-tapa .sombra-tapa{opacity:0}
 .borde-boca{transition:fill .9s}.luz-interior .borde-boca{fill:#d9653a}
@@ -438,15 +445,37 @@ em{font-style:inherit;color:var(--pasion)}
           <filter id="brilloLed" x="-200%" y="-200%" width="500%" height="500%"><feGaussianBlur stdDeviation="2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
           <pattern id="relieve" width="10" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><path d="M0 5 H10" stroke="#000" stroke-opacity=".07"/></pattern>
           <pattern id="mono" width="64" height="64" patternUnits="userSpaceOnUse"><text x="4" y="16" font-family="JetBrains Mono, monospace" font-size="6" letter-spacing="1.6" fill="#4d0510" opacity=".45">M·E·L·I</text><text x="36" y="48" font-family="JetBrains Mono, monospace" font-size="6" letter-spacing="1.6" fill="#4d0510" opacity=".45">M·E·L·I</text></pattern>
-          <clipPath id="cFrente"><rect x="40" y="178" width="240" height="170" rx="2"/></clipPath>
-          <clipPath id="cTapa"><rect x="30" y="138" width="260" height="44" rx="3"/></clipPath>
+          <clipPath id="cFrente"><rect x="40" y="178" width="240" height="170" rx="7"/></clipPath>
+          <clipPath id="cTapa"><rect x="30" y="138" width="260" height="44" rx="6"/></clipPath>
+          <!-- volumen 3/4: luz del foco desde arriba-izquierda -->
+          <linearGradient id="fr3" x1="0" x2="1"><stop offset="0" stop-color="#c8192b"/><stop offset=".55" stop-color="#b81424"/><stop offset="1" stop-color="#99101c"/></linearGradient>
+          <linearGradient id="frV" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#000" stop-opacity=".55"/><stop offset=".12" stop-color="#000" stop-opacity=".12"/><stop offset=".4" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".45"/></linearGradient>
+          <radialGradient id="frBrillo" cx=".22" cy=".25" r=".7"><stop offset="0" stop-color="#ff8a8f" stop-opacity=".28"/><stop offset="1" stop-color="#ff8a8f" stop-opacity="0"/></radialGradient>
+          <linearGradient id="lado3" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5e0610"/><stop offset="1" stop-color="#2c0207"/></linearGradient>
+          <linearGradient id="tapaF3" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e02536"/><stop offset=".5" stop-color="#c3172a"/><stop offset="1" stop-color="#8e0c18"/></linearGradient>
+          <linearGradient id="tapaL3" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#86101b"/><stop offset="1" stop-color="#4a050c"/></linearGradient>
+          <radialGradient id="techo3" cx=".4" cy=".6" r=".8"><stop offset="0" stop-color="#f0485a"/><stop offset=".6" stop-color="#d0202f"/><stop offset="1" stop-color="#a51320"/></radialGradient>
+          <linearGradient id="satF" x1="0" x2="1"><stop offset="0" stop-color="#b9b9c0"/><stop offset=".5" stop-color="#a2a2a9"/><stop offset="1" stop-color="#85858c"/></linearGradient>
+          <linearGradient id="satL" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6d6d74"/><stop offset="1" stop-color="#47474d"/></linearGradient>
+          <linearGradient id="satT" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#d6d6dc"/><stop offset="1" stop-color="#a9a9b0"/></linearGradient>
+          <radialGradient id="lazo3" cx=".4" cy=".3" r=".9"><stop offset="0" stop-color="#ececf0"/><stop offset=".35" stop-color="#c0c0c7"/><stop offset=".8" stop-color="#7d7d84"/><stop offset="1" stop-color="#5a5a60"/></radialGradient>
+          <radialGradient id="hueco" cx=".55" cy=".35" r=".6"><stop offset="0" stop-color="#55555c"/><stop offset=".7" stop-color="#7c7c83"/><stop offset="1" stop-color="#9a9aa1" stop-opacity="0"/></radialGradient>
+          <radialGradient id="piso" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#000" stop-opacity=".95"/><stop offset=".6" stop-color="#000" stop-opacity=".55"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient>
+          <radialGradient id="reflejo" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#c8192b" stop-opacity=".3"/><stop offset="1" stop-color="#c8192b" stop-opacity="0"/></radialGradient>
+          <filter id="blur10" x="-30%" y="-100%" width="160%" height="300%"><feGaussianBlur stdDeviation="9"/></filter>
+          <filter id="blur2" x="-10%" y="-100%" width="120%" height="300%"><feGaussianBlur stdDeviation="2"/></filter>
         </defs>
 
+        <!-- piso: sombra de contacto y reflejo rojo en la mesa -->
+        <ellipse cx="178" cy="356" rx="182" ry="22" fill="url(#reflejo)"/>
+        <ellipse cx="184" cy="352" rx="176" ry="18" fill="url(#piso)" filter="url(#blur10)"/><ellipse cx="176" cy="349" rx="140" ry="6" fill="#000" opacity=".9" filter="url(#blur2)"/>
+        <path d="M44 348 H280 L308 328" fill="none" stroke="#000" stroke-width="6" stroke-opacity=".85" filter="url(#blur2)"/>
+
         <!-- interior de la caja (se ve cuando sale la tapa) -->
-        <path d="M40 178 L56 162 H264 L280 178 Z" fill="url(#gInterior)"/>
-        <path d="M56 162 H264" stroke="#7a0a14" stroke-width="1.5"/>
-        <polygon id="hazInterior" points="64,172 256,172 320,-60 0,-60" fill="url(#hazG)" filter="url(#difuso)"/>
-        <ellipse id="luzInterior" cx="160" cy="170" rx="118" ry="30" fill="url(#glow)"/>
+        <path d="M40 178 L68 158 H308 L280 178 Z" fill="url(#gInterior)"/>
+        <path d="M68 158 H308" stroke="#7a0a14" stroke-width="1.5"/>
+        <polygon id="hazInterior" points="70,172 300,166 360,-60 0,-60" fill="url(#hazG)" filter="url(#difuso)"/>
+        <ellipse id="luzInterior" cx="174" cy="168" rx="128" ry="22" fill="url(#glow)"/>
 
         <!-- la carta doblada, guardada adentro -->
         <g id="papelGrupo">
@@ -458,24 +487,31 @@ em{font-style:inherit;color:var(--pasion)}
 
         <!-- cuerpo -->
         <g class="g-caja">
-          <path class="borde-boca" d="M40 178 L44 174 H276 L280 178 Z" fill="#7e0a15"/>
-          <rect x="40" y="178" width="240" height="170" rx="2" fill="url(#hFrente)"/>
-          <g clip-path="url(#cFrente)">
-            <rect x="40" y="178" width="240" height="170" fill="url(#relieve)"/>
-            <rect x="40" y="178" width="240" height="170" fill="url(#mono)"/>
-            <rect x="40" y="178" width="240" height="170" fill="#fff" filter="url(#textura)"/>
-            <rect x="40" y="178" width="240" height="170" fill="url(#vFrente)"/>
-            <g class="rib-caja rib-v">
-              <rect x="40" y="254" width="240" height="24" fill="url(#satinH)"/>
-              <rect x="40" y="278" width="106" height="3" fill="#000" opacity=".22"/><rect x="174" y="278" width="106" height="3" fill="#000" opacity=".22"/><rect x="174" y="178" width="3" height="170" fill="#000" opacity=".22"/><rect x="146" y="178" width="28" height="170" fill="url(#satin)"/>
-              <rect x="146" y="178" width="28" height="170" fill="url(#brilloMovil)"/>
-              <path d="M149 178 V348 M171 178 V348 M40 257 H146 M174 257 H280 M40 275 H146 M174 275 H280" stroke="#d6d6dc" stroke-opacity=".35" stroke-width=".8" stroke-dasharray="3 3"/>
-              <path d="M146 178 V348 M174 178 V348 M40 254 H146 M174 254 H280 M40 278 H146 M174 278 H280" stroke="#2c2c31" stroke-opacity=".45" stroke-width="1"/>
-              
-            </g>
-            <rect class="sombra-tapa" x="40" y="178" width="240" height="14" fill="#000" opacity=".38"/>
+          <path class="borde-boca" d="M40 178 L46 173 H284 L280 178 Z" fill="#7e0a15"/>
+          <!-- costado derecho, en sombra -->
+          <path d="M280 178 L308 158 V322 Q308 328 303 331 L284 345 Q280 348 280 342 Z" fill="url(#lado3)"/>
+          <g class="rib-caja rib-v">
+            <path d="M280 254 L308 234 V258 L280 278 Z" fill="url(#satL)"/>
           </g>
-          <rect x="40.5" y="178.5" width="239" height="169" rx="2" fill="none" stroke="#2e0306" stroke-opacity=".7"/>
+          <!-- frente -->
+          <rect x="40" y="178" width="240" height="170" rx="7" fill="url(#fr3)"/>
+          <g clip-path="url(#cFrente)">
+            <rect x="40" y="178" width="240" height="170" fill="url(#mono)" opacity=".7"/>
+            <rect x="40" y="178" width="240" height="170" fill="#fff" filter="url(#textura)"/>
+            <rect x="40" y="178" width="240" height="170" fill="url(#frBrillo)"/>
+            <g class="rib-caja rib-v">
+              <rect x="40" y="254" width="240" height="24" fill="url(#satF)"/>
+              <rect x="40" y="278" width="240" height="5" fill="#000" opacity=".18" filter="url(#sombraSuave)"/>
+              <rect x="174" y="178" width="5" height="170" fill="#000" opacity=".2" filter="url(#sombraSuave)"/>
+              <rect x="146" y="178" width="28" height="170" fill="url(#satF)"/>
+              <rect x="146" y="178" width="28" height="170" fill="url(#brilloMovil)"/>
+              <path d="M146.5 178 V348 M40 254.5 H146 M174 254.5 H280" stroke="#fff" stroke-opacity=".35"/>
+            </g>
+            <rect x="40" y="178" width="240" height="170" fill="url(#frV)"/>
+            <rect class="sombra-tapa" x="40" y="178" width="240" height="16" fill="#000" opacity=".45" filter="url(#sombraSuave)"/>
+          </g>
+          <!-- arista iluminada entre frente y costado -->
+          <path d="M280 182 V342" stroke="#ff6b75" stroke-opacity=".35" stroke-width="1.2"/>
         </g>
 
         <!-- candado (misma luz y mismo trazo que la caja) -->
@@ -507,60 +543,74 @@ em{font-style:inherit;color:var(--pasion)}
 
         <!-- el listón pasa por dentro del arco -->
         <g class="rib-v rib-frente"><rect x="146" y="182" width="28" height="58" fill="url(#satin)"/><path d="M146 182 V240 M174 182 V240" stroke="#2c2c31" stroke-opacity=".45"/><rect x="174" y="182" width="3" height="58" fill="#000" opacity=".22"/></g>
-        <ellipse id="halo" cx="160" cy="172" rx="150" ry="34" fill="url(#glow)" opacity="0"/>
+        <ellipse id="halo" cx="174" cy="168" rx="150" ry="34" fill="url(#glow)" opacity="0"/>
         <!-- tapa, moño y etiqueta: se van juntos -->
         <g class="g-tapa">
-          <path d="M30 138 L50 118 H270 L290 138 Z" fill="url(#gTecho)"/>
-          <path d="M30 138 L50 118 H270 L290 138 Z" fill="url(#mono)" opacity=".6"/>
-          <path d="M146 138 L151 118 H169 L174 138 Z" fill="url(#satin)"/>
-          
-          <rect x="30" y="138" width="260" height="44" rx="3" fill="url(#hTapa)"/>
+          <!-- techo de la tapa, lo que más luz recibe -->
+          <path d="M30 138 L58 118 H318 L290 138 Z" fill="url(#techo3)"/>
+          <path d="M30 138 L58 118 H318 L290 138 Z" fill="url(#mono)" opacity=".35"/>
+          <path d="M146 138 L174 118 H202 L174 138 Z" fill="url(#satT)"/>
+          <path d="M58 118.6 H318" stroke="#ff9aa2" stroke-opacity=".5"/>
+          <!-- costado de la tapa -->
+          <path d="M290 138 L318 118 V158 Q318 162 314 165 L294 179 Q290 182 290 177 Z" fill="url(#tapaL3)"/>
+          <!-- frente de la tapa -->
+          <rect x="30" y="138" width="260" height="44" rx="6" fill="url(#tapaF3)"/>
           <g clip-path="url(#cTapa)">
-            <rect x="30" y="138" width="260" height="44" fill="url(#relieve)"/>
-            <rect x="30" y="138" width="260" height="44" fill="url(#mono)"/>
             <rect x="30" y="138" width="260" height="44" fill="#fff" filter="url(#textura)"/>
-            <rect x="146" y="138" width="28" height="44" fill="url(#satin)"/>
+            <rect x="146" y="138" width="28" height="44" fill="url(#satF)"/>
             <rect x="146" y="138" width="28" height="44" fill="url(#brilloMovil)"/>
-            <path d="M149 138 V182 M171 138 V182" stroke="#d6d6dc" stroke-opacity=".35" stroke-width=".8" stroke-dasharray="3 3"/>
-            <path d="M146 138 V182 M174 138 V182" stroke="#2c2c31" stroke-opacity=".45"/>
-            <rect x="30" y="138" width="260" height="44" fill="url(#vTapa)"/>
+            <rect x="174" y="138" width="4" height="44" fill="#000" opacity=".2"/>
           </g>
-          <path d="M33 138.6 H287" stroke="#ff9aa2" stroke-opacity=".55" stroke-width="1.2"/>
-          <rect x="30.5" y="138.5" width="259" height="43" rx="3" fill="none" stroke="#2e0306" stroke-opacity=".65"/>
+          <path d="M34 138.8 H288" stroke="#ffb3b9" stroke-opacity=".7" stroke-width="1.4" stroke-linecap="round"/>
+          <path d="M290 141 V178" stroke="#ff6b75" stroke-opacity=".3"/>
 
-          <!-- moño -->
-          <path d="M153 130 C145 150 137 166 127 186 L137 181 L139 194 C149 172 157 152 163 132 Z" fill="url(#cola)" stroke="#2c2c31" stroke-opacity=".35"/>
-          <path d="M167 130 C175 150 184 166 196 185 L186 181 L183 193 C173 172 164 152 158 132 Z" fill="url(#cola)" stroke="#2c2c31" stroke-opacity=".35"/>
-          <path d="M157 124 C138 78 108 62 98 79 C91 94 123 115 157 127 Z" fill="url(#lazoAtras)"/>
-          <path d="M163 124 C182 78 212 62 222 79 C229 94 197 115 163 127 Z" fill="url(#lazoAtras)"/>
-          <path d="M160 127 C120 80 70 70 66 101 C63 126 107 137 160 130 Z" fill="url(#lazo)" stroke="#2c2c31" stroke-opacity=".4"/>
-          <path d="M160 127 C134 104 100 96 88 111" fill="none" stroke="#2f2f34" stroke-opacity=".35" stroke-width="6" stroke-linecap="round"/>
-          <path d="M77 90 C96 76 122 81 141 101" fill="none" stroke="#fff" stroke-opacity=".28" stroke-width="2.5" stroke-linecap="round"/>
-          <path d="M160 127 C200 80 250 70 254 101 C257 126 213 137 160 130 Z" fill="url(#lazo)" stroke="#2c2c31" stroke-opacity=".4"/>
-          <path d="M160 127 C186 104 220 96 232 111" fill="none" stroke="#2f2f34" stroke-opacity=".35" stroke-width="6" stroke-linecap="round"/>
-          <path d="M182 99 C198 82 224 76 241 87" fill="none" stroke="#fff" stroke-opacity=".22" stroke-width="2.5" stroke-linecap="round"/>
-          <rect x="147" y="114" width="26" height="24" rx="8" fill="url(#nudo)" stroke="#2c2c31" stroke-opacity=".4"/>
-          <path d="M151 120 C156 124 164 124 169 120 M152 133 C157 129 163 129 168 133" fill="none" stroke="#3a3a40" stroke-opacity=".3" stroke-width="1.3"/>
+          <!-- moño de satín, con volumen -->
+          <g class="lazo3">
+            <ellipse cx="176" cy="132" rx="58" ry="9" fill="#000" opacity=".35" filter="url(#sombraSuave)"/>
+            <g class="cola cola-a"><path d="M168 128 C160 142 152 150 140 168 L150 166 L150 178 C160 158 170 144 176 130 Z" fill="url(#satF)"/><path d="M168 128 C160 142 152 150 140 168" fill="none" stroke="#fff" stroke-opacity=".35"/></g>
+            <g class="cola cola-b"><path d="M180 128 C188 142 198 152 214 166 L203 166 L203 177 C192 158 184 144 174 130 Z" fill="url(#satL)"/></g>
+            <!-- lazos de atrás -->
+            <path d="M174 122 C160 92 136 80 128 92 C122 104 148 116 174 124 Z" fill="url(#lazo3)" opacity=".85"/>
+            <path d="M180 122 C196 90 222 80 230 92 C236 104 208 116 180 124 Z" fill="#76767d"/>
+            <g class="loop loop-a">
+              <path d="M176 126 C140 92 96 84 90 108 C86 128 128 136 176 132 Z" fill="url(#lazo3)"/>
+              <ellipse cx="112" cy="112" rx="12" ry="5" transform="rotate(-14 114 112)" fill="url(#hueco)"/>
+              <path d="M98 96 C116 88 140 94 160 110" fill="none" stroke="#fff" stroke-opacity=".6" stroke-width="2.4" stroke-linecap="round"/>
+              <path d="M176 130 C150 128 112 126 96 118" fill="none" stroke="#3a3a40" stroke-opacity=".35" stroke-width="2"/>
+            </g>
+            <g class="loop loop-b">
+              <path d="M176 126 C214 90 260 82 266 106 C270 128 226 136 176 132 Z" fill="url(#lazo3)"/>
+              <ellipse cx="244" cy="110" rx="12" ry="5" transform="rotate(14 242 110)" fill="url(#hueco)"/>
+              <path d="M196 106 C214 92 238 88 254 94" fill="none" stroke="#fff" stroke-opacity=".45" stroke-width="2.2" stroke-linecap="round"/>
+              <path d="M176 130 C204 128 244 126 260 118" fill="none" stroke="#3a3a40" stroke-opacity=".4" stroke-width="2"/>
+            </g>
+            <rect x="163" y="117" width="26" height="20" rx="9" fill="url(#lazo3)"/>
+            <path d="M167 121 C172 124 180 124 185 121" fill="none" stroke="#fff" stroke-opacity=".55" stroke-width="1.4" stroke-linecap="round"/>
+            <path d="M167 133 C172 130 180 130 185 133" fill="none" stroke="#3a3a40" stroke-opacity=".35" stroke-width="1.3"/>
+          </g>
 
-          <!-- etiqueta atada al nudo, apoyada sobre la tapa -->
-          <path d="M150 131 C140 150 124 160 110 177" fill="none" stroke="#3a2a14" stroke-opacity=".5" stroke-width="2.4"/>
-          <path d="M150 131 C140 150 124 160 110 177" fill="none" stroke="#eadfc4" stroke-width="1.5"/>
+          <!-- hilo: del nudo, sobre el borde de la tapa, hasta el ojal -->
+          <path d="M166 132 C150 140 118 136 104 150 C99 156 97 162 96 168" fill="none" stroke="#2a1d0c" stroke-opacity=".45" stroke-width="2.4"/>
+          <path d="M166 132 C150 140 118 136 104 150 C99 156 97 162 96 168" fill="none" stroke="#eadfc4" stroke-width="1.4"/>
+          <!-- etiqueta colgando, se mece desde el ojal -->
           <g id="etiqueta">
-            <path d="M40 150 H104 L118 164 V190 L104 204 H40 Z" fill="#000" opacity=".4" transform="translate(3 4)" filter="url(#sombraSuave)"/>
+            <path d="M70 178 L96 162 L122 178 V236 Q122 240 118 240 H74 Q70 240 70 236 Z" fill="#000" opacity=".5" transform="translate(5 7)" filter="url(#sombraSuave)"/>
             <g class="cuerpo-tag">
-              <path d="M40 150 H104 L118 164 V190 L104 204 H40 Z" fill="url(#kraft)" stroke="#6b5532" stroke-opacity=".6"/>
-              <circle cx="109" cy="177" r="4.6" fill="#b49464"/><circle cx="109" cy="177" r="2.8" fill="#3b2a12"/>
+              <path d="M70 178 L96 162 L122 178 V236 Q122 240 118 240 H74 Q70 240 70 236 Z" fill="url(#kraft)" stroke="#6b5532" stroke-opacity=".6"/>
+              <path d="M71 236 H121" stroke="#7a5f36" stroke-opacity=".25"/>
+              <circle cx="96" cy="170" r="4" fill="#b49464"/><circle cx="96" cy="170" r="2.4" fill="#3b2a12"/>
               <g class="cara frente" font-family="JetBrains Mono, monospace" text-anchor="middle">
-                <text x="70" y="164" font-size="6.5" letter-spacing="1.4" fill="#3c2f1c">PARA</text>
-                <text x="70" y="180" font-size="12" font-weight="700" fill="#8e0c16">M.E.L.I.</text>
-                <text x="70" y="192" font-size="6.8" fill="#5b4c37">como te tengo</text>
-                <text x="70" y="200" font-size="6.8" fill="#5b4c37">en WhatsApp</text>
+                <text x="96" y="190" font-size="5.2" letter-spacing="1.4" fill="#3c2f1c">PARA</text>
+                <text x="96" y="204" font-size="9" font-weight="700" fill="#8e0c16">M.E.L.I.</text>
+                <text x="96" y="219" font-size="4.6" fill="#5b4c37">como te tengo</text>
+                <text x="96" y="226" font-size="4.6" fill="#5b4c37">en WhatsApp</text>
               </g>
               <g class="cara atras" font-family="JetBrains Mono, monospace" text-anchor="middle">
-                <text x="70" y="164" font-size="6.5" letter-spacing="1.4" fill="#8e0c16">PISTA</text>
-                <text x="70" y="177" font-size="6.6" fill="#3c2f1c">Método de</text>
-                <text x="70" y="187" font-size="6.6" fill="#3c2f1c">Estimación Lineal</text>
-                <text x="70" y="197" font-size="6.6" fill="#3c2f1c">Insesgado</text>
+                <text x="96" y="190" font-size="5.2" letter-spacing="1.4" fill="#8e0c16">PISTA</text>
+                <text x="96" y="203" font-size="4.6" fill="#3c2f1c">Método de</text>
+                <text x="96" y="211" font-size="4.6" fill="#3c2f1c">Estimación</text>
+                <text x="96" y="219" font-size="4.6" fill="#3c2f1c">Lineal</text>
+                <text x="96" y="227" font-size="4.6" fill="#3c2f1c">Insesgado</text>
               </g>
             </g>
           </g>
