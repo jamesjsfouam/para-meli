@@ -217,6 +217,69 @@ em{font-style:inherit;color:var(--pasion)}
 @media (max-width:340px){.esquina.b{display:none}}
 .titulo .H .o{-webkit-text-fill-color:var(--papel)!important;-webkit-text-stroke:0!important;color:var(--papel);text-shadow:3px 0px 0 var(--ink),-3px 0px 0 var(--ink),0px 3px 0 var(--ink),0px -3px 0 var(--ink),2px 2px 0 var(--ink),-2px 2px 0 var(--ink),2px -2px 0 var(--ink),-2px -2px 0 var(--ink),6px 6px 0 var(--ink)}
 
+
+/* ===== la sala: pared con paneles, zócalo, piso en perspectiva ===== */
+.sala{position:absolute;inset:0;pointer-events:none;--h:63%}
+.pared{position:absolute;left:0;right:0;top:0;height:var(--h);
+  background:
+   radial-gradient(26% 46% at 50% 52%,#5a443055,transparent 72%),
+   radial-gradient(60% 80% at 50% 40%,#2a201a,transparent 80%),
+   linear-gradient(#0a0807,#15100d 60%,#1d1611)}
+/* paneles de madera (boiserie) */
+.pared::before{content:"";position:absolute;left:0;right:0;top:46%;bottom:0;
+  background:
+   linear-gradient(#a4703f33,#a4703f33) 0 0/100% 1px no-repeat,
+   linear-gradient(#000a,#000a) 0 3px/100% 2px no-repeat,
+   repeating-linear-gradient(90deg,transparent 0 14px,#ffffff0a 14px 15px,transparent 15px 101px,#000000a0 101px 103px,transparent 103px 116px);
+  -webkit-mask:radial-gradient(70% 120% at 50% 0%,#000 30%,#0006 80%);mask:radial-gradient(70% 120% at 50% 0%,#000 30%,#0006 80%)}
+.pared::after{content:"";position:absolute;left:0;right:0;top:12%;height:30%;
+  background:repeating-linear-gradient(90deg,transparent 0 30px,#ffffff06 30px 31px,transparent 31px 200px,#00000080 200px 202px,transparent 202px 232px);
+  -webkit-mask:radial-gradient(50% 100% at 50% 50%,#000,#0000 85%);mask:radial-gradient(50% 100% at 50% 50%,#000,#0000 85%)}
+.zocalo{position:absolute;left:0;right:0;top:calc(var(--h) - 18px);height:18px;background:linear-gradient(#2a1c12,#120b07);border-top:1px solid #8a5a3344;box-shadow:0 6px 18px #000c}
+.piso{position:absolute;left:0;right:0;top:var(--h);bottom:0;overflow:hidden;perspective:300px;perspective-origin:50% 0}
+.piso::before{content:"";position:absolute;left:-150%;right:-150%;top:0;height:300%;transform-origin:50% 0;transform:rotateX(70deg);
+  background:repeating-linear-gradient(90deg,#1b120b 0 46px,#0a0604 46px 48px,#20150d 48px 94px,#0a0604 94px 96px)}
+.piso::after{content:"";position:absolute;inset:0;background:
+  radial-gradient(30% 34% at 50% 26%,#e0a86233,transparent 70%),
+  linear-gradient(#000c,#0000 30%,#0008)}
+.mesita{position:absolute;left:0;top:300px;width:340px;height:340px;overflow:visible;z-index:-1}
+.cinta-regalo,.regalo .sombra{display:none}
+.caja3d{filter:drop-shadow(0 0 34px #c8192b30)}
+.chispa{transform-box:fill-box;transform-origin:center;opacity:0;animation:chispa 5.5s ease-in-out infinite}
+.chispa.b{animation-delay:-1.9s}.chispa.c{animation-delay:-3.7s}
+@keyframes chispa{0%,70%,100%{opacity:0;transform:scale(.2) rotate(0)}78%{opacity:1;transform:scale(1) rotate(45deg)}88%{opacity:0;transform:scale(.3) rotate(90deg)}}
+.abriendo .chispa{display:none}
+
+/* ===== la puerta ===== */
+#puerta{position:fixed;inset:0;z-index:40;overflow:hidden;cursor:pointer;transform-origin:50% 50%}
+.hueco{position:absolute;left:50%;top:50%;width:min(52vw,250px);height:min(66vh,440px);transform:translate(-50%,-50%);perspective:1100px;
+  box-shadow:0 0 0 12px #2c1d12,0 0 0 13px #6b4a2c,0 0 0 26px #1e140c,0 0 0 27px #4a3220,0 0 0 300vmax #0d0a08}
+.hueco::before{content:"";position:absolute;left:-8px;right:-8px;bottom:-3px;height:6px;background:#ffcf8a;filter:blur(3px);opacity:.75;animation:fuga 4s ease-in-out infinite}
+@keyframes fuga{50%{opacity:.45}}
+.hoja{position:absolute;inset:0;transform-origin:0 50%;transition:transform 1.5s cubic-bezier(.55,0,.25,1);
+  background:linear-gradient(90deg,#00000055,#0000 12%,#0000 88%,#00000077),repeating-linear-gradient(90deg,#3a2414 0 7px,#341f11 7px 9px,#3d2616 9px 19px),#3a2414;
+  box-shadow:inset 0 0 0 1px #000,inset 0 0 60px #000a,2px 0 0 #ffcf8a66}
+.hoja i{position:absolute;left:14%;right:14%;border-radius:2px;box-shadow:inset 3px 3px 0 #00000088,inset -2px -2px 0 #a4703f33,0 0 0 5px #2c1a0e,0 0 0 6px #6b4a2c44}
+.hoja i:nth-child(1){top:7%;height:38%}.hoja i:nth-child(2){top:53%;height:39%}
+.pomo{position:absolute;right:9%;top:50%;width:16px;height:16px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff3c4,#c9a35a 40%,#5e4416);box-shadow:2px 3px 4px #000c}
+.cerradura{position:absolute;right:calc(9% + 4px);top:calc(50% + 24px);width:8px;height:14px;background:radial-gradient(circle at 50% 30%,#ffd590 2px,transparent 3px),linear-gradient(#ffd590,#ffd590) 50% 8px/2px 6px no-repeat;filter:drop-shadow(0 0 4px #ffb35c);animation:fuga 4s ease-in-out infinite}
+.placa{position:absolute;left:50%;top:47.5%;transform:translateX(-50%);padding:3px 8px;font:700 9px/1 var(--mono);letter-spacing:.18em;color:#3b2a10;background:linear-gradient(#e6c681,#a8843f);box-shadow:0 1px 2px #000c;white-space:nowrap}
+.aplique{position:absolute;z-index:1;top:calc(50% - min(33vh,220px) + 40px);width:10px;height:26px;border-radius:3px;background:linear-gradient(#c9a35a,#5e4416)}
+.aplique::after{content:"";position:absolute;left:50%;top:-6px;width:160px;height:200px;margin-left:-80px;background:radial-gradient(closest-side,#ffcf8a2e,transparent);pointer-events:none}
+.aplique::before{content:"";position:absolute;left:-3px;top:-10px;width:16px;height:12px;border-radius:50% 50% 30% 30%;background:radial-gradient(circle at 50% 70%,#fff4d6,#ffb35c 60%,#ff8a3c00);filter:blur(.5px);animation:vela 2.4s ease-in-out infinite}
+@keyframes vela{30%{opacity:.8;transform:scale(.95)}60%{opacity:1;transform:scale(1.05)}}
+.aplique.a{left:calc(50% - min(26vw,125px) - 70px)}.aplique.b{right:calc(50% - min(26vw,125px) - 70px)}
+@media (max-width:440px){.aplique{display:none}}
+.puerta-txt{position:absolute;left:0;right:0;bottom:max(40px,env(safe-area-inset-bottom));text-align:center;color:#8f877c;transition:opacity .4s}
+.puerta-txt b{color:#d9cfbf;font-weight:500}
+#puerta::after{content:"";position:absolute;inset:0;pointer-events:none;box-shadow:inset 0 0 200px 80px #000;background-image:var(--grano);opacity:.9}
+#puerta.abre .hoja{transform:rotateY(-108deg)}
+#puerta.abre .puerta-txt,#puerta.abre .hueco::before{opacity:0}
+#puerta.entra{transition:transform 2.6s cubic-bezier(.6,0,.3,1),opacity .6s 2s;transform:scale(5);opacity:0}
+#escena.lejos{transform:scale(.4)}
+#escena.lejos .esquina,#escena.lejos .instruccion,#escena.lejos .sonido-hint,#escena.lejos .marco{opacity:0}
+#escena{transition:opacity .7s ease,transform 2.6s cubic-bezier(.6,0,.3,1)}
+
 /* ============ toque wrapped: piezas comunes ============ */
 .H{font-family:var(--display);font-weight:900;line-height:.92;letter-spacing:-.03em;text-transform:uppercase}
 .tag{display:inline-block;padding:6px 12px;border-radius:999px;font:800 12px/1.2 var(--sans);letter-spacing:.02em;background:var(--ink);color:var(--papel)}
@@ -402,15 +465,15 @@ em{font-style:inherit;color:var(--pasion)}
 }
 </style>
 </head>
-<body class="cerrado">
+<body class="cerrado en-puerta">
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
   <filter id="goo"><feGaussianBlur in="SourceGraphic" stdDeviation="22" result="b"/><feColorMatrix in="b" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 26 -11"/></filter>
 </defs></svg>
 
 <!-- ============ EL REGALO ============ -->
-<div id="escena">
+<div id="escena" class="lejos">
   <div class="foco"></div>
-  <div class="mesa"></div>
+  <div class="sala"><div class="pared"></div><div class="zocalo"></div><div class="piso"></div></div>
   <div class="marco"></div>
   <div class="niebla"></div><div class="niebla b"></div>
   <div class="haz"></div>
@@ -422,6 +485,22 @@ em{font-style:inherit;color:var(--pasion)}
   <div class="regalo" id="regalo">
     <div class="sombra"></div>
     <div class="flota">
+      <svg class="mesita" viewBox="0 0 340 340" aria-hidden="true">
+        <defs>
+          <linearGradient id="mTope" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4a3020"/><stop offset="1" stop-color="#24170e"/></linearGradient>
+          <radialGradient id="mLuz" cx=".5" cy=".4" r=".55"><stop offset="0" stop-color="#e0a862" stop-opacity=".45"/><stop offset="1" stop-color="#e0a862" stop-opacity="0"/></radialGradient>
+          <linearGradient id="mCanto" x1="0" x2="1"><stop offset="0" stop-color="#140c07"/><stop offset=".35" stop-color="#5a3a22"/><stop offset=".6" stop-color="#3a2414"/><stop offset="1" stop-color="#0e0805"/></linearGradient>
+          <linearGradient id="mPie" x1="0" x2="1"><stop offset="0" stop-color="#0c0704"/><stop offset=".4" stop-color="#4a3020"/><stop offset=".55" stop-color="#2a1a0e"/><stop offset="1" stop-color="#070403"/></linearGradient>
+          <filter id="mBlur" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="10"/></filter>
+        </defs>
+        <ellipse cx="176" cy="300" rx="120" ry="18" fill="#000" opacity=".8" filter="url(#mBlur)"/>
+        <path d="M160 70 C162 150 150 230 128 288 H224 C202 230 190 150 192 70 Z" fill="url(#mPie)"/>
+        <ellipse cx="176" cy="292" rx="70" ry="11" fill="url(#mPie)"/>
+        <path d="M-14 52 V66 A190 36 0 0 0 366 66 V52 Z" fill="url(#mCanto)"/>
+        <ellipse cx="176" cy="52" rx="190" ry="36" fill="url(#mTope)"/>
+        <ellipse cx="176" cy="52" rx="190" ry="36" fill="url(#mLuz)"/>
+        <path d="M-12 56 A190 36 0 0 0 364 56" fill="none" stroke="#c7894a" stroke-opacity=".35" stroke-width="1.2"/>
+      </svg>
       <svg class="caja3d" viewBox="0 0 340 380" aria-hidden="true">
         <defs>
           <!-- papel rojo mate -->
@@ -485,6 +564,10 @@ em{font-style:inherit;color:var(--pasion)}
           <linearGradient id="latonLado" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8a6a2c"/><stop offset="1" stop-color="#3e2c0c"/></linearGradient>
           <radialGradient id="especular" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#fffbe8" stop-opacity=".75"/><stop offset="1" stop-color="#fffbe8" stop-opacity="0"/></radialGradient>
           <linearGradient id="rebote" x1="0" y1="0" x2="0" y2="1"><stop offset=".6" stop-color="#e0303f" stop-opacity="0"/><stop offset="1" stop-color="#e0303f" stop-opacity=".28"/></linearGradient>
+          <linearGradient id="lustre" x1="0" y1="0" x2="1" y2=".4">
+            <stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".44" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#ffe2d0" stop-opacity=".16"/><stop offset=".56" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#fff" stop-opacity="0"/>
+            <animateTransform attributeName="gradientTransform" type="translate" values="-1.2 0;1.2 0;1.2 0" keyTimes="0;.35;1" dur="7s" repeatCount="indefinite"/>
+          </linearGradient>
           <filter id="blur10" x="-30%" y="-100%" width="160%" height="300%"><feGaussianBlur stdDeviation="9"/></filter>
           <filter id="blur2" x="-10%" y="-100%" width="120%" height="300%"><feGaussianBlur stdDeviation="2"/></filter>
         </defs>
@@ -521,7 +604,7 @@ em{font-style:inherit;color:var(--pasion)}
           <g clip-path="url(#cFrente)">
             <rect x="40" y="178" width="240" height="170" fill="url(#mono)" opacity=".7"/>
             <rect x="40" y="178" width="240" height="170" fill="#fff" filter="url(#textura)"/>
-            <rect x="40" y="178" width="240" height="170" fill="url(#frBrillo)"/><rect x="40" y="178" width="240" height="170" fill="url(#banda)"/>
+            <rect x="40" y="178" width="240" height="170" fill="url(#frBrillo)"/><rect x="40" y="178" width="240" height="170" fill="url(#banda)"/><rect x="40" y="178" width="240" height="170" fill="url(#lustre)"/>
             <g class="rib-caja rib-v">
               <rect x="40" y="254" width="240" height="24" fill="url(#satF)"/>
               <rect x="40" y="278" width="240" height="5" fill="#000" opacity=".18" filter="url(#sombraSuave)"/>
@@ -537,6 +620,12 @@ em{font-style:inherit;color:var(--pasion)}
           <path d="M280 184 V340" stroke="#ff8a93" stroke-opacity=".45" stroke-width="1.6" stroke-linecap="round"/>
         </g>
 
+        <!-- chispas de brillo -->
+        <g fill="#fff8e6">
+          <path class="chispa" d="M300 112 l2 -9 l2 9 l9 2 l-9 2 l-2 9 l-2 -9 l-9 -2 z"/>
+          <path class="chispa b" d="M44 182 l1.5 -7 l1.5 7 l7 1.5 l-7 1.5 l-1.5 7 l-1.5 -7 l-7 -1.5 z"/>
+          <path class="chispa c" d="M282 236 l1.5 -6 l1.5 6 l6 1.5 l-6 1.5 l-1.5 6 l-1.5 -6 l-6 -1.5 z"/>
+        </g>
         <!-- candado (misma luz y mismo trazo que la caja) -->
         <g id="candadoSvg">
           <rect x="104" y="246" width="120" height="98" rx="14" fill="#000" opacity=".45" filter="url(#sombraSuave)"/>
@@ -656,6 +745,12 @@ em{font-style:inherit;color:var(--pasion)}
   </div>
   <p class="sonido-hint mono" id="sonidoHint">Subí el volumen</p>
   <p class="instruccion mono"><b class="raton">Girá las ruedas o escribí</b><b class="tactil">Deslizá las ruedas</b> · cuatro letras</p>
+</div>
+
+<div id="puerta" role="button" tabindex="0" aria-label="Abrir la puerta">
+  <span class="aplique a"></span><span class="aplique b"></span>
+  <div class="hueco"><div class="hoja"><i></i><i></i><span class="placa">M.E.L.I.</span><span class="pomo"></span><span class="cerradura"></span></div></div>
+  <p class="puerta-txt mono"><b>Tocá la puerta</b> · alguien te espera adentro</p>
 </div>
 
 <div id="cartaFinal" aria-hidden="true"><div class="marco3d"><div class="cf-panel arriba"><p class="cf-in cf-fecha">N° 01 · 11 · 2026</p></div><div class="cf-panel medio"><p class="cf-in cf-texto">Feliz cumple,<b class="cf-meli">MELI</b></p></div><div class="cf-panel abajo"><p class="cf-in cf-firma">— James</p></div><span class="cf-sello">M</span></div></div>
@@ -862,11 +957,25 @@ function ambiente(){
 $('etiqueta').addEventListener('animationiteration',()=>{if(!abierto&&ac&&!reducido)setTimeout(()=>{if(!abierto)ruido(2.2,700,.6,.18,true,1800)},8000*.53)});
 $('etiqueta').addEventListener('click',e=>{e.stopPropagation();if(!abierto){$('etiqueta').classList.toggle('volteada');clic()}});
 setTimeout(()=>{if(!abierto)$('etiqueta').classList.add('volteada')},12000);
-document.addEventListener('keydown',e=>{if(abierto||els.includes(document.activeElement)||!/^[a-z]$/i.test(e.key))return;const n=fijas.indexOf(false);if(n>=0){els[n].focus({preventScroll:true});els[n].dispatchEvent(new KeyboardEvent('keydown',{key:e.key}))}});
+document.addEventListener('keydown',e=>{if(document.body.classList.contains('en-puerta'))return;if(abierto||els.includes(document.activeElement)||!/^[a-z]$/i.test(e.key))return;const n=fijas.indexOf(false);if(n>=0){els[n].focus({preventScroll:true});els[n].dispatchEvent(new KeyboardEvent('keydown',{key:e.key}))}});
 /* audio: desbloquear con el primer gesto (iPhone) y dejar la canción lista */
 let songG;
 function enlazaCancion(){const c=ctx();if(songG||!c)return;try{audio.crossOrigin='anonymous';songG=c.createGain();songG.gain.value=.5;c.createMediaElementSource(audio).connect(songG).connect(c.destination)}catch(e){songG=null}}
 let desbloqueado=false;
+function rechinido(){const c=ctx();if(!c)return;const t=c.currentTime,o=c.createOscillator(),f=c.createBiquadFilter(),g=c.createGain(),l=c.createOscillator(),lg=c.createGain();
+  o.type='sawtooth';o.frequency.setValueAtTime(70,t);o.frequency.linearRampToValueAtTime(115,t+1.3);l.frequency.value=13;lg.gain.value=18;l.connect(lg).connect(o.frequency);
+  f.type='bandpass';f.frequency.value=1100;f.Q.value=9;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.16,t+.15);g.gain.setValueAtTime(.16,t+1);g.gain.linearRampToValueAtTime(0,t+1.4);
+  o.connect(f).connect(g).connect(bus());o.start(t);l.start(t);o.stop(t+1.5);l.stop(t+1.5)}
+function paso(){const c=ctx();if(!c)return;golpeGrave(c.currentTime,85,.3);ruido(.09,500,1,.12)}
+let entrando=false;
+async function entrar(){if(entrando)return;entrando=true;const pu=$('puerta');desbloquea();
+  clicFuerte();await espera(260);rechinido();pu.classList.add('abre');
+  await espera(1100);pu.classList.add('entra');$('escena').classList.remove('lejos');
+  for(let k=0;k<4;k++)setTimeout(paso,300+k*520);
+  await espera(2700);pu.remove();document.body.classList.remove('en-puerta');
+  const n=fijas.indexOf(false);if(n>=0)els[n].focus({preventScroll:true})}
+$('puerta').addEventListener('click',entrar);
+$('puerta').addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();entrar()}});
 function desbloquea(){ambiente();if(desbloqueado)return;desbloqueado=true;try{if(navigator.audioSession)navigator.audioSession.type='playback'}catch(e){}
   enlazaCancion();audio.src=CANCIONES[0][2];audio.muted=true;audio.play().then(()=>{audio.pause();audio.currentTime=0;audio.muted=false}).catch(()=>{audio.muted=false})}
 ['pointerup','touchend','click','keydown'].forEach(ev=>$('escena').addEventListener(ev,desbloquea,{passive:true}));
