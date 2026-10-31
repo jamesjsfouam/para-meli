@@ -42,9 +42,9 @@ em{font-style:inherit;color:var(--pasion)}
 .mesa::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,#ffffff03 0 2px,transparent 2px 9px),radial-gradient(40% 50% at 50% 0%,#ffe9c412,transparent 70%)}
 /* marco editorial */
 .marco{position:absolute;inset:16px;border:1px solid #ffffff12;pointer-events:none}
-.esquina{position:absolute;color:#8f877c;z-index:2}
+.esquina{position:absolute;color:#8f877c;z-index:4}
 .esquina.a{top:28px;left:30px}.esquina.b{top:28px;right:30px}
-.instruccion{position:absolute;left:0;right:0;bottom:max(40px,env(safe-area-inset-bottom));text-align:center;color:#8f877c;transition:opacity .4s;z-index:2}
+.instruccion{position:absolute;left:0;right:0;bottom:max(40px,env(safe-area-inset-bottom));text-align:center;color:#8f877c;transition:opacity .4s;z-index:4}
 .instruccion b{color:#d9cfbf;font-weight:500}
 
 .regalo{position:relative;width:250px;height:300px;margin-top:-4vh;animation:llega 1.2s var(--ease) both}
@@ -135,6 +135,31 @@ em{font-style:inherit;color:var(--pasion)}
 
 
 .cinta-regalo{position:absolute;left:0;bottom:92px;white-space:nowrap;font:900 44px/1 var(--display);text-transform:uppercase;color:#1c1714;animation:marquee 28s linear infinite;pointer-events:none}
+
+/* ambiente de misterio */
+#escena::before{content:"";position:absolute;inset:0;z-index:3;pointer-events:none;box-shadow:inset 0 0 180px 60px #000;animation:respiraLuz 7s ease-in-out infinite}
+@keyframes respiraLuz{50%{box-shadow:inset 0 0 220px 90px #000}}
+.haz{position:absolute;left:50%;top:-5%;width:760px;height:95%;margin-left:-380px;pointer-events:none;
+  background:linear-gradient(#ffe9c42e,#ffe9c40a 70%,transparent);clip-path:polygon(43% 0,57% 0,88% 100%,12% 100%);filter:blur(10px);animation:parpadeo 9s steps(1) infinite,oscila 11s ease-in-out infinite}
+@keyframes parpadeo{0%,100%{opacity:1}37%{opacity:.82}38%{opacity:1}64%{opacity:.88}65%{opacity:1}}
+@keyframes oscila{50%{transform:skewX(-2deg)}}
+.niebla{position:absolute;left:-20%;right:-20%;bottom:-10%;height:55%;pointer-events:none;opacity:.5;mix-blend-mode:screen;
+  background:radial-gradient(40% 50% at 30% 60%,#3a322c,transparent 70%),radial-gradient(35% 45% at 70% 70%,#2f2925,transparent 70%),radial-gradient(30% 40% at 50% 40%,#2a2420,transparent 70%);
+  filter:blur(18px);animation:deriva 26s ease-in-out infinite alternate}
+.niebla.b{bottom:-20%;opacity:.35;animation-duration:34s;animation-direction:alternate-reverse}
+@keyframes deriva{to{transform:translateX(12%)}}
+.polvo{position:absolute;left:50%;top:0;width:420px;height:80%;margin-left:-210px;pointer-events:none;clip-path:polygon(40% 0,60% 0,90% 100%,10% 100%)}
+.polvo i{position:absolute;width:var(--s);height:var(--s);border-radius:50%;background:#ffefd0;opacity:0;filter:blur(.4px);animation:mota var(--t) linear var(--d) infinite}
+@keyframes mota{0%{opacity:0;transform:translate(0,0)}15%{opacity:.7}85%{opacity:.5}100%{opacity:0;transform:translate(var(--dx),-140px)}}
+.sonido-hint{position:absolute;left:0;right:0;bottom:calc(max(40px,env(safe-area-inset-bottom)) + 22px);text-align:center;color:#6f685f;z-index:4;transition:opacity .6s}
+.sonido-hint.fuera,.abierto .sonido-hint{opacity:0}
+.suspenso .regalo .caja{animation:latidoCaja var(--latido,1s) ease-out infinite}
+@keyframes latidoCaja{0%,100%{box-shadow:inset 0 -14px 24px -12px #0007,inset 10px 0 18px -14px #fff3,0 0 0 0 #c1121f00}12%{box-shadow:inset 0 -14px 24px -12px #0007,inset 10px 0 18px -14px #fff3,0 0 70px 6px #c1121f55}}
+.sacude{animation:sacude .45s cubic-bezier(.36,.07,.19,.97)}
+@keyframes sacude{20%{transform:translate(-3px,2px)}40%{transform:translate(3px,-2px)}60%{transform:translate(-2px,1px)}80%{transform:translate(1px,-1px)}}
+.suspenso .haz{animation:parpadeo 4s steps(1) infinite,oscila 11s ease-in-out infinite}
+.suspenso .niebla{opacity:.65}
+@media (prefers-reduced-motion:reduce){.haz,.niebla,.polvo i,#escena::before{animation:none}}
 
 /* ============ toque wrapped: piezas comunes ============ */
 .H{font-family:var(--display);font-weight:900;line-height:.92;letter-spacing:-.03em;text-transform:uppercase}
@@ -331,6 +356,10 @@ em{font-style:inherit;color:var(--pasion)}
   <div class="foco"></div>
   <div class="mesa"></div>
   <div class="marco"></div>
+  <div class="niebla"></div><div class="niebla b"></div>
+  <div class="haz"></div>
+  <div class="polvo" id="polvo"></div>
+  <p class="sonido-hint mono" id="sonidoHint">Subí el volumen</p>
   <div class="cinta-regalo">Para M.E.L.I. · 01 · 11 · Para M.E.L.I. · 01 · 11 · Para M.E.L.I. · 01 · 11 · Para M.E.L.I. · 01 · 11 · </div>
   <span class="esquina a mono">N° 01 · 11 · 2026</span>
   <span class="esquina b mono">Para M.E.L.I.</span>
@@ -496,12 +525,65 @@ els.forEach((el,i)=>{pinta(i);
     else if(/^[a-z]$/i.test(e.key)){ruedas[i]=ABC.indexOf(e.key.toUpperCase());pinta(i);clic();if(els[i+1])els[i+1].focus();revisa()}
   });
 });
+
+/* ---------- ambiente de misterio (sonido generado, sin archivos) ---------- */
+$('polvo').innerHTML=Array.from({length:18},()=>`<i style="left:${(10+Math.random()*80).toFixed(1)}%;top:${(15+Math.random()*80).toFixed(1)}%;--s:${(1+Math.random()*2.4).toFixed(1)}px;--t:${(7+Math.random()*8).toFixed(1)}s;--d:-${(Math.random()*12).toFixed(1)}s;--dx:${(Math.random()*60-30).toFixed(0)}px"></i>`).join('');
+let amb=null;
+/* música de suspenso: latido, cuerdas en tensión, caja de música desafinada y golpes graves.
+   La tensión sube con cada letra correcta del candado. */
+function tension(){return CLAVE.split('').filter((l,i)=>ABC[ruedas[i]]===l).length}
+function ambiente(){
+  if(amb||abierto)return;const c=ctx();if(!c)return;
+  const t0=c.currentTime,master=c.createGain();master.gain.setValueAtTime(0,t0);master.gain.linearRampToValueAtTime(.42,t0+5);
+  const comp=c.createDynamicsCompressor();master.connect(comp).connect(c.destination);
+  // reverberación simple (ruido con caída)
+  const rv=c.createConvolver(),len=c.sampleRate*3.2,ir=c.createBuffer(2,len,c.sampleRate);
+  for(let ch=0;ch<2;ch++){const d=ir.getChannelData(ch);for(let i=0;i<len;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/len,3)}
+  rv.buffer=ir;const rvG=c.createGain();rvG.gain.value=.55;rv.connect(rvG).connect(master);
+  const env=(g,t,a,v,r)=>{g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v,t+a);g.gain.exponentialRampToValueAtTime(.0001,t+a+r)};
+  const parar=[];
+
+  // 1. cuerdas en tensión: cluster disonante que se abre poco a poco
+  const cuerdasF=c.createBiquadFilter();cuerdasF.type='lowpass';cuerdasF.frequency.value=260;cuerdasF.Q.value=4;
+  const cuerdasG=c.createGain();cuerdasG.gain.value=.11;cuerdasF.connect(cuerdasG);cuerdasG.connect(master);cuerdasG.connect(rv);
+  [[110,0],[116.5,0],[164.8,0],[155.6,0],[220,-6]].forEach(([f,det])=>{
+    for(const d of [-7,7]){const o=c.createOscillator();o.type='sawtooth';o.frequency.value=f;o.detune.value=d+det;
+      const vib=c.createOscillator(),vg=c.createGain();vib.frequency.value=4.5+Math.random();vg.gain.value=3;vib.connect(vg).connect(o.detune);vib.start();
+      o.connect(cuerdasF);o.start();parar.push(o,vib)}});
+  // 2. sub grave
+  const sub=c.createOscillator(),subG=c.createGain();sub.type='sine';sub.frequency.value=41.2;subG.gain.value=.22;sub.connect(subG).connect(master);sub.start();parar.push(sub);
+
+  // 3. latido
+  function golpe(t,f,v){const o=c.createOscillator(),g=c.createGain();o.type='sine';o.frequency.setValueAtTime(f,t);o.frequency.exponentialRampToValueAtTime(32,t+.25);env(g,t,.005,v,.35);o.connect(g).connect(master);o.start(t);o.stop(t+.5)}
+  // 4. caja de música desafinada (La menor con tritono)
+  const caja=[440,523.25,659.25,622.25,440,523.25,739.99,659.25,493.88,523.25,622.25,587.33];let paso=0;
+  function nota(t){const f=caja[paso++%caja.length]*(1+(Math.random()-.5)*.006);
+    [[1,.07],[2.01,.022],[4.2,.008]].forEach(([m,v])=>{const o=c.createOscillator(),g=c.createGain();o.type='sine';o.frequency.value=f*m;env(g,t,.004,v,1.8);o.connect(g);g.connect(master);g.connect(rv);o.start(t);o.stop(t+2)})}
+  // 5. golpe de suspenso: whoosh que sube + boom
+  function boom(){const t=c.currentTime,n=c.createBuffer(1,c.sampleRate*2.2,c.sampleRate),d=n.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*(i/d.length);
+    const s=c.createBufferSource(),f=c.createBiquadFilter(),g=c.createGain();s.buffer=n;f.type='bandpass';f.Q.value=3;f.frequency.setValueAtTime(200,t);f.frequency.exponentialRampToValueAtTime(3500,t+2.1);g.gain.value=.12;s.connect(f).connect(g);g.connect(master);g.connect(rv);s.start(t);
+    setTimeout(()=>{if(!amb)return;const t2=c.currentTime;golpe(t2,90,.9);golpe(t2+.02,60,.7);const e=$('escena');if(e){e.classList.remove('sacude');void e.offsetWidth;e.classList.add('sacude')}},2150)}
+
+  // reloj: latido + caja de música, más rápido cuanta más tensión
+  let prox=c.currentTime+.3,cuenta=0,vivo=true,ultBoom=Date.now();
+  (function reloj(){if(!vivo)return;const k=tension(),bpm=58+k*14,beat=60/bpm;
+    while(prox<c.currentTime+.25){golpe(prox,70,.55);golpe(prox+beat*.28,58,.35);
+      if(cuenta%2===0)nota(prox+beat*.5);if(k>=2)nota(prox+beat*.75);cuenta++;prox+=beat}
+    cuerdasF.frequency.setTargetAtTime(260+k*420,c.currentTime,1.2);cuerdasG.gain.setTargetAtTime(.11+k*.03,c.currentTime,1.2);
+    document.documentElement.style.setProperty('--latido',(beat).toFixed(2)+'s');
+    if(Date.now()-ultBoom>(15000-k*2500)){ultBoom=Date.now();boom()}
+    setTimeout(reloj,80)})();
+
+  amb={parar(){vivo=false;const n=c.currentTime;master.gain.cancelScheduledValues(n);master.gain.setValueAtTime(master.gain.value,n);master.gain.linearRampToValueAtTime(0,n+1.4);setTimeout(()=>parar.forEach(o=>{try{o.stop()}catch(e){}}),1600)}};
+  $('sonidoHint').classList.add('fuera');$('escena').classList.add('suspenso');
+}
+['pointerdown','keydown'].forEach(ev=>$('escena').addEventListener(ev,ambiente));
 setTimeout(()=>{if(!abierto)$('etiqueta').classList.add('volteada')},20000);
 
 /* ---------- abrir y desplegar ---------- */
 const reducido=matchMedia('(prefers-reduced-motion: reduce)').matches;
 function abrir(){
-  abierto=true;$('candado').classList.add('suelto');clicFuerte();
+  abierto=true;$('candado').classList.add('suelto');clicFuerte();if(amb)amb.parar();
   const T=reducido?[0,0,0,0,0]:[450,1050,1500,2400,2900];
   setTimeout(()=>$('escena').classList.add('abierto'),T[0]);
   setTimeout(()=>{$('papel').classList.add('paso1');papel();pon(0)},T[1]);

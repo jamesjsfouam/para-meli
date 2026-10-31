@@ -42,17 +42,17 @@ const LINEA = [
   {
     fecha: "11 · 06 · 2026",
     titulo: "“Yo siempre estaré ahí para vos”",
-    mensaje: "Y sí estuviste. durante todo el proceso de cambio que vivi",
+    mensaje: "Y sí estuviste, durante todo el proceso de cambio que viví.",
   },
   {
     fecha: "12 · 08 · 2026",
     titulo: "Tu primer Substack",
-    mensaje: " Al día siguiente ya estabas publicando.",
+    mensaje: "Al día siguiente ya estabas publicando.",
   },
   {
     fecha: "28 · 08 · 2026",
     titulo: "Rally Nacional",
-    mensaje: "el dia de nuestro primer rally juntos. pero sobre todo quiero decirte gracias por toda esa ayuda que me distes cuando estaba en mi punto mas bajo ",   // ← escribí aquí lo que querés decirle de este rally
+    mensaje: "El día de nuestro primer rally juntos. Pero sobre todo, quiero decirte gracias por toda esa ayuda que me diste cuando estaba en mi punto más bajo.",   // ← escribí aquí lo que querés decirle de este rally
     fotos: ["linea-rally-nacional.jpg"],   // ← guardá la foto con este nombre en fotos/
   },
   {
@@ -78,9 +78,15 @@ const LINEA = [
 const CARTA = {
   saludo: "Meli:",
   parrafos: [
-    "Meli, ya practicamnete cumplimos 1 año de conocernos, año en el que han pasado demasiadas cosas tanto buenas como malas, hoy que es tu cumpleaños, solo quiero agradercerte muchisimo por lo que eres hoy en dia, pero en especial por seguir a mi lado y eso es algo que valoro muchisimo.  qro que sepas que sos la mejor persona que he podido conocer a lo largo de mi vida, y que solo quiero que asi como haces de feliz a los demas te hagan feliz a ti, asi como amas de intenso y fuerte a los demas, asi te puedan amar a ti, quiero que sepas que siempre estare, pase lo que pase, siempre me tendras. sos la persona mas especial que tengo en mi vida, una persona que amo muchisimo, sos mi lugar seguro para todo por que sos la persona a la que le tengo la mayor confianza de mi vida, te amo muchisimo y quiero que lo sepas, de principio a fin. solo quiero que el dia de hoy mires hacia el cielo y puedas ver una de esas estrellas que iluminan el cielo, quiero que sepas que tu eres una de esas estrellas en mi vida, pero eres una de esas estrellas que no se apagan ni de noche ni de dia. siempre brillan, siempre dan lo mejor de ellas, pero sobre todo. Son estrellas. te quiero muchisimo melissa, solo quiero que disfrutes al maximo tu cumpleaños mi niña linda. por que a como siempre te he dicho, despues de cada tormetan siempre hay un solecito al final de todo. Feliz cumpleaños",
+    "Meli, ya prácticamente cumplimos 1 año de conocernos, año en el que han pasado demasiadas cosas, tanto buenas como malas. Hoy que es tu cumpleaños, solo quiero agradecerte muchísimo por lo que eres hoy en día, pero en especial por seguir a mi lado, y eso es algo que valoro muchísimo.",
+    "Quiero que sepas que sos la mejor persona que he podido conocer a lo largo de mi vida, y que solo quiero que así como haces de feliz a los demás te hagan feliz a ti, así como amas de intenso y fuerte a los demás, así te puedan amar a ti. Quiero que sepas que siempre estaré, pase lo que pase; siempre me tendrás.",
+    "Sos la persona más especial que tengo en mi vida, una persona que amo muchísimo. Sos mi lugar seguro para todo, porque sos la persona a la que le tengo la mayor confianza de mi vida. Te amo muchísimo y quiero que lo sepas, de principio a fin.",
+    "También quiero agradecerte por todas esas noches en las que me ahogaba sobrepensando y no podía ni dormir, porque aunque fueran las peores horas, siempre estuviste ahí para mí, sin juzgarme y sin soltarme. Quiero que sepas que gran parte de la persona que soy hoy es gracias a vos, a tu paciencia y a tu cariño, y eso es algo que nunca voy a terminar de agradecerte.",
+    "Y si algún día te da miedo no ser suficiente, quiero que sepas que para mí siempre lo vas a ser, y de sobra. Nunca vas a tener que cambiar nada de quién sos para que te quieran, porque así como sos ya sos demasiado. Yo siempre voy a estar para vos, en tus días buenos y en los feos, pase lo que pase.",
+    "Solo quiero que el día de hoy mires hacia el cielo y puedas ver una de esas estrellas que iluminan el cielo. Quiero que sepas que tú eres una de esas estrellas en mi vida, pero eres una de esas estrellas que no se apagan ni de noche ni de día: siempre brillan, siempre dan lo mejor de ellas, pero sobre todo, son estrellas.",
+    "Te quiero muchísimo, Melissa. Solo quiero que disfrutes al máximo tu cumpleaños, mi niña linda, porque a como siempre te he dicho, después de cada tormenta siempre hay un solecito al final de todo. Feliz cumpleaños.",
   ],
-  despedida: "Te adoro y te quiero muchísimo,",
+  despedida: "",   // opcional: una línea antes de la firma
   firma: "James",
   posdata: "",   // opcional: una p.d. al final de la carta
 };
