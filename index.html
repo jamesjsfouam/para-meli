@@ -137,40 +137,53 @@ em{font-style:inherit;color:var(--pasion)}
 .cinta-regalo{position:absolute;left:0;bottom:92px;white-space:nowrap;font:900 44px/1 var(--display);text-transform:uppercase;color:#1c1714;animation:marquee 28s linear infinite;pointer-events:none}
 
 
-/* ===== regalo v2: caja en 3D, candado y ruedas de mejor calidad ===== */
-.regalo{width:300px;height:340px}
-.caja3d{position:absolute;inset:0;width:100%;height:100%;overflow:visible;filter:drop-shadow(0 18px 18px #000a)}
+/* ===== regalo v3: vista frontal tipo foto de producto ===== */
+.regalo{width:320px;height:360px}
+.caja3d{position:absolute;inset:0;width:100%;height:100%;overflow:visible;filter:drop-shadow(0 26px 22px #000c) drop-shadow(0 4px 4px #0008)}
 .caja3d g{transform-box:fill-box;transform-origin:center;transition:transform .6s var(--ease),opacity .5s}
-.abierto .g-moño{opacity:0;transform:translateY(-40px) scale(.8)}
+.abierto .g-moño{opacity:0;transform:translateY(-50px) scale(.85) rotate(-6deg)}
 .abierto .rib-caja{opacity:0}
-.abierto .g-tapa{transform:translate(-30px,-140vh) rotate(-18deg);transition:transform .7s .45s cubic-bezier(.5,0,.75,0)}
-.sombra{left:30px;margin-left:0;width:250px;bottom:-14px}
-.reflejo{left:40px;right:40px}
-.candado{left:45px;margin-left:0;top:156px;scale:.86}
-.etiqueta{left:248px;right:auto;top:188px}
+.abierto .g-tapa{transform:translate(-20px,-140vh) rotate(-16deg);transition:transform .75s .4s cubic-bezier(.5,0,.75,0)}
+.sombra{left:20px;margin-left:0;width:290px;bottom:-12px;height:40px}
+.reflejo{left:50px;right:50px;bottom:-58px}
+.candado{left:85px;margin-left:0;top:186px;scale:.82}
+.etiqueta{left:292px;right:auto;top:276px;width:134px;height:68px;animation:mece 4.5s ease-in-out infinite;transform-origin:4px 30%}
+.etiqueta::before{display:none}
+.etiqueta .cara{background:linear-gradient(160deg,#e3d2b3,#cdb48a);border-radius:2px 12px 12px 2px;box-shadow:0 6px 12px #0009,inset 0 0 0 1px #0000001a;padding:10px 10px 0 22px}
+.etiqueta .cara::after{content:"";position:absolute;inset:0;border-radius:inherit;background-image:var(--grano);opacity:.18;mix-blend-mode:multiply}
+.etiqueta .cara::before{left:7px;width:8px;height:8px;background:#141110;box-shadow:0 0 0 2.5px #b79d70,0 0 0 3.5px #8a7350}
+.etiqueta .cara p{color:#2a2218}
+.etiqueta .cara p.g{color:#5b4c37}
 .suspenso .caja3d{animation:latidoSvg var(--latido,1s) ease-out infinite}
-@keyframes latidoSvg{0%,100%{filter:drop-shadow(0 18px 18px #000a)}12%{filter:drop-shadow(0 18px 18px #000a) drop-shadow(0 0 26px #c1121f88)}}
-@media (max-width:440px){.regalo{scale:1.06;margin-left:-58px}}
-.arco{border:0;background:linear-gradient(90deg,#7a5c24,#efd294 26%,#c9a35b 52%,#9c7a37 78%,#6f5320);
-  -webkit-mask:radial-gradient(27px 47px at 50% 100%,#0000 98%,#000 100%);mask:radial-gradient(27px 47px at 50% 100%,#0000 98%,#000 100%);box-shadow:none}
+@keyframes latidoSvg{0%,100%{filter:drop-shadow(0 26px 22px #000c) drop-shadow(0 4px 4px #0008)}12%{filter:drop-shadow(0 26px 22px #000c) drop-shadow(0 0 30px #d4142a99)}}
+@media (max-width:440px){.regalo{scale:.98;margin-left:-30px}.etiqueta{left:214px;top:318px}}
+.abierto .brillo{display:none}
+/* candado: latón cepillado, ventana con vidrio */
+.arco{width:80px;height:62px;border:0;background:linear-gradient(90deg,#5e4519,#e9c983 22%,#fff0c4 34%,#c9a35b 55%,#8e6d2e 80%,#5a4216);
+  -webkit-mask:radial-gradient(28px 50px at 50% 100%,#0000 98%,#000 100%);mask:radial-gradient(28px 50px at 50% 100%,#0000 98%,#000 100%);box-shadow:none}
 .arco::after{display:none}
-.cuerpo{padding-top:9px;height:122px;background:linear-gradient(160deg,#ecd08f,#c9a35b 34%,#a8853f 78%,#b8944e);box-shadow:0 14px 22px -6px #000d,inset 0 1px 0 #fbe7b8,inset 0 -3px 0 #7c5e26,inset 0 0 0 2px #0000000d}
+.cuerpo{padding-top:10px;height:126px;border-radius:14px;
+  background:repeating-linear-gradient(90deg,#ffffff0a 0 1px,transparent 1px 3px),linear-gradient(165deg,#f2d896 0%,#d4ae64 22%,#b68f45 55%,#8f6c2c 85%,#a8843f 100%);
+  box-shadow:0 18px 26px -8px #000e,inset 0 2px 0 #fff2c7,inset 0 -4px 0 #6b4f1c,inset 2px 0 0 #f6dfa5,inset -2px 0 0 #7d5e25}
+.cuerpo::before{background:linear-gradient(115deg,transparent 30%,#ffffff2e 42%,transparent 50%)}
 .cuerpo::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
-  background:radial-gradient(circle at 12px 110px,#6f5320 0 2.5px,#f3dca4 3px 3.6px,transparent 4px),radial-gradient(circle at calc(100% - 12px) 110px,#6f5320 0 2.5px,#f3dca4 3px 3.6px,transparent 4px)}
-.leds{display:flex;justify-content:center;gap:24px;margin-bottom:6px}
-.leds i{width:6px;height:6px;border-radius:50%;background:#4a2a12;box-shadow:inset 0 1px 1px #000a;transition:background .3s,box-shadow .3s}
-.leds i.on{background:#ff3344;box-shadow:0 0 6px 2px #ff2233aa,inset 0 -1px 1px #0005}
-.ventana{padding:5px;border-radius:7px;background:#1c140d;box-shadow:inset 0 3px 6px #000,0 1px 0 #f5dfab}
-.rueda{width:30px;height:66px;border-radius:3px;background:linear-gradient(#2b2014 0%,#9b8c74 14%,#efe5d1 34%,#fffaf0 50%,#efe5d1 66%,#9b8c74 86%,#2b2014 100%);transition:background .4s,box-shadow .4s}
-.rueda::before{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;background:linear-gradient(#000a,#0000 30%,#0000 70%,#000a);border-radius:inherit}
-.rueda::after{top:22px;border-color:#c1121f66;z-index:3}
+  background:radial-gradient(circle at 13px 113px,#4b3812 0 2px,#f7e2ad 2.6px 3.4px,#7a5d22 3.8px,transparent 4.4px),radial-gradient(circle at calc(100% - 13px) 113px,#4b3812 0 2px,#f7e2ad 2.6px 3.4px,#7a5d22 3.8px,transparent 4.4px)}
+.leds{display:flex;justify-content:center;gap:26px;margin-bottom:7px}
+.leds i{width:7px;height:7px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#7a3a22,#2a1208);box-shadow:inset 0 1px 1px #000c,0 1px 0 #f7e2ad66;transition:background .3s,box-shadow .3s}
+.leds i.on{background:radial-gradient(circle at 35% 35%,#ffb0b6,#ff2638 45%,#a3000f);box-shadow:0 0 8px 3px #ff2233aa,0 1px 0 #f7e2ad66}
+.ventana{position:relative;padding:6px;border-radius:8px;background:linear-gradient(#0e0a06,#22180e);box-shadow:inset 0 4px 8px #000,inset 0 -1px 0 #ffffff14,0 1px 0 #fbe7b8}
+.ventana::after{content:"";position:absolute;inset:6px;border-radius:3px;pointer-events:none;z-index:4;background:linear-gradient(170deg,#ffffff38 0%,#ffffff0a 38%,transparent 40%)}
+.rueda{width:30px;height:66px;border-radius:3px;background:linear-gradient(#1d150c 0%,#8d7e66 13%,#ece2cd 33%,#fffaf1 50%,#ece2cd 67%,#8d7e66 87%,#1d150c 100%);transition:background .4s,box-shadow .4s}
+.rueda::before{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;background:linear-gradient(#000b,#0000 32%,#0000 68%,#000b),repeating-linear-gradient(90deg,#0000 0 2px,#00000010 2px 3px);border-radius:inherit}
+.rueda::after{top:22px;border-color:#c1121f55;z-index:3}
 .rueda span{font:700 16px/22px var(--mono)}
-.rueda.fija{cursor:default;background:linear-gradient(#2b1608 0%,#9a6a2c 14%,#f3d79a 34%,#fff1cf 50%,#f3d79a 66%,#9a6a2c 86%,#2b1608 100%);box-shadow:0 0 10px #ff334455}
-.rueda.fija span{color:#8e0c16}
+.rueda:focus-visible{box-shadow:0 0 0 2px #ff3344aa}
+.rueda.fija{cursor:default;background:linear-gradient(#2a1405 0%,#986626 13%,#f2d595 33%,#fff2d2 50%,#f2d595 67%,#986626 87%,#2a1405 100%)}
+.rueda.fija span{color:#9b0d19}
 .rueda.fija::after{border-color:#c1121f}
+.cuerpo .marca{margin-top:9px;font:700 8px/1 var(--mono);letter-spacing:.3em;color:#5d4416;text-shadow:0 1px 0 #f3dca444}
 .candado.golpe{animation:golpeCand .35s cubic-bezier(.3,1.6,.5,1)}
-@keyframes golpeCand{30%{transform:translateY(4px) scale(.985)}}
-.etiqueta::before{left:-34px;width:42px;background:linear-gradient(90deg,#9c917d,#d9cdb5);height:1.5px}
+@keyframes golpeCand{30%{transform:translateY(5px)}}
 
 /* ambiente de misterio */
 #escena::before{content:"";position:absolute;inset:0;z-index:3;pointer-events:none;box-shadow:inset 0 0 180px 60px #000;animation:respiraLuz 7s ease-in-out infinite}
@@ -404,50 +417,90 @@ em{font-style:inherit;color:var(--pasion)}
     <div class="sombra"></div>
     <div class="reflejo"></div>
     <div class="flota">
-      <svg class="caja3d" viewBox="0 0 300 340" aria-hidden="true">
+      <svg class="caja3d" viewBox="0 0 320 360" aria-hidden="true">
         <defs>
-          <linearGradient id="gFrente" x1="0" x2="1"><stop offset="0" stop-color="#7e0a13"/><stop offset=".3" stop-color="#c1121f"/><stop offset=".72" stop-color="#b0101c"/><stop offset="1" stop-color="#860b15"/></linearGradient>
-          <linearGradient id="gLado" x1="0" x2="1"><stop offset="0" stop-color="#5c0710"/><stop offset="1" stop-color="#3e040a"/></linearGradient>
-          <linearGradient id="gTecho" x1="0" y1="1" x2=".4" y2="0"><stop offset="0" stop-color="#d9202f"/><stop offset="1" stop-color="#a80f1b"/></linearGradient>
-          <linearGradient id="gTapa" x1="0" x2="1"><stop offset="0" stop-color="#9b0e18"/><stop offset=".3" stop-color="#d31726"/><stop offset=".75" stop-color="#bb121e"/><stop offset="1" stop-color="#8e0c16"/></linearGradient>
-          <linearGradient id="gListon" x1="0" x2="1"><stop offset="0" stop-color="#5d5d64"/><stop offset=".42" stop-color="#bdbdc4"/><stop offset=".6" stop-color="#8f8f96"/><stop offset="1" stop-color="#5a5a61"/></linearGradient>
-          <linearGradient id="gListonLado" x1="0" x2="1"><stop offset="0" stop-color="#4b4b51"/><stop offset="1" stop-color="#6d6d74"/></linearGradient>
-          <linearGradient id="gLazo" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#d2d2d8"/><stop offset=".5" stop-color="#9a9aa1"/><stop offset="1" stop-color="#5f5f66"/></linearGradient>
-          <linearGradient id="gBrillo" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".22"/><stop offset=".25" stop-color="#fff" stop-opacity="0"/></linearGradient>
-          <pattern id="pMeli" width="46" height="46" patternUnits="userSpaceOnUse"><text x="2" y="12" font-family="monospace" font-size="6.5" letter-spacing="1.2" fill="#5a0610" opacity=".55">M·E·L·I</text><text x="25" y="35" font-family="monospace" font-size="6.5" letter-spacing="1.2" fill="#5a0610" opacity=".55">M·E·L·I</text></pattern>
+          <!-- papel rojo mate con luz de arriba -->
+          <linearGradient id="hFrente" x1="0" x2="1"><stop offset="0" stop-color="#6e0912"/><stop offset=".16" stop-color="#a90f1c"/><stop offset=".46" stop-color="#cc1628"/><stop offset=".78" stop-color="#ad101d"/><stop offset="1" stop-color="#6a0811"/></linearGradient>
+          <linearGradient id="vFrente" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#000" stop-opacity=".55"/><stop offset=".12" stop-color="#000" stop-opacity=".12"/><stop offset=".55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".35"/></linearGradient>
+          <linearGradient id="hTapa" x1="0" x2="1"><stop offset="0" stop-color="#7a0a14"/><stop offset=".15" stop-color="#b7121f"/><stop offset=".45" stop-color="#dc1c2e"/><stop offset=".8" stop-color="#b9121f"/><stop offset="1" stop-color="#740912"/></linearGradient>
+          <linearGradient id="vTapa" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".18"/><stop offset=".2" stop-color="#fff" stop-opacity="0"/><stop offset=".8" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".4"/></linearGradient>
+          <linearGradient id="gTecho" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#e2283a"/><stop offset="1" stop-color="#a30f1b"/></linearGradient>
+          <!-- listón satinado -->
+          <linearGradient id="satin" x1="0" x2="1"><stop offset="0" stop-color="#3f3f45"/><stop offset=".14" stop-color="#7d7d84"/><stop offset=".36" stop-color="#e6e6ec"/><stop offset=".5" stop-color="#b3b3ba"/><stop offset=".74" stop-color="#6d6d74"/><stop offset="1" stop-color="#3b3b41"/></linearGradient>
+          <linearGradient id="satinH" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3f3f45"/><stop offset=".3" stop-color="#d9d9df"/><stop offset=".55" stop-color="#9a9aa1"/><stop offset="1" stop-color="#404046"/></linearGradient>
+          <linearGradient id="brilloMovil" x1="0" y1="0" x2="1" y2="0" gradientUnits="objectBoundingBox">
+            <stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".45" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff" stop-opacity=".55"/><stop offset=".55" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#fff" stop-opacity="0"/>
+            <animateTransform attributeName="gradientTransform" type="translate" values="-1 0;1 0;1 0" keyTimes="0;.45;1" dur="5s" repeatCount="indefinite"/>
+          </linearGradient>
+          <!-- moño -->
+          <radialGradient id="lazo" cx=".35" cy=".3" r=".9"><stop offset="0" stop-color="#f4f4f8"/><stop offset=".35" stop-color="#b9b9c0"/><stop offset=".75" stop-color="#727279"/><stop offset="1" stop-color="#46464c"/></radialGradient>
+          <radialGradient id="lazoAtras" cx=".5" cy=".4" r=".8"><stop offset="0" stop-color="#9a9aa1"/><stop offset="1" stop-color="#3c3c42"/></radialGradient>
+          <linearGradient id="cola" x1="0" x2="1"><stop offset="0" stop-color="#4a4a50"/><stop offset=".45" stop-color="#c8c8ce"/><stop offset="1" stop-color="#55555b"/></linearGradient>
+          <radialGradient id="nudo" cx=".4" cy=".35" r=".8"><stop offset="0" stop-color="#ececf1"/><stop offset=".6" stop-color="#9c9ca3"/><stop offset="1" stop-color="#55555b"/></radialGradient>
+          <!-- textura de papel -->
+          <filter id="textura" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="1.4" numOctaves="2" seed="3"/><feColorMatrix values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .09 0"/><feComposite in2="SourceGraphic" operator="in"/></filter>
+          <pattern id="relieve" width="10" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="10" height="10" fill="none"/><path d="M0 5 H10" stroke="#000" stroke-opacity=".07" stroke-width="1"/></pattern>
+          <pattern id="mono" width="64" height="64" patternUnits="userSpaceOnUse"><text x="4" y="16" font-family="JetBrains Mono, monospace" font-size="6" letter-spacing="1.6" fill="#4d0510" opacity=".5">M·E·L·I</text><text x="36" y="48" font-family="JetBrains Mono, monospace" font-size="6" letter-spacing="1.6" fill="#4d0510" opacity=".5">M·E·L·I</text></pattern>
+          <clipPath id="cFrente"><rect x="40" y="172" width="240" height="168" rx="2"/></clipPath>
+          <clipPath id="cTapa"><rect x="30" y="132" width="260" height="44" rx="3"/></clipPath>
         </defs>
+
+        <!-- cuerpo -->
         <g class="g-caja">
-          <polygon points="210,160 258,140 258,310 210,330" fill="url(#gLado)"/>
-          <rect x="30" y="160" width="180" height="170" fill="url(#gFrente)"/>
-          <rect x="30" y="160" width="180" height="170" fill="url(#pMeli)"/>
-          <rect x="30" y="160" width="180" height="170" fill="url(#gBrillo)"/>
-          <g class="rib-caja">
-            <rect x="110" y="160" width="20" height="170" fill="url(#gListon)"/>
-            <polygon points="210,236 258,216 258,232 210,252" fill="url(#gListonLado)"/>
+          <rect x="40" y="172" width="240" height="168" rx="2" fill="url(#hFrente)"/>
+          <g clip-path="url(#cFrente)">
+            <rect x="40" y="172" width="240" height="168" fill="url(#relieve)"/>
+            <rect x="40" y="172" width="240" height="168" fill="url(#mono)"/>
+            <rect x="40" y="172" width="240" height="168" fill="#fff" filter="url(#textura)"/>
+            <rect x="40" y="172" width="240" height="168" fill="url(#vFrente)"/>
+            <g class="rib-caja">
+              <rect x="40" y="244" width="240" height="26" fill="url(#satinH)"/>
+              <rect x="40" y="244" width="240" height="26" fill="#000" opacity=".12"/>
+              <rect x="145" y="172" width="30" height="168" fill="url(#satin)"/>
+              <rect x="145" y="172" width="30" height="168" fill="url(#brilloMovil)" class="brillo"/>
+              <path d="M145 172 V340 M175 172 V340 M40 244 H280 M40 270 H280" stroke="#000" stroke-opacity=".25" stroke-width="1"/>
+              <path d="M280 247 V268" stroke="#fff" stroke-opacity=".15"/>
+              <path d="M262 272 C276 292 294 290 300 300" fill="none" stroke="#bfb19a" stroke-width="1.4"/>
+            </g>
+            <rect x="40" y="172" width="240" height="12" fill="#000" opacity=".35"/>
           </g>
-          <path d="M30 330 H210 L258 310" fill="none" stroke="#2a0306" stroke-width="1.5" opacity=".6"/>
+          <rect x="40.5" y="172.5" width="239" height="167" rx="2" fill="none" stroke="#3a0408" stroke-opacity=".6"/>
         </g>
+
+        <!-- tapa -->
         <g class="g-tapa">
-          <polygon points="22,126 70,106 266,106 218,126" fill="url(#gTecho)"/>
-          <polygon points="22,126 70,106 266,106 218,126" fill="url(#pMeli)" opacity=".7"/>
-          <polygon points="218,126 266,106 266,146 218,166" fill="url(#gLado)"/>
-          <rect x="22" y="126" width="196" height="40" fill="url(#gTapa)"/>
-          <rect x="22" y="126" width="196" height="40" fill="url(#pMeli)"/>
-          <path d="M22 126.5 H218 L266 106.5" fill="none" stroke="#ff8a8f" stroke-width="1" opacity=".55"/>
-          <path d="M22 166 H218 L266 146" fill="none" stroke="#2a0306" stroke-width="2" opacity=".5"/>
-          <rect x="110" y="126" width="20" height="40" fill="url(#gListon)"/>
-          <polygon points="238,118 246,115 246,155 238,158" fill="url(#gListonLado)"/>
-          <polygon points="110,126 130,126 178,106 158,106" fill="url(#gListon)"/>
-          <polygon points="42,118 238,118 246,114 50,114" fill="#8d8d94"/>
+          <path d="M30 132 L50 112 H270 L290 132 Z" fill="url(#gTecho)"/>
+          <path d="M30 132 L50 112 H270 L290 132 Z" fill="url(#mono)" opacity=".7"/>
+          <path d="M145 132 L150 112 H170 L175 132 Z" fill="url(#satin)"/>
+          <path d="M38 124 H282 L278 120 H42 Z" fill="url(#satinH)" opacity=".9"/>
+          <rect x="30" y="132" width="260" height="44" rx="3" fill="url(#hTapa)"/>
+          <g clip-path="url(#cTapa)">
+            <rect x="30" y="132" width="260" height="44" fill="url(#relieve)"/>
+            <rect x="30" y="132" width="260" height="44" fill="url(#mono)"/>
+            <rect x="30" y="132" width="260" height="44" fill="#fff" filter="url(#textura)"/>
+            <rect x="145" y="132" width="30" height="44" fill="url(#satin)"/>
+            <rect x="145" y="132" width="30" height="44" fill="url(#brilloMovil)" class="brillo"/>
+            <rect x="30" y="132" width="260" height="44" fill="url(#vTapa)"/>
+          </g>
+          <path d="M33 132.5 H287" stroke="#ff9aa2" stroke-opacity=".6" stroke-width="1.2"/>
+          <rect x="30.5" y="132.5" width="259" height="43" rx="3" fill="none" stroke="#3a0408" stroke-opacity=".55"/>
         </g>
+
+        <!-- moño -->
         <g class="g-moño">
-          <path d="M141 119 L127 156 L133 151 L138 158 L147 121 Z" fill="#7a7a81"/>
-          <path d="M149 119 L166 153 L160 149 L156 156 L145 121 Z" fill="#6c6c73"/>
-          <path d="M144 114 C112 76 86 96 98 116 C106 130 132 124 144 114 Z" fill="url(#gLazo)"/>
-          <path d="M144 114 C120 98 104 102 104 112" fill="none" stroke="#55555c" stroke-width="2" opacity=".7"/>
-          <path d="M144 114 C178 74 206 94 192 115 C184 128 157 124 144 114 Z" fill="url(#gLazo)"/>
-          <path d="M144 114 C168 97 186 101 186 112" fill="none" stroke="#55555c" stroke-width="2" opacity=".7"/>
-          <ellipse cx="144" cy="115" rx="11" ry="9" fill="#a6a6ad"/><ellipse cx="141" cy="112" rx="4" ry="3" fill="#fff" opacity=".35"/>
+          <path d="M152 126 C142 150 132 170 118 198 L130 192 L131 207 C145 180 156 154 162 128 Z" fill="url(#cola)"/>
+          <path d="M168 126 C178 150 190 170 204 196 L192 191 L190 206 C177 180 166 154 160 128 Z" fill="url(#cola)"/>
+          <path d="M157 118 C138 70 106 52 96 70 C88 86 122 110 157 121 Z" fill="url(#lazoAtras)"/>
+          <path d="M163 118 C182 70 214 52 224 70 C232 86 198 110 163 121 Z" fill="url(#lazoAtras)"/>
+          <path d="M160 121 C118 72 64 62 60 94 C57 120 104 132 160 124 Z" fill="url(#lazo)"/>
+          <path d="M160 121 C132 96 96 88 84 104" fill="none" stroke="#2f2f34" stroke-opacity=".45" stroke-width="7" stroke-linecap="round"/>
+          <path d="M72 82 C92 66 120 72 140 94" fill="none" stroke="#fff" stroke-opacity=".45" stroke-width="3" stroke-linecap="round"/>
+          <path d="M160 121 C202 72 256 62 260 94 C263 120 216 132 160 124 Z" fill="url(#lazo)"/>
+          <path d="M160 121 C188 96 224 88 236 104" fill="none" stroke="#2f2f34" stroke-opacity=".45" stroke-width="7" stroke-linecap="round"/>
+          <path d="M184 92 C200 74 228 68 246 80" fill="none" stroke="#fff" stroke-opacity=".35" stroke-width="3" stroke-linecap="round"/>
+          <rect x="145" y="107" width="30" height="27" rx="9" fill="url(#nudo)"/>
+          <path d="M150 113 C156 118 164 118 170 113 M151 128 C157 124 163 124 169 128" fill="none" stroke="#3a3a40" stroke-opacity=".35" stroke-width="1.5"/>
+          <ellipse cx="155" cy="114" rx="5" ry="3" fill="#fff" opacity=".5"/>
         </g>
       </svg>
 
