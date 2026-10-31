@@ -323,6 +323,17 @@ body.en-puerta{background:#000}
 #intro.andando .intro-txt{opacity:0}
 #intro.sale{opacity:0;pointer-events:none}
 
+
+/* ===== el regalo dibujado encima del cuarto 3D ===== */
+#escena.sobre3d{background:transparent;z-index:41;opacity:0;pointer-events:none;transition:opacity 1.4s ease}
+#escena.sobre3d.ver{opacity:1;pointer-events:auto}
+#escena.sobre3d .sala,#escena.sobre3d .foco,#escena.sobre3d .haz,#escena.sobre3d .niebla,#escena.sobre3d .polvo,#escena.sobre3d .mesita,#escena.sobre3d .marco{display:none}
+#escena.sobre3d::after{opacity:.05}
+#escena.sobre3d::before{box-shadow:inset 0 0 160px 50px #000a;animation:none}
+#escena.sobre3d .regalo{animation:none;transition:none}
+#escena.sobre3d .caja3d{filter:drop-shadow(0 0 30px #c8192b22)}
+#intro.sale{opacity:0;pointer-events:none}
+
 /* ============ toque wrapped: piezas comunes ============ */
 .H{font-family:var(--display);font-weight:900;line-height:.92;letter-spacing:-.03em;text-transform:uppercase}
 .tag{display:inline-block;padding:6px 12px;border-radius:999px;font:800 12px/1.2 var(--sans);letter-spacing:.02em;background:var(--ink);color:var(--papel)}
@@ -514,7 +525,7 @@ body.en-puerta{background:#000}
 </defs></svg>
 
 <!-- ============ EL REGALO ============ -->
-<div id="escena">
+<div id="escena" class="sobre3d">
   <div class="foco"></div>
   <div class="sala"><div class="pared"></div><div class="zocalo"></div><div class="piso"></div></div>
   <div class="marco"></div>
@@ -1023,7 +1034,11 @@ function golpeSusto(){const c=ctx();if(!c)return;const t=c.currentTime;golpeGrav
 const MEDIA={};
 function cargaMedia(n,url){const a=new Audio();a.preload='auto';a.src=url;a.onerror=()=>{delete MEDIA[n]};MEDIA[n]=a}
 function suena(n,vol=1,loop=false){const a=MEDIA[n];if(!a)return false;try{const b=loop?a:a.cloneNode();b.volume=Math.min(1,vol);b.loop=loop;b.play().catch(()=>{});return b}catch(e){return false}}
-let resp=null,respLoop=null;
+let resp=null,respLoop=null,lluviaG=null;
+function lluviaVol(v){const c=ctx();if(!c)return;if(!lluviaG){const b=c.createBuffer(1,c.sampleRate*2,c.sampleRate),d=b.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;
+  const src=c.createBufferSource();src.buffer=b;src.loop=true;const hp=c.createBiquadFilter();hp.type='highpass';hp.frequency.value=700;const lp=c.createBiquadFilter();lp.type='lowpass';lp.frequency.value=5200;
+  lluviaG=c.createGain();lluviaG.gain.value=0;src.connect(hp).connect(lp).connect(lluviaG).connect(bus());src.start()}
+  lluviaG.gain.setTargetAtTime(.16*v,c.currentTime,.8);if(v<1)lluviaG.gain.setTargetAtTime(0,c.currentTime+6,2.5)}
 const apiIntro={
   paso(){const a=MEDIA.paso;if(!a||!a.duration){paso();return}const b=a.cloneNode();b.volume=.7;b.currentTime=Math.random()*(a.duration-1);b.play().catch(()=>{});setTimeout(()=>b.pause(),420)},
   sonar(n,x){const c=ctx();
@@ -1032,6 +1047,10 @@ const apiIntro={
     else if(n==='rechina'){if(MEDIA.rechina){if(x<1)suena('rechina',.8)}else rechinido()}
     else if(n==='susto'){if(resp)resp.jadeo();if(c)golpeGrave(c.currentTime,60,.25)}
     else if(n==='descubre'){golpeSusto();if(resp){resp.jadeo();resp.ritmo(2.6)}}
+    else if(n==='lluvia'){lluviaVol(x)}
+    else if(n==='radio'){if(c){const t=c.currentTime;ruido(.5,1800,6,.12);tono(1200,t+.05,.005,.025,.12,'square');ruido(.35,900,3,.08)}}
+    else if(n==='auto'){clicFuerte();if(c){golpeGrave(c.currentTime+.05,90,.25)}ruido(.6,2400,1,.1,true)}
+    else if(n==='portazo'){if(c){golpeGrave(c.currentTime,70,.55);ruido(.12,600,1,.3)}}
     else if(n==='alivio'){if(resp)resp.alivio();if(respLoop){const r=respLoop;let v=r.volume;const k=setInterval(()=>{v-=.05;if(v<=0){r.pause();clearInterval(k)}else r.volume=v},80)}}
   }};
 function iniciaIntro(){
@@ -1041,8 +1060,16 @@ function iniciaIntro(){
 }
 let entrando=false;
 function entrar(){if(entrando)return;entrando=true;desbloquea();$('intro').classList.add('andando');
-  Intro3D.correr(apiIntro,()=>{const es=$('escena');es.classList.add('prende');$('intro').classList.add('sale');
-    setTimeout(()=>{Intro3D.parar();$('intro').remove();es.classList.remove('prende');document.body.classList.remove('en-puerta');const n=fijas.indexOf(false);if(n>=0)els[n].focus({preventScroll:true})},1150)})}
+  Intro3D.correr(apiIntro,()=>{const es=$('escena');alinearRegalo();es.classList.add('ver');Intro3D.fundeRegalo(1400);$('intro').style.cursor='default';
+    setTimeout(()=>{document.body.classList.remove('en-puerta');const n=fijas.indexOf(false);if(n>=0)els[n].focus({preventScroll:true})},1400)})}
+/* pone el regalo dibujado exactamente donde está el regalo 3D */
+function alinearRegalo(){const el=$('regalo'),svg=el.querySelector('.caja3d');if(!svg||!window.Intro3D)return;
+  el.style.scale='';el.style.translate='';const r=Intro3D.rectRegalo(),b=svg.getBoundingClientRect();
+  const base=parseFloat(getComputedStyle(el).scale)||1;
+  const gw=300/340*b.width,gh=280/380*b.height,k=(r.w/gw+r.h/gh)/2;
+  const ex=b.left+b.width/2,ey=b.top+b.height/2,ox=180/340*b.width+b.left-ex,oy=210/380*b.height+b.top-ey;
+  el.style.scale=base*k;el.style.translate=`${r.x+r.w/2-ex-ox*k}px ${r.y+r.h/2-ey-oy*k}px`}
+addEventListener('resize',()=>{if($('escena')&&$('escena').classList.contains('ver')&&!abierto)alinearRegalo()});
 $('intro').addEventListener('click',entrar);
 $('intro').addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();entrar()}});
 function desbloquea(){ambiente();if(desbloqueado)return;desbloqueado=true;try{if(navigator.audioSession)navigator.audioSession.type='playback'}catch(e){}
@@ -1082,10 +1109,10 @@ async function abrir(){
   const cubrir=sc*1.25;
   mov.cancel();cf.style.transform=`translate(${dx}px,${dy}px) scale(${sc})`;void cf.offsetWidth;
   cf.classList.add('cubre');cf.style.transform=`translate(${dx}px,${dy}px) scale(${cubrir})`;
-  esc.classList.add('fuera');scrollTo(0,0);$('web').classList.add('visible');
+  esc.classList.add('fuera');if($('intro'))$('intro').classList.add('sale');scrollTo(0,0);$('web').classList.add('visible');
   await espera(700);
   }catch(err){console.error(err)}
-  const cf=$('cartaFinal');if(cf)cf.remove();esc.remove();document.body.classList.remove('cerrado');$('web').classList.add('visible');$('web').removeAttribute('aria-hidden');observa(document);
+  const cf=$('cartaFinal');if(cf)cf.remove();esc.remove();if($('intro')){try{Intro3D.parar()}catch(e){}$('intro').remove()}document.body.classList.remove('cerrado');$('web').classList.add('visible');$('web').removeAttribute('aria-hidden');observa(document);
 }
 
 /* ---------- aparecer ---------- */
@@ -1192,7 +1219,7 @@ audio.addEventListener('pause',()=>{$('musica').classList.add('pausa');$('musica
 els[0].focus({preventScroll:true});
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script src="intro3d.js?v=9"></script>
+<script src="intro3d.js?v=13"></script>
 <script>iniciaIntro()</script>
 </body>
 </html>
