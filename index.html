@@ -10,7 +10,7 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='4' y='10' width='24' height='18' rx='2' fill='%23c1121f'/%3E%3Crect x='14' y='10' width='4' height='18' fill='%238a8a91'/%3E%3Crect x='3' y='7' width='26' height='6' rx='1.5' fill='%23c1121f'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;800;900&family=Inter+Tight:wght@400;500;600;800&family=JetBrains+Mono:wght@500&family=Reenie+Beanie&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;800;900&family=Inter+Tight:wght@400;500;600;800&family=JetBrains+Mono:wght@500;700&family=Reenie+Beanie&display=swap" rel="stylesheet">
 <style>
 :root{
   --mesa:#0f0d0c; --papel:#f2ece1; --papel2:#e9e1d3; --tinta:#1a1715; --pasion:#c1121f; --emo:#8a8a91; --laton:#c9a35b;
@@ -32,162 +32,25 @@ img{display:block;max-width:100%}
 em{font-style:inherit;color:var(--pasion)}
 
 /* =================== EL REGALO =================== */
-#escena{-webkit-user-select:none;user-select:none;position:fixed;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;overflow:hidden;transition:opacity .4s ease;
-  background:radial-gradient(60% 55% at 50% 38%,#2b241f 0%,#17130f 55%,var(--mesa) 100%)}
-#escena::after{content:"";position:absolute;inset:0;background-image:var(--grano);opacity:.09;pointer-events:none}
-#escena.fuera{opacity:0;pointer-events:none}
-/* luz cenital y mesa */
-.foco{position:absolute;left:50%;top:-10%;width:620px;height:110%;margin-left:-310px;background:radial-gradient(50% 60% at 50% 30%,#ffe9c41a,transparent 70%);pointer-events:none}
-.mesa{position:absolute;left:0;right:0;bottom:0;height:34%;background:linear-gradient(#1b1612,#0d0b09);border-top:1px solid #2c251f}
-.mesa::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,#ffffff03 0 2px,transparent 2px 9px),radial-gradient(40% 50% at 50% 0%,#ffe9c412,transparent 70%)}
-/* marco editorial */
-.marco{position:absolute;inset:16px;border:1px solid #ffffff12;pointer-events:none}
-.esquina{position:absolute;color:#8f877c;z-index:4}
-.esquina.a{top:28px;left:30px}.esquina.b{top:28px;right:30px}
-.instruccion{position:absolute;left:0;right:0;bottom:max(40px,env(safe-area-inset-bottom));text-align:center;color:#8f877c;transition:opacity .4s;z-index:4}
-.instruccion b{color:#d9cfbf;font-weight:500}
-
-.regalo{position:relative;width:250px;height:300px;margin-top:-4vh;animation:llega 1.2s var(--ease) both}
-@keyframes llega{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
-.regalo .flota{position:absolute;inset:0;animation:respira 5s ease-in-out 1.2s infinite}
-@keyframes respira{50%{transform:translateY(-3px)}}
-.sombra{position:absolute;left:50%;bottom:-20px;width:300px;height:36px;margin-left:-150px;border-radius:50%;background:radial-gradient(closest-side,#000d,transparent);animation:sombra 1.2s var(--ease) both}
-@keyframes sombra{from{transform:scale(.6);opacity:0}to{transform:none;opacity:1}}
-.reflejo{position:absolute;left:20px;right:20px;bottom:-62px;height:44px;background:linear-gradient(#c1121f22,transparent);filter:blur(6px);border-radius:50%}
-
-.caja{position:absolute;left:10px;right:10px;bottom:0;height:206px;border-radius:2px;
-  background:var(--estampado),linear-gradient(100deg,#9c0e18 0%,var(--pasion) 28%,#b8111d 72%,#860b15 100%);background-size:92px 92px,100% 100%;
-  box-shadow:inset 0 -14px 24px -12px #0007,inset 10px 0 18px -14px #fff3}
-.caja::after,.tapa::after{content:"";position:absolute;inset:0;background-image:var(--grano);opacity:.08;border-radius:inherit}
-.tapa{position:absolute;left:0;right:0;top:46px;height:56px;border-radius:3px;z-index:3;transition:transform .5s var(--ease);
-  background:var(--estampado),linear-gradient(100deg,#ad101c,#cf1524 32%,#bb121e 78%,#930d18);background-size:92px 92px,100% 100%;
-  box-shadow:0 8px 12px -6px #0009,inset 0 2px 0 #ffffff26,inset 0 -3px 0 #0003}
-.liston-v{position:absolute;left:50%;width:36px;margin-left:-18px;z-index:4;overflow:hidden;
-  background:linear-gradient(90deg,#6f6f76,#a3a3aa 40%,#8b8b92 60%,#707077)}
-.liston-v::after,.liston-h::after{content:"";position:absolute;inset:0;background:linear-gradient(100deg,transparent 30%,#ffffff40 50%,transparent 70%);background-size:300% 100%;animation:satin 6s ease-in-out infinite}
-@keyframes satin{0%,100%{background-position:100% 0}50%{background-position:0 0}}
-.liston-v.a{top:46px;height:56px}.liston-v.b{bottom:0;height:206px;z-index:1}
-.liston-h{position:absolute;left:10px;right:10px;bottom:88px;height:28px;z-index:1;overflow:hidden;background:linear-gradient(#6f6f76,#a3a3aa 45%,#8b8b92 60%,#707077)}
-/* moño */
-.moño{position:absolute;left:50%;top:-2px;width:170px;height:70px;margin-left:-85px;z-index:5;transition:transform .6s var(--ease),opacity .6s}
-.moño .lazo{position:absolute;top:8px;width:80px;height:52px;border-radius:50% 50% 46% 46%/62% 62% 38% 38%;
-  background:radial-gradient(60% 55% at 50% 60%,#5b5b62 0 32%,transparent 34%),linear-gradient(160deg,#b0b0b7,#85858c 55%,#6b6b72);box-shadow:inset 0 -4px 8px #0003}
-.moño .lazo.i{left:2px;transform:rotate(-14deg)}.moño .lazo.d{right:2px;transform:rotate(14deg)}
-.moño .nudo{position:absolute;left:50%;top:24px;width:30px;height:30px;margin-left:-15px;border-radius:7px;background:linear-gradient(160deg,#aeaeb5,#7b7b82);box-shadow:0 2px 4px #0005,inset 0 1px 0 #fff4}
-.moño .cola{position:absolute;top:46px;width:16px;height:52px;background:linear-gradient(90deg,#77777e,#a0a0a7);clip-path:polygon(0 0,100% 0,100% 100%,50% 82%,0 100%)}
-.moño .cola.i{left:66px;transform:rotate(18deg);transform-origin:top}.moño .cola.d{right:66px;transform:rotate(-14deg);transform-origin:top}
-.abierto .moño{opacity:0;transform:translateY(30px) scale(.8)}
-.abierto .liston-v,.abierto .liston-h{transition:opacity .4s;opacity:0}
-.abierto .etiqueta{opacity:0;transition:opacity .3s}
-.abierto .tapa{transform:translateY(-140vh) rotate(-14deg);transition:transform .6s .45s cubic-bezier(.5,0,.75,0)}
-.abierto .flota{animation:none}
-
-/* etiqueta */
-.etiqueta{position:absolute;right:-78px;top:78px;width:122px;height:74px;z-index:6;transform-origin:8px 50%;perspective:500px;animation:mece 4s ease-in-out infinite}
-@keyframes mece{0%,100%{transform:rotate(12deg)}50%{transform:rotate(16deg)}}
-.etiqueta::before{content:"";position:absolute;left:-30px;top:50%;width:38px;height:1px;background:#cbbfa9;transform:rotate(-14deg);transform-origin:right}
-.etiqueta .cara{position:absolute;inset:0;background:var(--papel);border-radius:2px 10px 10px 2px;padding:10px 10px 0 20px;backface-visibility:hidden;transition:transform .8s var(--fold);box-shadow:0 4px 10px #0007}
-.etiqueta .cara::before{content:"";position:absolute;left:7px;top:50%;width:7px;height:7px;margin-top:-4px;border-radius:50%;background:var(--mesa);box-shadow:0 0 0 2px #d8cdb8}
-.etiqueta .cara p{font:500 9.5px/1.45 var(--mono);letter-spacing:.06em;color:var(--tinta)}
-.etiqueta .cara p.g{color:#77736b;text-transform:none;letter-spacing:0}
-.etiqueta .cara p.r{color:var(--pasion)}
-.etiqueta .atras{transform:rotateY(180deg)}
-.etiqueta.volteada .frente{transform:rotateY(-180deg)}
-.etiqueta.volteada .atras{transform:rotateY(0)}
-
-/* candado */
-.candado{position:absolute;left:50%;top:90px;width:150px;margin-left:-75px;z-index:7;transform-origin:50% 0;animation:balancea 3.6s ease-in-out 1.4s infinite;transition:transform .5s cubic-bezier(.5,0,.75,0),opacity .4s}
-@keyframes balancea{0%,100%{transform:rotate(-1.2deg)}50%{transform:rotate(1.2deg)}}
-.arco{position:relative;width:76px;height:58px;margin:0 auto -14px;border:11px solid var(--laton);border-bottom:0;border-radius:40px 40px 0 0;box-shadow:inset 2px 2px 0 #e6c98c66,0 -1px 0 #f2dca7;transition:transform .5s cubic-bezier(.3,1.6,.5,1)}
-.arco::after{content:"";position:absolute;right:-11px;bottom:-14px;width:11px;height:14px;background:var(--laton)}
-.cuerpo{position:relative;z-index:2;height:114px;border-radius:12px;background:linear-gradient(160deg,#e3c584,#c9a35b 35%,#a8853f 80%,#b8944e);box-shadow:0 12px 20px -6px #000c,inset 0 1px 0 #f5dfab,inset 0 -2px 0 #8a6a2c;padding:12px 10px 0}
-.cuerpo::before{content:"";position:absolute;inset:0;border-radius:inherit;background:repeating-linear-gradient(90deg,#fff0 0 2px,#ffffff10 2px 3px);pointer-events:none}
-.ventana{display:flex;gap:4px;justify-content:center;background:#2a2119;border-radius:6px;padding:4px;box-shadow:inset 0 2px 4px #000c}
-.rueda{position:relative;width:28px;height:64px;border-radius:4px;overflow:hidden;background:linear-gradient(#5e4a2a,#e9dcc2 30%,#f6efe2 50%,#e9dcc2 70%,#5e4a2a);touch-action:none;outline:none;cursor:ns-resize}
-.rueda:focus-visible{box-shadow:0 0 0 2px var(--pasion)}
-.rueda::after{content:"";position:absolute;left:0;right:0;top:21px;height:22px;border-top:1px solid #0000002a;border-bottom:1px solid #0000002a;pointer-events:none}
-.rueda .tira{position:absolute;left:0;right:0;top:0;transition:transform .25s var(--ease)}
-.rueda span{display:block;height:22px;text-align:center;font:500 15px/22px var(--mono);color:var(--tinta)}
-.cuerpo .marca{margin-top:8px;text-align:center;font:500 8px/1 var(--mono);letter-spacing:.24em;color:#6d5426}
-.candado.tiron{animation:tiron .35s}
-@keyframes tiron{30%{transform:translateY(7px) rotate(-2deg)}60%{transform:translateY(-2px) rotate(1deg)}}
-.candado.suelto{animation:none}
-.candado.suelto .arco{transform:translateY(-14px) translateX(-6px) rotate(-20deg)}
-.abierto .candado{transform:translateY(80vh) rotate(25deg);opacity:0;transition-delay:.15s}
-.abierto .instruccion,.abierto .esquina{opacity:0}
-.regalo{scale:1.15}
-@media (max-width:440px){.regalo{scale:1;margin-left:-60px}}
-@media (min-width:700px) and (min-height:700px){.regalo{scale:1.35}}
-
-/* papel que se despliega */
-#papel{position:fixed;left:50%;top:50%;z-index:25;width:min(92vw,520px);height:min(70svh,640px);margin:calc(min(70svh,640px)/-2) 0 0 calc(min(92vw,520px)/-2);perspective:1400px;pointer-events:none;visibility:hidden}
-#papel .hoja{position:absolute;inset:0;transform:scale(.22) translateY(55%);opacity:0;transform-style:preserve-3d}
-#papel .mitad{position:absolute;top:0;bottom:0;width:50%;background:var(--papel);backface-visibility:hidden}
-#papel .mitad::after{content:"";position:absolute;inset:0;background-image:var(--grano);opacity:.06}
-#papel .izq{left:0;transform-origin:right center;transform:rotateY(178deg);box-shadow:inset -18px 0 22px -12px #0003}
-#papel .der{right:0;box-shadow:inset 18px 0 22px -12px #0003}
-#papel .pliegue{position:absolute;left:0;right:0;top:50%;height:1px;background:#0002;box-shadow:0 0 14px 2px #0001}
-#papel.paso1{visibility:visible}
-#papel.paso1 .hoja{transition:transform .6s var(--ease),opacity .3s;transform:scale(.42) translateY(10%);opacity:1}
-#papel.paso2 .izq{transition:transform .9s var(--fold);transform:rotateY(0)}
-#papel.paso3 .hoja{transition:transform .5s var(--fold);transform:scale(3.2)}
-#papel.paso3 .pliegue{opacity:0;transition:opacity .4s}
-
-
-.cinta-regalo{position:absolute;left:0;bottom:92px;white-space:nowrap;font:900 44px/1 var(--display);text-transform:uppercase;color:#1c1714;animation:marquee 28s linear infinite;pointer-events:none}
-
-
-/* ===== regalo v3: vista frontal tipo foto de producto ===== */
-.regalo{width:320px;height:360px}
-.caja3d{position:absolute;inset:0;width:100%;height:100%;overflow:visible;filter:drop-shadow(0 26px 22px #000c) drop-shadow(0 4px 4px #0008)}
-.caja3d g{transform-box:fill-box;transform-origin:center;transition:transform .6s var(--ease),opacity .5s}
-.abierto .g-moño{opacity:0;transform:translateY(-50px) scale(.85) rotate(-6deg)}
-.abierto .rib-caja{opacity:0}
-.abierto .g-tapa{transform:translate(-20px,-140vh) rotate(-16deg);transition:transform .75s .4s cubic-bezier(.5,0,.75,0)}
-.sombra{left:20px;margin-left:0;width:290px;bottom:-12px;height:40px}
-.reflejo{left:50px;right:50px;bottom:-58px}
-.candado{left:85px;margin-left:0;top:186px;scale:.82}
-.etiqueta{left:292px;right:auto;top:276px;width:134px;height:68px;animation:mece 4.5s ease-in-out infinite;transform-origin:4px 30%}
-.etiqueta::before{display:none}
-.etiqueta .cara{background:linear-gradient(160deg,#e3d2b3,#cdb48a);border-radius:2px 12px 12px 2px;box-shadow:0 6px 12px #0009,inset 0 0 0 1px #0000001a;padding:10px 10px 0 22px}
-.etiqueta .cara::after{content:"";position:absolute;inset:0;border-radius:inherit;background-image:var(--grano);opacity:.18;mix-blend-mode:multiply}
-.etiqueta .cara::before{left:7px;width:8px;height:8px;background:#141110;box-shadow:0 0 0 2.5px #b79d70,0 0 0 3.5px #8a7350}
-.etiqueta .cara p{color:#2a2218}
-.etiqueta .cara p.g{color:#5b4c37}
-.suspenso .caja3d{animation:latidoSvg var(--latido,1s) ease-out infinite}
-@keyframes latidoSvg{0%,100%{filter:drop-shadow(0 26px 22px #000c) drop-shadow(0 4px 4px #0008)}12%{filter:drop-shadow(0 26px 22px #000c) drop-shadow(0 0 30px #d4142a99)}}
-@media (max-width:440px){.regalo{scale:.98;margin-left:-30px}.etiqueta{left:214px;top:318px}}
-.abierto .brillo{display:none}
-/* candado: latón cepillado, ventana con vidrio */
-.arco{width:80px;height:62px;border:0;background:linear-gradient(90deg,#5e4519,#e9c983 22%,#fff0c4 34%,#c9a35b 55%,#8e6d2e 80%,#5a4216);
-  -webkit-mask:radial-gradient(28px 50px at 50% 100%,#0000 98%,#000 100%);mask:radial-gradient(28px 50px at 50% 100%,#0000 98%,#000 100%);box-shadow:none}
-.arco::after{display:none}
-.cuerpo{padding-top:10px;height:126px;border-radius:14px;
-  background:repeating-linear-gradient(90deg,#ffffff0a 0 1px,transparent 1px 3px),linear-gradient(165deg,#f2d896 0%,#d4ae64 22%,#b68f45 55%,#8f6c2c 85%,#a8843f 100%);
-  box-shadow:0 18px 26px -8px #000e,inset 0 2px 0 #fff2c7,inset 0 -4px 0 #6b4f1c,inset 2px 0 0 #f6dfa5,inset -2px 0 0 #7d5e25}
-.cuerpo::before{background:linear-gradient(115deg,transparent 30%,#ffffff2e 42%,transparent 50%)}
-.cuerpo::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
-  background:radial-gradient(circle at 13px 113px,#4b3812 0 2px,#f7e2ad 2.6px 3.4px,#7a5d22 3.8px,transparent 4.4px),radial-gradient(circle at calc(100% - 13px) 113px,#4b3812 0 2px,#f7e2ad 2.6px 3.4px,#7a5d22 3.8px,transparent 4.4px)}
-.leds{display:flex;justify-content:center;gap:26px;margin-bottom:7px}
-.leds i{width:7px;height:7px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#7a3a22,#2a1208);box-shadow:inset 0 1px 1px #000c,0 1px 0 #f7e2ad66;transition:background .3s,box-shadow .3s}
-.leds i.on{background:radial-gradient(circle at 35% 35%,#ffb0b6,#ff2638 45%,#a3000f);box-shadow:0 0 8px 3px #ff2233aa,0 1px 0 #f7e2ad66}
-.ventana{position:relative;padding:6px;border-radius:8px;background:linear-gradient(#0e0a06,#22180e);box-shadow:inset 0 4px 8px #000,inset 0 -1px 0 #ffffff14,0 1px 0 #fbe7b8}
-.ventana::after{content:"";position:absolute;inset:6px;border-radius:3px;pointer-events:none;z-index:4;background:linear-gradient(170deg,#ffffff38 0%,#ffffff0a 38%,transparent 40%)}
-.rueda{width:30px;height:66px;border-radius:3px;background:linear-gradient(#1d150c 0%,#8d7e66 13%,#ece2cd 33%,#fffaf1 50%,#ece2cd 67%,#8d7e66 87%,#1d150c 100%);transition:background .4s,box-shadow .4s}
-.rueda::before{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;background:linear-gradient(#000b,#0000 32%,#0000 68%,#000b),repeating-linear-gradient(90deg,#0000 0 2px,#00000010 2px 3px);border-radius:inherit}
-.rueda::after{top:22px;border-color:#c1121f55;z-index:3}
-.rueda span{font:700 16px/22px var(--mono)}
-.rueda:focus-visible{box-shadow:0 0 0 2px #ff3344aa}
-.rueda.fija{cursor:default;background:linear-gradient(#2a1405 0%,#986626 13%,#f2d595 33%,#fff2d2 50%,#f2d595 67%,#986626 87%,#2a1405 100%)}
-.rueda.fija span{color:#9b0d19}
-.rueda.fija::after{border-color:#c1121f}
-.cuerpo .marca{margin-top:9px;font:700 8px/1 var(--mono);letter-spacing:.3em;color:#5d4416;text-shadow:0 1px 0 #f3dca444}
-.candado.golpe{animation:golpeCand .35s cubic-bezier(.3,1.6,.5,1)}
-@keyframes golpeCand{30%{transform:translateY(5px)}}
-
-/* ambiente de misterio */
+#escena{-webkit-user-select:none;user-select:none;position:fixed;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;overflow:hidden;transition:opacity .7s ease;
+  background:radial-gradient(60% 55% at 50% 40%,#2b241f 0%,#17130f 55%,var(--mesa) 100%)}
+#escena::after{content:"";position:absolute;inset:0;background-image:var(--grano);opacity:.09;pointer-events:none;z-index:5}
 #escena::before{content:"";position:absolute;inset:0;z-index:3;pointer-events:none;box-shadow:inset 0 0 180px 60px #000;animation:respiraLuz 7s ease-in-out infinite}
 @keyframes respiraLuz{50%{box-shadow:inset 0 0 220px 90px #000}}
+#escena.fuera{opacity:0;pointer-events:none}
+.foco{position:absolute;left:50%;top:-10%;width:620px;height:110%;margin-left:-310px;background:radial-gradient(50% 60% at 50% 32%,#ffe9c41f,transparent 70%);pointer-events:none}
+.mesa{position:absolute;left:0;right:0;bottom:0;height:33%;background:linear-gradient(#1c1612,#0c0a08);border-top:1px solid #2c251f}
+.mesa::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,#ffffff03 0 2px,transparent 2px 9px),radial-gradient(40% 55% at 50% 0%,#ffe9c414,transparent 70%)}
+.marco{position:absolute;inset:16px;border:1px solid #ffffff12;pointer-events:none;z-index:4}
+.esquina{position:absolute;color:#8f877c;z-index:6}
+.esquina.a{top:28px;left:30px}.esquina.b{top:28px;right:30px}
+.instruccion{position:absolute;left:0;right:0;bottom:max(40px,env(safe-area-inset-bottom));text-align:center;color:#8f877c;transition:opacity .4s;z-index:6}
+.instruccion b{color:#d9cfbf;font-weight:500}
+.sonido-hint{position:absolute;left:0;right:0;bottom:calc(max(40px,env(safe-area-inset-bottom)) + 22px);text-align:center;color:#6f685f;z-index:6;transition:opacity .6s}
+.sonido-hint.fuera{opacity:0}
+.cinta-regalo{position:absolute;left:0;bottom:92px;white-space:nowrap;font:900 44px/1 var(--display);text-transform:uppercase;color:#1c1714;animation:marquee 28s linear infinite;pointer-events:none}
+.abriendo .instruccion,.abriendo .sonido-hint,.abriendo .esquina{opacity:0}
+/* luz, niebla y polvo */
 .haz{position:absolute;left:50%;top:-5%;width:760px;height:95%;margin-left:-380px;pointer-events:none;
   background:linear-gradient(#ffe9c42e,#ffe9c40a 70%,transparent);clip-path:polygon(43% 0,57% 0,88% 100%,12% 100%);filter:blur(10px);animation:parpadeo 9s steps(1) infinite,oscila 11s ease-in-out infinite}
 @keyframes parpadeo{0%,100%{opacity:1}37%{opacity:.82}38%{opacity:1}64%{opacity:.88}65%{opacity:1}}
@@ -200,15 +63,135 @@ em{font-style:inherit;color:var(--pasion)}
 .polvo{position:absolute;left:50%;top:0;width:420px;height:80%;margin-left:-210px;pointer-events:none;clip-path:polygon(40% 0,60% 0,90% 100%,10% 100%)}
 .polvo i{position:absolute;width:var(--s);height:var(--s);border-radius:50%;background:#ffefd0;opacity:0;filter:blur(.4px);animation:mota var(--t) linear var(--d) infinite}
 @keyframes mota{0%{opacity:0;transform:translate(0,0)}15%{opacity:.7}85%{opacity:.5}100%{opacity:0;transform:translate(var(--dx),-140px)}}
-.sonido-hint{position:absolute;left:0;right:0;bottom:calc(max(40px,env(safe-area-inset-bottom)) + 22px);text-align:center;color:#6f685f;z-index:4;transition:opacity .6s}
-.sonido-hint.fuera,.abierto .sonido-hint{opacity:0}
-
-@keyframes latidoCaja{0%,100%{box-shadow:inset 0 -14px 24px -12px #0007,inset 10px 0 18px -14px #fff3,0 0 0 0 #c1121f00}12%{box-shadow:inset 0 -14px 24px -12px #0007,inset 10px 0 18px -14px #fff3,0 0 70px 6px #c1121f55}}
-.sacude{animation:sacude .45s cubic-bezier(.36,.07,.19,.97)}
-@keyframes sacude{20%{transform:translate(-3px,2px)}40%{transform:translate(3px,-2px)}60%{transform:translate(-2px,1px)}80%{transform:translate(1px,-1px)}}
 .suspenso .haz{animation:parpadeo 4s steps(1) infinite,oscila 11s ease-in-out infinite}
 .suspenso .niebla{opacity:.65}
-@media (prefers-reduced-motion:reduce){.haz,.niebla,.polvo i,#escena::before{animation:none}}
+.sacude{animation:sacude .45s cubic-bezier(.36,.07,.19,.97)}
+@keyframes sacude{20%{transform:translate(-3px,2px)}40%{transform:translate(3px,-2px)}60%{transform:translate(-2px,1px)}80%{transform:translate(1px,-1px)}}
+
+/* ---------- el regalo: una sola ilustración ---------- */
+.regalo{position:relative;width:340px;height:380px;margin-top:-3vh;animation:llega 1.2s var(--ease) both;z-index:2}
+@keyframes llega{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
+.flota{position:absolute;inset:0;animation:respira 5s ease-in-out 1.2s infinite}
+@keyframes respira{50%{transform:translateY(-3px)}}
+.abriendo .flota{animation:none}
+.sombra{position:absolute;left:24px;width:290px;bottom:16px;height:40px;border-radius:50%;background:radial-gradient(closest-side,#000e,transparent);animation:sombra 1.2s var(--ease) both}
+@keyframes sombra{from{transform:scale(.6);opacity:0}to{transform:none;opacity:1}}
+.caja3d{position:absolute;inset:0;width:100%;height:100%;overflow:visible;filter:drop-shadow(0 22px 20px #000c)}
+.suspenso .caja3d{animation:latidoSvg var(--latido,1s) ease-out infinite}
+@keyframes latidoSvg{0%,100%{filter:drop-shadow(0 22px 20px #000c)}12%{filter:drop-shadow(0 22px 20px #000c) drop-shadow(0 0 26px #d4142a88)}}
+.caja3d g{transition:transform .6s var(--ease),opacity .45s}
+@media (min-width:700px) and (min-height:720px){.regalo{scale:1.25}}
+@media (max-width:440px){.regalo{scale:1}}
+@media (max-width:360px){.regalo{scale:.9}}
+
+/* etiqueta: cuelga del moño y se mece desde el ojal */
+#etiqueta{transform-box:view-box;transform-origin:306px 178px;animation:mece 4.5s ease-in-out infinite}
+@keyframes mece{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(3deg)}}
+#etiqueta .cara{transition:opacity .35s}
+#etiqueta .atras{opacity:0}
+#etiqueta.volteada .frente{opacity:0}
+#etiqueta.volteada .atras{opacity:1}
+#etiqueta.volteada .cuerpo-tag{animation:gira .7s var(--fold)}
+.cuerpo-tag{transform-box:fill-box;transform-origin:center}
+@keyframes gira{50%{transform:scaleX(.05)}}
+
+/* candado */
+#candadoSvg,#ruedasWin{transition:transform .5s cubic-bezier(.5,0,.75,0),opacity .35s}
+.golpe{animation:golpeCand .3s cubic-bezier(.3,1.6,.5,1)}
+@keyframes golpeCand{35%{transform:translateY(3px)}}
+#candadoSvg{transform-box:view-box}
+.g-arco{transform-box:view-box;transform-origin:192px 254px;transition:transform .45s cubic-bezier(.3,1.6,.5,1)}
+.abriendo .g-arco{transform:translateY(-12px) rotate(-26deg)}
+.led{fill:#3b210c;transition:fill .3s}
+.led.on{fill:#ff2a3d;filter:url(#brilloLed)}
+.cae-candado #candadoSvg,.cae-candado #ruedasWin{transform:translateY(90px) rotate(8deg);opacity:0}
+#ruedasWin{position:absolute;left:116px;top:266px;width:88px;height:48px;transform-origin:50% 0}
+.ventana{position:relative;display:flex;gap:4px;width:100%;height:100%}
+.ventana::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:4;border-radius:2px;background:linear-gradient(172deg,#ffffff30 0%,#ffffff08 40%,transparent 42%)}
+.rueda{position:relative;flex:1;height:48px;border-radius:2px;overflow:hidden;touch-action:none;outline:none;cursor:ns-resize;
+  background:linear-gradient(#1b130b 0%,#8a7a62 14%,#e9dfca 34%,#fbf6ec 50%,#e9dfca 66%,#8a7a62 86%,#1b130b 100%);transition:background .4s}
+.rueda::before{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;background:linear-gradient(#000b,#0000 34%,#0000 66%,#000b)}
+.rueda::after{content:"";position:absolute;left:0;right:0;top:16px;height:16px;border-top:1px solid #c1121f55;border-bottom:1px solid #c1121f55;z-index:3;pointer-events:none}
+.rueda:focus-visible{box-shadow:0 0 0 2px #ff3344}
+.rueda .tira{position:absolute;left:0;right:0;top:0;transition:transform .22s var(--ease)}
+.rueda span{display:block;height:16px;text-align:center;font:700 12px/16px var(--mono);color:#1a1715}
+.rueda.fija{cursor:default;background:linear-gradient(#2a1405 0%,#986626 14%,#f2d595 34%,#fff2d2 50%,#f2d595 66%,#986626 86%,#2a1405 100%)}
+.rueda.fija span{color:#9b0d19}
+.rueda.fija::after{border-color:#c1121f}
+
+/* apertura */
+.rib-caja{transition:opacity .5s,transform .6s cubic-bezier(.5,0,.75,0)}
+.sin-liston .rib-caja{opacity:0;transform:translateY(16px)}
+.g-tapa{transform-box:view-box;transform-origin:160px 150px}
+.sin-tapa .g-tapa{animation:vuelaTapa 1s cubic-bezier(.45,0,.75,.2) forwards}
+@keyframes vuelaTapa{0%{transform:none}22%{transform:translateY(-16px) rotate(-3deg)}100%{transform:translate(-60px,-115vh) rotate(-24deg)}}
+#luzInterior,#hazInterior{opacity:0;transition:opacity .9s}
+.luz-interior #luzInterior{opacity:1}
+.luz-interior #hazInterior{opacity:.55}
+#papelGrupo{transform-box:view-box;transition:transform 1s cubic-bezier(.2,.8,.2,1)}
+.sube-carta #papelGrupo{transform:translateY(-158px)}
+
+/* la carta en papel que se despliega (ya fuera de la caja) */
+#cartaFinal{position:fixed;z-index:25;display:none;perspective:1400px;transform-origin:center;transition:transform .7s var(--fold)}
+#cartaFinal.ver{display:block}
+#cartaFinal .marco3d{position:absolute;inset:0;transform-style:preserve-3d}
+.cf-panel{position:absolute;left:0;right:0;height:33.334%;background:var(--papel);transition:transform .85s var(--fold)}
+.cf-panel::after{content:"";position:absolute;inset:0;background-image:var(--grano);opacity:.07}
+.cf-panel.arriba{top:0;transform-origin:50% 100%;transform:rotateX(-179.5deg);box-shadow:inset 0 -14px 16px -12px #0003;z-index:3}
+.cf-panel.medio{top:33.333%;z-index:1}
+.cf-panel.abajo{top:66.666%;transform-origin:50% 0;transform:rotateX(179.5deg);box-shadow:inset 0 14px 16px -12px #0003;z-index:2}
+.desplegada .cf-panel.arriba,.desplegada .cf-panel.abajo{transform:none}
+.cf-sello{position:absolute;left:50%;top:50%;width:20%;aspect-ratio:1;transform:translate(-50%,-50%) translateZ(4px);border-radius:50%;
+  background:radial-gradient(circle at 38% 34%,#e2323f,#a10d18 62%,#7a0912);box-shadow:0 2px 4px #0006,inset 0 0 0 3px #ffffff1a;display:grid;place-items:center;
+  color:#f7d6d4;font:900 clamp(10px,3vw,22px)/1 var(--display);z-index:5;transition:transform .45s cubic-bezier(.5,0,.75,0),opacity .45s}
+.rompe-sello .cf-sello{transform:translate(-50%,10%) rotate(30deg) scale(.6);opacity:0}
+#cartaFinal.cubre{transition:transform .65s cubic-bezier(.6,0,.3,1),opacity .5s .2s}
+
+@media (prefers-reduced-motion:reduce){.haz,.niebla,.polvo i,#escena::before,#etiqueta,.flota{animation:none}}
+#cartaFinal.cubre{opacity:0;transition:transform .65s cubic-bezier(.6,0,.3,1),opacity .5s .2s}
+
+
+/* ===== ajustes tras la revisión ===== */
+#etiqueta{transform-origin:109px 177px;animation:meceT 5s ease-in-out infinite;cursor:pointer;pointer-events:all}
+@keyframes meceT{0%,100%{transform:rotate(-1.2deg)}50%{transform:rotate(1deg)}}
+.sin-tapa #etiqueta{animation:inercia 1s cubic-bezier(.3,0,.4,1) forwards}
+@keyframes inercia{0%{transform:rotate(0)}25%{transform:rotate(-10deg)}100%{transform:rotate(24deg)}}
+#ruedasWin{top:260px}
+.g-arco{transform-origin:192px 248px}
+#candadoSvg{transform-origin:160px 240px}
+#ruedasWin{transform-origin:44px -20px}
+.cae-candado #candadoSvg,.cae-candado #ruedasWin,.cae-candado #zonas{opacity:1;transition:none;animation:caeCand .6s cubic-bezier(.5,0,.75,0) forwards}
+@keyframes caeCand{0%{transform:none}60%{transform:translateY(44px) rotate(7deg)}78%{transform:translateY(36px) rotate(5deg)}100%{transform:translateY(44px) rotate(6deg)}}
+.rib-v{transform-box:view-box;transform-origin:160px 178px;transition:transform .5s cubic-bezier(.5,0,.75,0)}
+.sin-liston .rib-caja,.sin-liston .rib-v{opacity:1;transform:scaleY(0)}
+.sombra-tapa{transition:opacity .4s .2s}.sin-tapa .sombra-tapa{opacity:0}
+.borde-boca{transition:fill .9s}.luz-interior .borde-boca{fill:#d9653a}
+#halo{transition:opacity .9s;mix-blend-mode:screen}.luz-interior #halo{opacity:.9}
+.luz-interior #hazInterior{opacity:1}
+.luz-interior .haz{opacity:.3;transition:opacity .9s}
+.calida{transition:opacity .8s}.luz-interior .calida{opacity:.22}
+#escena.atenua .regalo,#escena.atenua .mesa,#escena.atenua .cinta-regalo,#escena.atenua .niebla{filter:brightness(.28) blur(4px);transition:filter .8s}
+#cartaFinal::before{content:"";position:absolute;inset:-70%;z-index:-1;background:radial-gradient(closest-side,#ffd9a02e,transparent);pointer-events:none}
+.cf-panel{box-shadow:0 14px 28px -8px #000b}
+.cf-panel.medio{background:linear-gradient(#f7f2e8,#ece4d4)}
+.cf-sello{width:19.7%;background:radial-gradient(circle at 38% 34%,#e2323f,#a10d18 62%,#7a0912);border-radius:47% 53% 51% 49%/52% 48% 52% 48%}
+.cf-in{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;margin:0;opacity:0;transition:opacity .6s .55s;color:var(--tinta);text-align:center}
+.desplegada .cf-in{opacity:1}
+.cf-fecha{font:500 .045em/1 var(--mono);letter-spacing:.2em;color:var(--emo);align-items:flex-end;padding-bottom:6%}
+.cf-texto{flex-direction:column;gap:.04em;font:900 .085em/1 var(--display);text-transform:uppercase;letter-spacing:-.03em}
+.cf-meli{display:inline-block;margin-top:.15em;background:var(--pasion);color:var(--papel);padding:.02em .25em .08em;border:.02em solid var(--ink);box-shadow:.04em .04em 0 var(--ink);transform:rotate(-2deg)}
+.cf-firma{font:400 .11em/1 "Reenie Beanie",cursive;color:var(--pasion);align-items:flex-start;padding-top:6%}
+.regalo.sacude{animation:sacude .45s cubic-bezier(.36,.07,.19,.97)}
+#zonas{position:absolute;left:100px;top:240px;width:120px;height:98px;display:grid;grid-template-columns:repeat(4,1fr);z-index:3;touch-action:none;transition:transform .5s,opacity .35s}
+#zonas i{cursor:ns-resize}
+.instruccion .tactil{display:none}
+@media (pointer:coarse){.instruccion .raton{display:none}.instruccion .tactil{display:inline}}
+@media (max-height:640px){.regalo{scale:.82}}
+@media (max-height:520px){.regalo{scale:.66;margin-top:-6vh}.cinta-regalo{display:none}}
+@media (max-height:420px){.regalo{scale:.56;margin-top:-10vh}.sonido-hint{display:none}.instruccion{bottom:14px}}
+@media (max-width:380px){.esquina{font-size:10px;letter-spacing:.06em}.esquina.a{left:24px}.esquina.b{right:24px}}
+@media (max-width:340px){.esquina.b{display:none}}
+.titulo .H .o{-webkit-text-fill-color:var(--papel)!important;-webkit-text-stroke:0!important;color:var(--papel);text-shadow:3px 0px 0 var(--ink),-3px 0px 0 var(--ink),0px 3px 0 var(--ink),0px -3px 0 var(--ink),2px 2px 0 var(--ink),-2px 2px 0 var(--ink),2px -2px 0 var(--ink),-2px -2px 0 var(--ink),6px 6px 0 var(--ink)}
 
 /* ============ toque wrapped: piezas comunes ============ */
 .H{font-family:var(--display);font-weight:900;line-height:.92;letter-spacing:-.03em;text-transform:uppercase}
@@ -408,123 +391,189 @@ em{font-style:inherit;color:var(--pasion)}
   <div class="niebla"></div><div class="niebla b"></div>
   <div class="haz"></div>
   <div class="polvo" id="polvo"></div>
-  <p class="sonido-hint mono" id="sonidoHint">Subí el volumen</p>
   <div class="cinta-regalo">Para M.E.L.I. · 01 · 11 · Para M.E.L.I. · 01 · 11 · Para M.E.L.I. · 01 · 11 · Para M.E.L.I. · 01 · 11 · </div>
   <span class="esquina a mono">N° 01 · 11 · 2026</span>
   <span class="esquina b mono">Para M.E.L.I.</span>
 
   <div class="regalo" id="regalo">
     <div class="sombra"></div>
-    <div class="reflejo"></div>
     <div class="flota">
-      <svg class="caja3d" viewBox="0 0 320 360" aria-hidden="true">
+      <svg class="caja3d" viewBox="0 0 340 380" aria-hidden="true">
         <defs>
-          <!-- papel rojo mate con luz de arriba -->
-          <linearGradient id="hFrente" x1="0" x2="1"><stop offset="0" stop-color="#6e0912"/><stop offset=".16" stop-color="#a90f1c"/><stop offset=".46" stop-color="#cc1628"/><stop offset=".78" stop-color="#ad101d"/><stop offset="1" stop-color="#6a0811"/></linearGradient>
-          <linearGradient id="vFrente" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#000" stop-opacity=".55"/><stop offset=".12" stop-color="#000" stop-opacity=".12"/><stop offset=".55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".35"/></linearGradient>
-          <linearGradient id="hTapa" x1="0" x2="1"><stop offset="0" stop-color="#7a0a14"/><stop offset=".15" stop-color="#b7121f"/><stop offset=".45" stop-color="#dc1c2e"/><stop offset=".8" stop-color="#b9121f"/><stop offset="1" stop-color="#740912"/></linearGradient>
-          <linearGradient id="vTapa" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".18"/><stop offset=".2" stop-color="#fff" stop-opacity="0"/><stop offset=".8" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".4"/></linearGradient>
-          <linearGradient id="gTecho" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#e2283a"/><stop offset="1" stop-color="#a30f1b"/></linearGradient>
-          <!-- listón satinado -->
-          <linearGradient id="satin" x1="0" x2="1"><stop offset="0" stop-color="#3f3f45"/><stop offset=".14" stop-color="#7d7d84"/><stop offset=".36" stop-color="#e6e6ec"/><stop offset=".5" stop-color="#b3b3ba"/><stop offset=".74" stop-color="#6d6d74"/><stop offset="1" stop-color="#3b3b41"/></linearGradient>
-          <linearGradient id="satinH" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3f3f45"/><stop offset=".3" stop-color="#d9d9df"/><stop offset=".55" stop-color="#9a9aa1"/><stop offset="1" stop-color="#404046"/></linearGradient>
-          <linearGradient id="brilloMovil" x1="0" y1="0" x2="1" y2="0" gradientUnits="objectBoundingBox">
-            <stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".45" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff" stop-opacity=".55"/><stop offset=".55" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#fff" stop-opacity="0"/>
-            <animateTransform attributeName="gradientTransform" type="translate" values="-1 0;1 0;1 0" keyTimes="0;.45;1" dur="5s" repeatCount="indefinite"/>
+          <!-- papel rojo mate -->
+          <linearGradient id="hFrente" x1="0" x2="1"><stop offset="0" stop-color="#9a0d19"/><stop offset=".45" stop-color="#c41426"/><stop offset="1" stop-color="#930c18"/></linearGradient>
+          <linearGradient id="vFrente" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#000" stop-opacity=".5"/><stop offset=".1" stop-color="#000" stop-opacity=".1"/><stop offset=".55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".38"/></linearGradient>
+          <linearGradient id="hTapa" x1="0" x2="1"><stop offset="0" stop-color="#a3101c"/><stop offset=".45" stop-color="#d61a2c"/><stop offset="1" stop-color="#9c0f1a"/></linearGradient>
+          <linearGradient id="vTapa" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".16"/><stop offset=".22" stop-color="#fff" stop-opacity="0"/><stop offset=".8" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".42"/></linearGradient>
+          <linearGradient id="gTecho" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#df2537"/><stop offset="1" stop-color="#a30f1b"/></linearGradient>
+          <linearGradient id="gInterior" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3a0509"/><stop offset="1" stop-color="#120103"/></linearGradient>
+          <!-- listón de satín mate (gris emo) -->
+          <linearGradient id="satin" x1="0" x2="1"><stop offset="0" stop-color="#9b9ba2"/><stop offset=".1" stop-color="#8f8f96"/><stop offset=".9" stop-color="#88888f"/><stop offset="1" stop-color="#77777e"/></linearGradient>
+          <linearGradient id="satinH" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a6a6ad"/><stop offset=".2" stop-color="#919198"/><stop offset="1" stop-color="#7b7b82"/></linearGradient>
+          <linearGradient id="brilloMovil" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".46" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff" stop-opacity=".08"/><stop offset=".54" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#fff" stop-opacity="0"/>
+            <animateTransform attributeName="gradientTransform" type="translate" values="-1 -1;1 1;1 1" keyTimes="0;.5;1" dur="6s" repeatCount="indefinite"/>
           </linearGradient>
-          <!-- moño -->
-          <radialGradient id="lazo" cx=".35" cy=".3" r=".9"><stop offset="0" stop-color="#f4f4f8"/><stop offset=".35" stop-color="#b9b9c0"/><stop offset=".75" stop-color="#727279"/><stop offset="1" stop-color="#46464c"/></radialGradient>
-          <radialGradient id="lazoAtras" cx=".5" cy=".4" r=".8"><stop offset="0" stop-color="#9a9aa1"/><stop offset="1" stop-color="#3c3c42"/></radialGradient>
-          <linearGradient id="cola" x1="0" x2="1"><stop offset="0" stop-color="#4a4a50"/><stop offset=".45" stop-color="#c8c8ce"/><stop offset="1" stop-color="#55555b"/></linearGradient>
-          <radialGradient id="nudo" cx=".4" cy=".35" r=".8"><stop offset="0" stop-color="#ececf1"/><stop offset=".6" stop-color="#9c9ca3"/><stop offset="1" stop-color="#55555b"/></radialGradient>
-          <!-- textura de papel -->
+          <!-- moño del mismo satín -->
+          <radialGradient id="lazo" cx=".35" cy=".35" r=".85"><stop offset="0" stop-color="#c3c3ca"/><stop offset=".45" stop-color="#9a9aa1"/><stop offset=".85" stop-color="#6b6b72"/><stop offset="1" stop-color="#55555c"/></radialGradient>
+          <radialGradient id="lazoAtras" cx=".5" cy=".45" r=".8"><stop offset="0" stop-color="#85858c"/><stop offset="1" stop-color="#48484e"/></radialGradient>
+          <linearGradient id="cola" x1="0" x2="1"><stop offset="0" stop-color="#9b9ba2"/><stop offset="1" stop-color="#7c7c83"/></linearGradient>
+          <radialGradient id="nudo" cx=".4" cy=".35" r=".8"><stop offset="0" stop-color="#cfcfd5"/><stop offset=".6" stop-color="#93939a"/><stop offset="1" stop-color="#5f5f66"/></radialGradient>
+          <!-- latón del candado: misma luz de arriba -->
+          <linearGradient id="laton" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f1d590"/><stop offset=".35" stop-color="#cfa95e"/><stop offset=".75" stop-color="#a7843f"/><stop offset="1" stop-color="#7f6026"/></linearGradient>
+          <linearGradient id="latonH" x1="0" x2="1"><stop offset="0" stop-color="#000" stop-opacity=".22"/><stop offset=".25" stop-color="#000" stop-opacity="0"/><stop offset=".75" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".25"/></linearGradient>
+          <linearGradient id="arco" x1="0" x2="1"><stop offset="0" stop-color="#6e5320"/><stop offset=".3" stop-color="#e2c27c"/><stop offset=".5" stop-color="#c39d55"/><stop offset=".8" stop-color="#8d6c2c"/><stop offset="1" stop-color="#6a4f1d"/></linearGradient>
+          <pattern id="cepillado" width="4" height="4" patternUnits="userSpaceOnUse"><path d="M0 1 H4" stroke="#fff" stroke-opacity=".07"/></pattern>
+          <!-- cartón kraft de la etiqueta -->
+          <linearGradient id="kraft" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e6d4b2"/><stop offset="1" stop-color="#c9ad80"/></linearGradient>
+          <!-- carta doblada y luz -->
+          <linearGradient id="papelG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f7f2e8"/><stop offset="1" stop-color="#e8e0cf"/></linearGradient>
+          <radialGradient id="selloG" cx=".38" cy=".34" r=".7"><stop offset="0" stop-color="#e2323f"/><stop offset=".62" stop-color="#a10d18"/><stop offset="1" stop-color="#7a0912"/></radialGradient>
+          <radialGradient id="glow" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#ffd9a0" stop-opacity=".95"/><stop offset=".5" stop-color="#ffb35c" stop-opacity=".35"/><stop offset="1" stop-color="#ff9a3c" stop-opacity="0"/></radialGradient>
+          <linearGradient id="hazG" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#ffd9a0" stop-opacity=".8"/><stop offset="1" stop-color="#ffd9a0" stop-opacity="0"/></linearGradient>
+          <!-- textura -->
           <filter id="textura" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="1.4" numOctaves="2" seed="3"/><feColorMatrix values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .09 0"/><feComposite in2="SourceGraphic" operator="in"/></filter>
-          <pattern id="relieve" width="10" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="10" height="10" fill="none"/><path d="M0 5 H10" stroke="#000" stroke-opacity=".07" stroke-width="1"/></pattern>
-          <pattern id="mono" width="64" height="64" patternUnits="userSpaceOnUse"><text x="4" y="16" font-family="JetBrains Mono, monospace" font-size="6" letter-spacing="1.6" fill="#4d0510" opacity=".5">M·E·L·I</text><text x="36" y="48" font-family="JetBrains Mono, monospace" font-size="6" letter-spacing="1.6" fill="#4d0510" opacity=".5">M·E·L·I</text></pattern>
-          <clipPath id="cFrente"><rect x="40" y="172" width="240" height="168" rx="2"/></clipPath>
-          <clipPath id="cTapa"><rect x="30" y="132" width="260" height="44" rx="3"/></clipPath>
+          <filter id="sombraSuave" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="3"/></filter>
+          <filter id="difuso" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="8"/></filter>
+          <filter id="brilloLed" x="-200%" y="-200%" width="500%" height="500%"><feGaussianBlur stdDeviation="2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          <pattern id="relieve" width="10" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><path d="M0 5 H10" stroke="#000" stroke-opacity=".07"/></pattern>
+          <pattern id="mono" width="64" height="64" patternUnits="userSpaceOnUse"><text x="4" y="16" font-family="JetBrains Mono, monospace" font-size="6" letter-spacing="1.6" fill="#4d0510" opacity=".45">M·E·L·I</text><text x="36" y="48" font-family="JetBrains Mono, monospace" font-size="6" letter-spacing="1.6" fill="#4d0510" opacity=".45">M·E·L·I</text></pattern>
+          <clipPath id="cFrente"><rect x="40" y="178" width="240" height="170" rx="2"/></clipPath>
+          <clipPath id="cTapa"><rect x="30" y="138" width="260" height="44" rx="3"/></clipPath>
         </defs>
+
+        <!-- interior de la caja (se ve cuando sale la tapa) -->
+        <path d="M40 178 L56 162 H264 L280 178 Z" fill="url(#gInterior)"/>
+        <path d="M56 162 H264" stroke="#7a0a14" stroke-width="1.5"/>
+        <polygon id="hazInterior" points="64,172 256,172 320,-60 0,-60" fill="url(#hazG)" filter="url(#difuso)"/>
+        <ellipse id="luzInterior" cx="160" cy="170" rx="118" ry="30" fill="url(#glow)"/>
+
+        <!-- la carta doblada, guardada adentro -->
+        <g id="papelGrupo">
+          <rect id="papelSvg" x="84" y="190" width="152" height="62" rx="1.5" fill="url(#papelG)" stroke="#0000001f"/>
+          <path d="M84 196 H236" stroke="#000" stroke-opacity=".06"/>
+          <rect class="calida" x="84" y="190" width="152" height="62" fill="#ffcf8a" opacity="0"/><circle cx="160" cy="221" r="15" fill="url(#selloG)"/>
+          <text x="160" y="225.5" text-anchor="middle" font-family="Unbounded, sans-serif" font-weight="900" font-size="14" fill="#f7d6d4">M</text>
+        </g>
 
         <!-- cuerpo -->
         <g class="g-caja">
-          <rect x="40" y="172" width="240" height="168" rx="2" fill="url(#hFrente)"/>
+          <path class="borde-boca" d="M40 178 L44 174 H276 L280 178 Z" fill="#7e0a15"/>
+          <rect x="40" y="178" width="240" height="170" rx="2" fill="url(#hFrente)"/>
           <g clip-path="url(#cFrente)">
-            <rect x="40" y="172" width="240" height="168" fill="url(#relieve)"/>
-            <rect x="40" y="172" width="240" height="168" fill="url(#mono)"/>
-            <rect x="40" y="172" width="240" height="168" fill="#fff" filter="url(#textura)"/>
-            <rect x="40" y="172" width="240" height="168" fill="url(#vFrente)"/>
-            <g class="rib-caja">
-              <rect x="40" y="244" width="240" height="26" fill="url(#satinH)"/>
-              <rect x="40" y="244" width="240" height="26" fill="#000" opacity=".12"/>
-              <rect x="145" y="172" width="30" height="168" fill="url(#satin)"/>
-              <rect x="145" y="172" width="30" height="168" fill="url(#brilloMovil)" class="brillo"/>
-              <path d="M145 172 V340 M175 172 V340 M40 244 H280 M40 270 H280" stroke="#000" stroke-opacity=".25" stroke-width="1"/>
-              <path d="M280 247 V268" stroke="#fff" stroke-opacity=".15"/>
-              <path d="M262 272 C276 292 294 290 300 300" fill="none" stroke="#bfb19a" stroke-width="1.4"/>
+            <rect x="40" y="178" width="240" height="170" fill="url(#relieve)"/>
+            <rect x="40" y="178" width="240" height="170" fill="url(#mono)"/>
+            <rect x="40" y="178" width="240" height="170" fill="#fff" filter="url(#textura)"/>
+            <rect x="40" y="178" width="240" height="170" fill="url(#vFrente)"/>
+            <g class="rib-caja rib-v">
+              <rect x="40" y="254" width="240" height="24" fill="url(#satinH)"/>
+              <rect x="40" y="278" width="106" height="3" fill="#000" opacity=".22"/><rect x="174" y="278" width="106" height="3" fill="#000" opacity=".22"/><rect x="174" y="178" width="3" height="170" fill="#000" opacity=".22"/><rect x="146" y="178" width="28" height="170" fill="url(#satin)"/>
+              <rect x="146" y="178" width="28" height="170" fill="url(#brilloMovil)"/>
+              <path d="M149 178 V348 M171 178 V348 M40 257 H146 M174 257 H280 M40 275 H146 M174 275 H280" stroke="#d6d6dc" stroke-opacity=".35" stroke-width=".8" stroke-dasharray="3 3"/>
+              <path d="M146 178 V348 M174 178 V348 M40 254 H146 M174 254 H280 M40 278 H146 M174 278 H280" stroke="#2c2c31" stroke-opacity=".45" stroke-width="1"/>
+              
             </g>
-            <rect x="40" y="172" width="240" height="12" fill="#000" opacity=".35"/>
+            <rect class="sombra-tapa" x="40" y="178" width="240" height="14" fill="#000" opacity=".38"/>
           </g>
-          <rect x="40.5" y="172.5" width="239" height="167" rx="2" fill="none" stroke="#3a0408" stroke-opacity=".6"/>
+          <rect x="40.5" y="178.5" width="239" height="169" rx="2" fill="none" stroke="#2e0306" stroke-opacity=".7"/>
         </g>
 
-        <!-- tapa -->
+        <!-- candado (misma luz y mismo trazo que la caja) -->
+        <g id="candadoSvg">
+          <rect x="104" y="246" width="120" height="98" rx="14" fill="#000" opacity=".45" filter="url(#sombraSuave)"/>
+          <path d="M131 255 V225 A32 32 0 0 1 195 225 V255" fill="none" stroke="#000" stroke-opacity=".3" stroke-width="12" filter="url(#sombraSuave)"/>
+          <g class="g-arco">
+            <path d="M128 250 V220 A32 32 0 0 1 192 220 V250" fill="none" stroke="#2a1d07" stroke-opacity=".7" stroke-width="15"/>
+            <path d="M128 250 V220 A32 32 0 0 1 192 220 V250" fill="none" stroke="url(#arco)" stroke-width="12"/>
+            <path d="M131 244 V220 A29 29 0 0 1 152 192" fill="none" stroke="#fff4cf" stroke-opacity=".55" stroke-width="2.2" stroke-linecap="round"/>
+          </g>
+          <rect x="100" y="240" width="120" height="98" rx="14" fill="url(#laton)"/>
+          <rect x="100" y="240" width="120" height="98" rx="14" fill="url(#cepillado)"/>
+          <rect x="100" y="240" width="120" height="98" rx="14" fill="url(#latonH)"/>
+          <rect x="103.5" y="243.5" width="113" height="91" rx="11" fill="none" stroke="#fff3cb" stroke-opacity=".45"/>
+          <rect x="100.5" y="240.5" width="119" height="97" rx="13.5" fill="none" stroke="#2a1d07" stroke-opacity=".75"/>
+          <path d="M112 241.2 H208" stroke="#fff8dc" stroke-opacity=".8" stroke-width="1.2"/>
+          <g id="leds">
+            <circle class="led" cx="126" cy="251" r="2.6"/><circle class="led" cx="149" cy="251" r="2.6"/><circle class="led" cx="171" cy="251" r="2.6"/><circle class="led" cx="194" cy="251" r="2.6"/>
+          </g>
+          <!-- ventana hundida donde van las ruedas -->
+          <rect x="110" y="255" width="100" height="58" rx="6" fill="#120c06"/>
+          <rect x="110.5" y="255.5" width="99" height="57" rx="5.5" fill="none" stroke="#5f4717" stroke-width="1"/>
+          <path d="M111 312.6 H209" stroke="#fff1c4" stroke-opacity=".55"/>
+          <text x="160" y="327" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="6.2" font-weight="700" letter-spacing="2.2" fill="#5b4214" opacity=".85">N° 01 · 11</text>
+          <circle cx="110" cy="327" r="3.2" fill="#8c6a2a"/><path d="M107.8 327 H112.2" stroke="#4b3812" stroke-width="1"/>
+          <circle cx="210" cy="327" r="3.2" fill="#8c6a2a"/><path d="M210 324.8 V329.2" stroke="#4b3812" stroke-width="1"/>
+        </g>
+
+        <!-- el listón pasa por dentro del arco -->
+        <g class="rib-v rib-frente"><rect x="146" y="182" width="28" height="58" fill="url(#satin)"/><path d="M146 182 V240 M174 182 V240" stroke="#2c2c31" stroke-opacity=".45"/><rect x="174" y="182" width="3" height="58" fill="#000" opacity=".22"/></g>
+        <ellipse id="halo" cx="160" cy="172" rx="150" ry="34" fill="url(#glow)" opacity="0"/>
+        <!-- tapa, moño y etiqueta: se van juntos -->
         <g class="g-tapa">
-          <path d="M30 132 L50 112 H270 L290 132 Z" fill="url(#gTecho)"/>
-          <path d="M30 132 L50 112 H270 L290 132 Z" fill="url(#mono)" opacity=".7"/>
-          <path d="M145 132 L150 112 H170 L175 132 Z" fill="url(#satin)"/>
-          <path d="M38 124 H282 L278 120 H42 Z" fill="url(#satinH)" opacity=".9"/>
-          <rect x="30" y="132" width="260" height="44" rx="3" fill="url(#hTapa)"/>
+          <path d="M30 138 L50 118 H270 L290 138 Z" fill="url(#gTecho)"/>
+          <path d="M30 138 L50 118 H270 L290 138 Z" fill="url(#mono)" opacity=".6"/>
+          <path d="M146 138 L151 118 H169 L174 138 Z" fill="url(#satin)"/>
+          
+          <rect x="30" y="138" width="260" height="44" rx="3" fill="url(#hTapa)"/>
           <g clip-path="url(#cTapa)">
-            <rect x="30" y="132" width="260" height="44" fill="url(#relieve)"/>
-            <rect x="30" y="132" width="260" height="44" fill="url(#mono)"/>
-            <rect x="30" y="132" width="260" height="44" fill="#fff" filter="url(#textura)"/>
-            <rect x="145" y="132" width="30" height="44" fill="url(#satin)"/>
-            <rect x="145" y="132" width="30" height="44" fill="url(#brilloMovil)" class="brillo"/>
-            <rect x="30" y="132" width="260" height="44" fill="url(#vTapa)"/>
+            <rect x="30" y="138" width="260" height="44" fill="url(#relieve)"/>
+            <rect x="30" y="138" width="260" height="44" fill="url(#mono)"/>
+            <rect x="30" y="138" width="260" height="44" fill="#fff" filter="url(#textura)"/>
+            <rect x="146" y="138" width="28" height="44" fill="url(#satin)"/>
+            <rect x="146" y="138" width="28" height="44" fill="url(#brilloMovil)"/>
+            <path d="M149 138 V182 M171 138 V182" stroke="#d6d6dc" stroke-opacity=".35" stroke-width=".8" stroke-dasharray="3 3"/>
+            <path d="M146 138 V182 M174 138 V182" stroke="#2c2c31" stroke-opacity=".45"/>
+            <rect x="30" y="138" width="260" height="44" fill="url(#vTapa)"/>
           </g>
-          <path d="M33 132.5 H287" stroke="#ff9aa2" stroke-opacity=".6" stroke-width="1.2"/>
-          <rect x="30.5" y="132.5" width="259" height="43" rx="3" fill="none" stroke="#3a0408" stroke-opacity=".55"/>
-        </g>
+          <path d="M33 138.6 H287" stroke="#ff9aa2" stroke-opacity=".55" stroke-width="1.2"/>
+          <rect x="30.5" y="138.5" width="259" height="43" rx="3" fill="none" stroke="#2e0306" stroke-opacity=".65"/>
 
-        <!-- moño -->
-        <g class="g-moño">
-          <path d="M152 126 C142 150 132 170 118 198 L130 192 L131 207 C145 180 156 154 162 128 Z" fill="url(#cola)"/>
-          <path d="M168 126 C178 150 190 170 204 196 L192 191 L190 206 C177 180 166 154 160 128 Z" fill="url(#cola)"/>
-          <path d="M157 118 C138 70 106 52 96 70 C88 86 122 110 157 121 Z" fill="url(#lazoAtras)"/>
-          <path d="M163 118 C182 70 214 52 224 70 C232 86 198 110 163 121 Z" fill="url(#lazoAtras)"/>
-          <path d="M160 121 C118 72 64 62 60 94 C57 120 104 132 160 124 Z" fill="url(#lazo)"/>
-          <path d="M160 121 C132 96 96 88 84 104" fill="none" stroke="#2f2f34" stroke-opacity=".45" stroke-width="7" stroke-linecap="round"/>
-          <path d="M72 82 C92 66 120 72 140 94" fill="none" stroke="#fff" stroke-opacity=".45" stroke-width="3" stroke-linecap="round"/>
-          <path d="M160 121 C202 72 256 62 260 94 C263 120 216 132 160 124 Z" fill="url(#lazo)"/>
-          <path d="M160 121 C188 96 224 88 236 104" fill="none" stroke="#2f2f34" stroke-opacity=".45" stroke-width="7" stroke-linecap="round"/>
-          <path d="M184 92 C200 74 228 68 246 80" fill="none" stroke="#fff" stroke-opacity=".35" stroke-width="3" stroke-linecap="round"/>
-          <rect x="145" y="107" width="30" height="27" rx="9" fill="url(#nudo)"/>
-          <path d="M150 113 C156 118 164 118 170 113 M151 128 C157 124 163 124 169 128" fill="none" stroke="#3a3a40" stroke-opacity=".35" stroke-width="1.5"/>
-          <ellipse cx="155" cy="114" rx="5" ry="3" fill="#fff" opacity=".5"/>
+          <!-- moño -->
+          <path d="M153 130 C145 150 137 166 127 186 L137 181 L139 194 C149 172 157 152 163 132 Z" fill="url(#cola)" stroke="#2c2c31" stroke-opacity=".35"/>
+          <path d="M167 130 C175 150 184 166 196 185 L186 181 L183 193 C173 172 164 152 158 132 Z" fill="url(#cola)" stroke="#2c2c31" stroke-opacity=".35"/>
+          <path d="M157 124 C138 78 108 62 98 79 C91 94 123 115 157 127 Z" fill="url(#lazoAtras)"/>
+          <path d="M163 124 C182 78 212 62 222 79 C229 94 197 115 163 127 Z" fill="url(#lazoAtras)"/>
+          <path d="M160 127 C120 80 70 70 66 101 C63 126 107 137 160 130 Z" fill="url(#lazo)" stroke="#2c2c31" stroke-opacity=".4"/>
+          <path d="M160 127 C134 104 100 96 88 111" fill="none" stroke="#2f2f34" stroke-opacity=".35" stroke-width="6" stroke-linecap="round"/>
+          <path d="M77 90 C96 76 122 81 141 101" fill="none" stroke="#fff" stroke-opacity=".28" stroke-width="2.5" stroke-linecap="round"/>
+          <path d="M160 127 C200 80 250 70 254 101 C257 126 213 137 160 130 Z" fill="url(#lazo)" stroke="#2c2c31" stroke-opacity=".4"/>
+          <path d="M160 127 C186 104 220 96 232 111" fill="none" stroke="#2f2f34" stroke-opacity=".35" stroke-width="6" stroke-linecap="round"/>
+          <path d="M182 99 C198 82 224 76 241 87" fill="none" stroke="#fff" stroke-opacity=".22" stroke-width="2.5" stroke-linecap="round"/>
+          <rect x="147" y="114" width="26" height="24" rx="8" fill="url(#nudo)" stroke="#2c2c31" stroke-opacity=".4"/>
+          <path d="M151 120 C156 124 164 124 169 120 M152 133 C157 129 163 129 168 133" fill="none" stroke="#3a3a40" stroke-opacity=".3" stroke-width="1.3"/>
+
+          <!-- etiqueta atada al nudo, apoyada sobre la tapa -->
+          <path d="M150 131 C140 150 124 160 110 177" fill="none" stroke="#3a2a14" stroke-opacity=".5" stroke-width="2.4"/>
+          <path d="M150 131 C140 150 124 160 110 177" fill="none" stroke="#eadfc4" stroke-width="1.5"/>
+          <g id="etiqueta">
+            <path d="M40 150 H104 L118 164 V190 L104 204 H40 Z" fill="#000" opacity=".4" transform="translate(3 4)" filter="url(#sombraSuave)"/>
+            <g class="cuerpo-tag">
+              <path d="M40 150 H104 L118 164 V190 L104 204 H40 Z" fill="url(#kraft)" stroke="#6b5532" stroke-opacity=".6"/>
+              <circle cx="109" cy="177" r="4.6" fill="#b49464"/><circle cx="109" cy="177" r="2.8" fill="#3b2a12"/>
+              <g class="cara frente" font-family="JetBrains Mono, monospace" text-anchor="middle">
+                <text x="70" y="164" font-size="6.5" letter-spacing="1.4" fill="#3c2f1c">PARA</text>
+                <text x="70" y="180" font-size="12" font-weight="700" fill="#8e0c16">M.E.L.I.</text>
+                <text x="70" y="192" font-size="6.8" fill="#5b4c37">como te tengo</text>
+                <text x="70" y="200" font-size="6.8" fill="#5b4c37">en WhatsApp</text>
+              </g>
+              <g class="cara atras" font-family="JetBrains Mono, monospace" text-anchor="middle">
+                <text x="70" y="164" font-size="6.5" letter-spacing="1.4" fill="#8e0c16">PISTA</text>
+                <text x="70" y="177" font-size="6.6" fill="#3c2f1c">Método de</text>
+                <text x="70" y="187" font-size="6.6" fill="#3c2f1c">Estimación Lineal</text>
+                <text x="70" y="197" font-size="6.6" fill="#3c2f1c">Insesgado</text>
+              </g>
+            </g>
+          </g>
         </g>
       </svg>
-
-      <div class="etiqueta" id="etiqueta" aria-hidden="true">
-        <div class="cara frente"><p>PARA: M.E.L.I.</p><p class="g">como te tengo en WhatsApp</p></div>
-        <div class="cara atras"><p class="r">PISTA</p><p class="g">Método de Estimación Lineal Insesgado</p></div>
-      </div>
-
-      <div class="candado" id="candado">
-        <div class="arco"></div>
-        <div class="cuerpo">
-          <div class="leds" id="leds"><i></i><i></i><i></i><i></i></div>
-          <div class="ventana" id="ventana" role="group" aria-label="Candado de cuatro letras"></div>
-          <div class="marca">N° 01 · 11</div>
-        </div>
-      </div>
+      <div id="zonas"><i></i><i></i><i></i><i></i></div><div id="ruedasWin"><div class="ventana" id="ventana" role="group" aria-label="Candado de cuatro letras"></div></div>
     </div>
   </div>
-  <p class="instruccion mono"><b>Girá las ruedas</b> · cuatro letras</p>
+  <p class="sonido-hint mono" id="sonidoHint">Subí el volumen</p>
+  <p class="instruccion mono"><b class="raton">Girá las ruedas o escribí</b><b class="tactil">Deslizá las ruedas</b> · cuatro letras</p>
 </div>
 
-<div id="papel" aria-hidden="true"><div class="hoja"><div class="mitad izq"></div><div class="mitad der"></div><div class="pliegue"></div></div></div>
-
-
+<div id="cartaFinal" aria-hidden="true"><div class="marco3d"><div class="cf-panel arriba"><p class="cf-in cf-fecha">N° 01 · 11 · 2026</p></div><div class="cf-panel medio"><p class="cf-in cf-texto">Feliz cumple,<b class="cf-meli">MELI</b></p></div><div class="cf-panel abajo"><p class="cf-in cf-firma">— James</p></div><span class="cf-sello">M</span></div></div>
 
 <!-- ============ PANTALLA PRINCIPAL ============ -->
 <main id="web" aria-hidden="true">
@@ -622,50 +671,60 @@ const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',
 const rico=s=>esc(s).replace(/\*(.+?)\*/g,'<em>$1</em>');
 
 /* ---------- sonido (sin archivos) ---------- */
-let ac;
-function ctx(){if(!ac){const A=window.AudioContext||window.webkitAudioContext;if(A)ac=new A()}if(ac&&ac.state==='suspended')ac.resume();return ac}
-function ruido(dur,freq,q,vol,barrido){const c=ctx();if(!c)return;const n=c.createBuffer(1,c.sampleRate*dur,c.sampleRate),d=n.getChannelData(0);
+let ac,busG;
+function ctx(){if(!ac){const A=window.AudioContext||window.webkitAudioContext;if(A){ac=new A();busG=ac.createGain();busG.gain.value=.6;const lim=ac.createDynamicsCompressor();lim.threshold.value=-6;lim.knee.value=0;lim.ratio.value=20;lim.attack.value=.002;lim.release.value=.2;busG.connect(lim).connect(ac.destination)}}if(ac&&ac.state==='suspended')ac.resume();return ac}
+function bus(){ctx();return busG}
+function ruido(dur,freq,q,vol,barrido,hasta){const c=ctx();if(!c)return;const n=c.createBuffer(1,c.sampleRate*dur,c.sampleRate),d=n.getChannelData(0);
   for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,barrido?1:4);
   const s=c.createBufferSource(),f=c.createBiquadFilter(),g=c.createGain();s.buffer=n;f.type='bandpass';f.frequency.value=freq;f.Q.value=q;
-  if(barrido)f.frequency.linearRampToValueAtTime(freq*.35,c.currentTime+dur);
-  g.gain.value=vol;s.connect(f).connect(g).connect(c.destination);s.start()}
-const clic=()=>ruido(.04,3200,6,.5), clacSordo=()=>ruido(.12,600,2,.8), clicFuerte=()=>{ruido(.06,2400,4,.9);setTimeout(()=>ruido(.08,1500,3,.6),70)}, papel=()=>ruido(.9,2600,.7,.35,true);
+  if(barrido)f.frequency.linearRampToValueAtTime(hasta||freq*.35,c.currentTime+dur);
+  g.gain.value=vol;s.connect(f).connect(g).connect(bus());s.start()}
+const clic=()=>ruido(.04,3200,6,.5), clicFuerte=()=>{ruido(.06,2400,4,.9);setTimeout(()=>ruido(.08,1500,3,.6),70)}, papel=()=>ruido(.9,2600,.7,.35,true);
+let rvB;
+function reverb(){const c=ctx();if(!c)return null;if(!rvB){rvB=c.createConvolver();const len=c.sampleRate*2.8,ir=c.createBuffer(2,len,c.sampleRate);
+  for(let ch=0;ch<2;ch++){const d=ir.getChannelData(ch);for(let j=0;j<len;j++)d[j]=(Math.random()*2-1)*Math.pow(1-j/len,2.6)}
+  rvB.buffer=ir;const g=c.createGain();g.gain.value=.5;rvB.connect(g).connect(bus())}return rvB}
+function tono(f,t,a,v,r,tipo){const c=ctx();if(!c)return;const o=c.createOscillator(),g=c.createGain();o.type=tipo||'sine';o.frequency.value=f;
+  g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(v,t+a);g.gain.exponentialRampToValueAtTime(.0001,t+a+r);o.connect(g);g.connect(bus());const rv=reverb();if(rv)g.connect(rv);o.start(t);o.stop(t+a+r+.05)}
+function golpeGrave(t,f,v){const c=ctx();if(!c)return;const o=c.createOscillator(),g=c.createGain();o.type='sine';o.frequency.setValueAtTime(f,t);o.frequency.exponentialRampToValueAtTime(36,t+.35);
+  g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(v,t+.01);g.gain.exponentialRampToValueAtTime(.0001,t+.5);o.connect(g).connect(bus());o.start(t);o.stop(t+.55)}
 
 /* ---------- candado ---------- */
-const ABC='ABCDEFGHIJKLMNOPQRSTUVWXYZ',CLAVE='MELI',H=22;
-const ruedas=[0,0,0,0];
+const ABC='ABCDEFGHIJKLMNOPQRSTUVWXYZ',CLAVE='MELI',H=16;
+const ruedas=[0,1,2,3].map(i=>(ABC.indexOf(CLAVE[i])+7+Math.floor(Math.random()*12))%26),vis=ruedas.map(r=>r+26);
+const PASO=matchMedia('(pointer:coarse)').matches?10:16;
 $('ventana').innerHTML=ruedas.map((_,i)=>`<div class="rueda" tabindex="0" role="spinbutton" aria-label="Letra ${i+1}"><div class="tira">${(ABC+ABC+ABC).split('').map(l=>`<span>${l}</span>`).join('')}</div></div>`).join('');
 const els=[...document.querySelectorAll('.rueda')];
-function pinta(i){els[i].querySelector('.tira').style.transform=`translateY(${-(ruedas[i]+26-1)*H}px)`;els[i].setAttribute('aria-valuetext',ABC[ruedas[i]])}
+function pinta(i,d){const t=els[i].querySelector('.tira');vis[i]=d?vis[i]+d:ruedas[i]+26;t.style.transform=`translateY(${-(vis[i]-1)*H}px)`;els[i].setAttribute('aria-valuetext',ABC[ruedas[i]]);
+  if(vis[i]<14||vis[i]>38)setTimeout(()=>{t.style.transition='none';vis[i]=ruedas[i]+26;t.style.transform=`translateY(${-(vis[i]-1)*H}px)`;void t.offsetWidth;t.style.transition=''},240)}
 let abierto=false;
 const fijas=[false,false,false,false];
-function mueve(i,d){if(abierto||fijas[i])return;ruedas[i]=(ruedas[i]+d+26)%26;pinta(i);clic();revisa(i)}
+function mueve(i,d){if(abierto||fijas[i])return;ruedas[i]=(ruedas[i]+d+26)%26;pinta(i,d);clic();revisa(i)}
 function revisa(i){if(!fijas[i]&&ABC[ruedas[i]]===CLAVE[i])fijar(i)}
+function golpecito(){['candadoSvg','ruedasWin'].forEach(id=>{const e=$(id);e.classList.remove('golpe');void e.getBoundingClientRect();e.classList.add('golpe')})}
 function fijar(i){fijas[i]=true;const el=els[i];el.classList.add('fija');el.setAttribute('aria-disabled','true');
-  document.querySelectorAll('#leds i')[i].classList.add('on');
-  const c=$('candado');c.classList.remove('golpe');void c.offsetWidth;c.classList.add('golpe');
+  document.querySelectorAll('#leds .led')[i].classList.add('on');golpecito();
   sonidoBloqueo(fijas.filter(Boolean).length);
-  const sig=fijas.indexOf(false);if(sig>=0)setTimeout(()=>els[sig].focus({preventScroll:true}),120);
-  if(fijas.every(Boolean))setTimeout(abrir,900)}
-/* sonido al bloquear una letra: cerrojo metálico + golpe grave + campana con eco, más aguda en cada letra */
-let rvB;
+  setTimeout(()=>{const a=els.indexOf(document.activeElement);if(a<0||fijas[a]){const n=fijas.indexOf(false);if(n>=0)els[n].focus({preventScroll:true})}},120);
+  if(fijas.every(Boolean)){if(amb)amb.parar();$('escena').classList.remove('suspenso');setTimeout(abrir,900)}}
+/* al bloquear una letra: cerrojo metálico + golpe grave + campana con eco, más aguda en cada letra */
 function sonidoBloqueo(k){const c=ctx();if(!c)return;const t=c.currentTime;
-  if(!rvB){rvB=c.createConvolver();const len=c.sampleRate*2.6,ir=c.createBuffer(2,len,c.sampleRate);for(let ch=0;ch<2;ch++){const d=ir.getChannelData(ch);for(let j=0;j<len;j++)d[j]=(Math.random()*2-1)*Math.pow(1-j/len,2.6)}rvB.buffer=ir;const g=c.createGain();g.gain.value=.5;rvB.connect(g).connect(c.destination)}
-  ruido(.05,1900,5,.9);setTimeout(()=>ruido(.07,900,3,.7),45);
-  const o=c.createOscillator(),g=c.createGain();o.type='sine';o.frequency.setValueAtTime(110,t);o.frequency.exponentialRampToValueAtTime(38,t+.35);g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(.9,t+.01);g.gain.exponentialRampToValueAtTime(.0001,t+.5);o.connect(g).connect(c.destination);o.start(t);o.stop(t+.55);
+  ruido(.05,1900,5,.5);setTimeout(()=>ruido(.07,900,3,.4),45);golpeGrave(t,110,.5);
   const base=[220,261.63,329.63,440][k-1]||220;
-  [[1,.16],[2.76,.06],[5.4,.03],[1.5,.05]].forEach(([m,v])=>{const b=c.createOscillator(),bg=c.createGain();b.type='sine';b.frequency.value=base*m;bg.gain.setValueAtTime(.0001,t+.04);bg.gain.linearRampToValueAtTime(v,t+.05);bg.gain.exponentialRampToValueAtTime(.0001,t+3.2);b.connect(bg);bg.connect(c.destination);bg.connect(rvB);b.start(t+.04);b.stop(t+3.3)})}
+  [[1,.16],[2.76,.06],[5.4,.03],[1.5,.05]].forEach(([m,v])=>tono(base*m,t+.04,.01,v,3.1))}
+const zonas=[...document.querySelectorAll('#zonas i')];
 els.forEach((el,i)=>{pinta(i);
-  let y0=null,acum=0,movio=false;
-  el.addEventListener('pointerdown',e=>{y0=e.clientY;acum=0;movio=false;el.setPointerCapture(e.pointerId);el.focus({preventScroll:true})});
-  el.addEventListener('pointermove',e=>{if(y0===null)return;const pasos=Math.trunc((e.clientY-y0-acum)/18);if(pasos){movio=true;acum+=pasos*18;mueve(i,-pasos)}});
-  el.addEventListener('pointerup',e=>{if(y0!==null&&!movio){const r=el.getBoundingClientRect();mueve(i,e.clientY<r.top+r.height/2?-1:1)}y0=null});
+  let y0=null,acum=0,movio=false;const z=zonas[i];
+  z.addEventListener('pointerdown',e=>{if(e.button>0)return;y0=e.clientY;acum=0;movio=false;z.setPointerCapture(e.pointerId);el.focus({preventScroll:true})});
+  z.addEventListener('pointermove',e=>{if(y0===null)return;const pasos=Math.trunc((e.clientY-y0-acum)/PASO);if(pasos){movio=true;acum+=pasos*PASO;mueve(i,-pasos)}});
+  z.addEventListener('pointerup',e=>{if(y0!==null&&!movio){const r=el.getBoundingClientRect();mueve(i,e.clientY<r.top+r.height/2?-1:1)}y0=null});
+  z.addEventListener('pointercancel',()=>{y0=null});
   el.addEventListener('keydown',e=>{
     if(e.key==='ArrowUp'){e.preventDefault();mueve(i,-1)}
     else if(e.key==='ArrowDown'){e.preventDefault();mueve(i,1)}
     else if(e.key==='ArrowRight'&&els[i+1])els[i+1].focus();
     else if(e.key==='ArrowLeft'&&els[i-1])els[i-1].focus();
-    else if(/^[a-z]$/i.test(e.key)){if(fijas[i]||abierto)return;ruedas[i]=ABC.indexOf(e.key.toUpperCase());pinta(i);clic();if(els[i+1]&&!fijas[i+1])els[i+1].focus();revisa(i)}
+    else if(/^[a-z]$/i.test(e.key)){if(abierto)return;if(fijas[i]){const n=fijas.indexOf(false);if(n>=0){els[n].focus();els[n].dispatchEvent(new KeyboardEvent('keydown',{key:e.key}))}return}ruedas[i]=ABC.indexOf(e.key.toUpperCase());pinta(i);clic();if(els[i+1]&&!fijas[i+1])els[i+1].focus();revisa(i)}
   });
 });
 
@@ -673,69 +732,97 @@ els.forEach((el,i)=>{pinta(i);
 $('polvo').innerHTML=Array.from({length:18},()=>`<i style="left:${(10+Math.random()*80).toFixed(1)}%;top:${(15+Math.random()*80).toFixed(1)}%;--s:${(1+Math.random()*2.4).toFixed(1)}px;--t:${(7+Math.random()*8).toFixed(1)}s;--d:-${(Math.random()*12).toFixed(1)}s;--dx:${(Math.random()*60-30).toFixed(0)}px"></i>`).join('');
 let amb=null;
 /* música de suspenso: latido, cuerdas en tensión, caja de música desafinada y golpes graves.
-   La tensión sube con cada letra correcta del candado. */
-function tension(){return CLAVE.split('').filter((l,i)=>ABC[ruedas[i]]===l).length}
+   La tensión sube con cada letra bloqueada. */
+function tension(){return fijas.filter(Boolean).length}
 function ambiente(){
   if(amb||abierto)return;const c=ctx();if(!c)return;
   const t0=c.currentTime,master=c.createGain();master.gain.setValueAtTime(0,t0);master.gain.linearRampToValueAtTime(.42,t0+5);
-  const comp=c.createDynamicsCompressor();master.connect(comp).connect(c.destination);
-  // reverberación simple (ruido con caída)
+  const comp=c.createDynamicsCompressor();master.connect(comp).connect(bus());
   const rv=c.createConvolver(),len=c.sampleRate*3.2,ir=c.createBuffer(2,len,c.sampleRate);
   for(let ch=0;ch<2;ch++){const d=ir.getChannelData(ch);for(let i=0;i<len;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/len,3)}
   rv.buffer=ir;const rvG=c.createGain();rvG.gain.value=.55;rv.connect(rvG).connect(master);
   const env=(g,t,a,v,r)=>{g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v,t+a);g.gain.exponentialRampToValueAtTime(.0001,t+a+r)};
   const parar=[];
-
-  // 1. cuerdas en tensión: cluster disonante que se abre poco a poco
+  // cuerdas en tensión
   const cuerdasF=c.createBiquadFilter();cuerdasF.type='lowpass';cuerdasF.frequency.value=260;cuerdasF.Q.value=4;
-  const cuerdasG=c.createGain();cuerdasG.gain.value=.11;cuerdasF.connect(cuerdasG);cuerdasG.connect(master);cuerdasG.connect(rv);
+  const cuerdasG=c.createGain();cuerdasG.gain.value=.05;cuerdasF.connect(cuerdasG);cuerdasG.connect(master);cuerdasG.connect(rv);
   [[110,0],[116.5,0],[164.8,0],[155.6,0],[220,-6]].forEach(([f,det])=>{
     for(const d of [-7,7]){const o=c.createOscillator();o.type='sawtooth';o.frequency.value=f;o.detune.value=d+det;
       const vib=c.createOscillator(),vg=c.createGain();vib.frequency.value=4.5+Math.random();vg.gain.value=3;vib.connect(vg).connect(o.detune);vib.start();
       o.connect(cuerdasF);o.start();parar.push(o,vib)}});
-  // 2. sub grave
-  const sub=c.createOscillator(),subG=c.createGain();sub.type='sine';sub.frequency.value=41.2;subG.gain.value=.22;sub.connect(subG).connect(master);sub.start();parar.push(sub);
-
-  // 3. latido
+  // sub grave
+  const sub=c.createOscillator(),subG=c.createGain();sub.type='sine';sub.frequency.value=41.2;subG.gain.value=.14;sub.connect(subG).connect(master);sub.start();parar.push(sub);
+  // latido
   function golpe(t,f,v){const o=c.createOscillator(),g=c.createGain();o.type='sine';o.frequency.setValueAtTime(f,t);o.frequency.exponentialRampToValueAtTime(32,t+.25);env(g,t,.005,v,.35);o.connect(g).connect(master);o.start(t);o.stop(t+.5)}
-  // 4. caja de música desafinada (La menor con tritono)
+  // caja de música desafinada
   const caja=[440,523.25,659.25,622.25,440,523.25,739.99,659.25,493.88,523.25,622.25,587.33];let paso=0;
   function nota(t){const f=caja[paso++%caja.length]*(1+(Math.random()-.5)*.006);
     [[1,.07],[2.01,.022],[4.2,.008]].forEach(([m,v])=>{const o=c.createOscillator(),g=c.createGain();o.type='sine';o.frequency.value=f*m;env(g,t,.004,v,1.8);o.connect(g);g.connect(master);g.connect(rv);o.start(t);o.stop(t+2)})}
-  // 5. golpe de suspenso: whoosh que sube + boom
+  // golpe de suspenso
   function boom(){const t=c.currentTime,n=c.createBuffer(1,c.sampleRate*2.2,c.sampleRate),d=n.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*(i/d.length);
     const s=c.createBufferSource(),f=c.createBiquadFilter(),g=c.createGain();s.buffer=n;f.type='bandpass';f.Q.value=3;f.frequency.setValueAtTime(200,t);f.frequency.exponentialRampToValueAtTime(3500,t+2.1);g.gain.value=.12;s.connect(f).connect(g);g.connect(master);g.connect(rv);s.start(t);
-    setTimeout(()=>{if(!amb)return;const t2=c.currentTime;golpe(t2,90,.9);golpe(t2+.02,60,.7);const e=$('escena');if(e){e.classList.remove('sacude');void e.offsetWidth;e.classList.add('sacude')}},2150)}
-
-  // reloj: latido + caja de música, más rápido cuanta más tensión
+    setTimeout(()=>{if(!amb||!vivo)return;const t2=c.currentTime;golpe(t2,90,.9);golpe(t2+.02,60,.7);const e=$('regalo');if(e){e.classList.remove('sacude');void e.offsetWidth;e.classList.add('sacude')}},2150)}
   let prox=c.currentTime+.3,cuenta=0,vivo=true,ultBoom=Date.now();
-  (function reloj(){if(!vivo)return;const k=tension(),bpm=58+k*14,beat=60/bpm;
+  (function reloj(){if(!vivo)return;const k=tension(),bpm=58+k*14,beat=60/bpm;if(prox<c.currentTime)prox=c.currentTime+.05;
     while(prox<c.currentTime+.25){golpe(prox,70,.55);golpe(prox+beat*.28,58,.35);
       if(cuenta%2===0)nota(prox+beat*.5);if(k>=2)nota(prox+beat*.75);cuenta++;prox+=beat}
-    cuerdasF.frequency.setTargetAtTime(260+k*420,c.currentTime,1.2);cuerdasG.gain.setTargetAtTime(.11+k*.03,c.currentTime,1.2);
+    cuerdasF.frequency.setTargetAtTime(260+k*260,c.currentTime,1.2);cuerdasG.gain.setTargetAtTime(.045+k*.012,c.currentTime,1.2);
     document.documentElement.style.setProperty('--latido',(beat).toFixed(2)+'s');
     if(Date.now()-ultBoom>(15000-k*2500)){ultBoom=Date.now();boom()}
     setTimeout(reloj,80)})();
-
-  amb={parar(){vivo=false;const n=c.currentTime;master.gain.cancelScheduledValues(n);master.gain.setValueAtTime(master.gain.value,n);master.gain.linearRampToValueAtTime(0,n+1.4);setTimeout(()=>parar.forEach(o=>{try{o.stop()}catch(e){}}),1600)}};
+  amb={parar(){if(!vivo)return;vivo=false;const n=c.currentTime;master.gain.cancelScheduledValues(n);master.gain.setTargetAtTime(0,n,.12);setTimeout(()=>{parar.forEach(o=>{try{o.stop()}catch(e){}});master.disconnect()},900)}};
   $('sonidoHint').classList.add('fuera');$('escena').classList.add('suspenso');
 }
 ['pointerdown','keydown'].forEach(ev=>$('escena').addEventListener(ev,ambiente));
-setTimeout(()=>{if(!abierto)$('etiqueta').classList.add('volteada')},20000);
+$('etiqueta').addEventListener('click',e=>{e.stopPropagation();if(!abierto){$('etiqueta').classList.toggle('volteada');clic()}});
+setTimeout(()=>{if(!abierto)$('etiqueta').classList.add('volteada')},12000);
+document.addEventListener('keydown',e=>{if(abierto||els.includes(document.activeElement)||!/^[a-z]$/i.test(e.key))return;const n=fijas.indexOf(false);if(n>=0){els[n].focus({preventScroll:true});els[n].dispatchEvent(new KeyboardEvent('keydown',{key:e.key}))}});
+/* audio: desbloquear con el primer gesto (iPhone) y dejar la canción lista */
+let songG;
+function enlazaCancion(){const c=ctx();if(songG||!c)return;try{audio.crossOrigin='anonymous';songG=c.createGain();songG.gain.value=.5;c.createMediaElementSource(audio).connect(songG).connect(c.destination)}catch(e){songG=null}}
+let desbloqueado=false;
+function desbloquea(){ambiente();if(desbloqueado)return;desbloqueado=true;try{if(navigator.audioSession)navigator.audioSession.type='playback'}catch(e){}
+  enlazaCancion();audio.src=CANCIONES[0][2];audio.muted=true;audio.play().then(()=>{audio.pause();audio.currentTime=0;audio.muted=false}).catch(()=>{audio.muted=false})}
+['pointerup','touchend','click','keydown'].forEach(ev=>$('escena').addEventListener(ev,desbloquea,{passive:true}));
 
-/* ---------- abrir y desplegar ---------- */
+/* ---------- abrir: el candado cae, se va la tapa con el moño y la carta sale entera de la caja ---------- */
 const reducido=matchMedia('(prefers-reduced-motion: reduce)').matches;
-function abrir(){
-  abierto=true;$('candado').classList.add('suelto');clicFuerte();if(amb)amb.parar();
-  const T=reducido?[0,0,0,0,0]:[450,1050,1500,2400,2900];
-  setTimeout(()=>$('escena').classList.add('abierto'),T[0]);
-  setTimeout(()=>{$('papel').classList.add('paso1');papel();pon(0)},T[1]);
-  setTimeout(()=>$('papel').classList.add('paso2'),T[2]);
-  setTimeout(()=>{$('papel').classList.add('paso3');scrollTo(0,0);$('escena').classList.add('fuera');$('web').classList.add('visible')},T[3]);
-  setTimeout(()=>{$('papel').remove();$('escena').remove();document.body.classList.remove('cerrado');$('web').removeAttribute('aria-hidden');observa(document)},T[4]+300);
+const espera=ms=>new Promise(r=>setTimeout(r,reducido?Math.min(ms,250):ms));
+/* acorde de revelación: el suspenso se resuelve en mayor */
+function acordeRevelacion(){const c=ctx();if(!c)return;const t=c.currentTime;
+  [110,164.81,220,329.63,493.88].forEach((f,i)=>tono(f,t+i*.03,.08,i<2?.07:.05,2.4,i%2?'triangle':'sine'));
+  [880,1318.51,1760].forEach((f,i)=>tono(f,t+.25+i*.12,.01,.035,1.6));golpeGrave(t,55,.35)}
+function whoosh(){ruido(1,300,1.1,.35,true,2600)}
+async function abrir(){
+  if(abierto)return;abierto=true;if(amb)amb.parar();
+  const esc=$('escena');
+  try{
+  esc.classList.add('abriendo');clicFuerte();tono(1850,ctx()?ctx().currentTime:0,.003,.03,.25,'triangle');
+  await espera(420);esc.classList.add('cae-candado');setTimeout(()=>{golpeGrave(ctx()?ctx().currentTime:0,140,.45);ruido(.3,2600,6,.25)},360);
+  await espera(300);esc.classList.add('sin-liston');ruido(.5,1800,1.2,.25,true);
+  await espera(320);esc.classList.add('sin-tapa');whoosh();
+  await espera(520);esc.classList.add('luz-interior');acordeRevelacion();
+  await espera(160);esc.classList.add('sube-carta');setTimeout(()=>ruido(.6,3200,.9,.22,true),150);
+  await espera(720);
+  // la carta todavía sube: pasa a primer plano sin frenar
+  const r=$('papelSvg').getBoundingClientRect(),cf=$('cartaFinal');
+  Object.assign(cf.style,{left:r.left+'px',top:(r.top-r.height)+'px',width:r.width+'px',height:(r.height*3)+'px',fontSize:r.width+'px'});
+  cf.classList.add('ver');$('papelGrupo').style.opacity=0;esc.classList.add('atenua');
+  const dx=innerWidth/2-(r.left+r.width/2),dy=innerHeight/2-(r.top+r.height/2);
+  const sc=Math.min(innerWidth*.86/r.width,innerHeight*.28/r.height);
+  const mov=cf.animate([{transform:'none'},{transform:`translate(${dx*.4}px,${dy-30}px) scale(${sc*.55}) rotate(-2deg)`,offset:.45},{transform:`translate(${dx}px,${dy}px) scale(${sc})`}],{duration:reducido?1:850,easing:'cubic-bezier(.25,.7,.3,1)',fill:'forwards'});
+  await espera(900);
+  cf.classList.add('rompe-sello');ruido(.12,1200,3,.5);setTimeout(()=>ruido(.08,3000,4,.3),60);
+  await espera(260);cf.classList.add('desplegada');ruido(.6,3200,.9,.22,true);pon(0,true);
+  await espera(1700);
+  const cubrir=sc*1.25;
+  mov.cancel();cf.style.transform=`translate(${dx}px,${dy}px) scale(${sc})`;void cf.offsetWidth;
+  cf.classList.add('cubre');cf.style.transform=`translate(${dx}px,${dy}px) scale(${cubrir})`;
+  esc.classList.add('fuera');scrollTo(0,0);$('web').classList.add('visible');
+  await espera(700);
+  }catch(err){console.error(err)}
+  const cf=$('cartaFinal');if(cf)cf.remove();esc.remove();document.body.classList.remove('cerrado');$('web').classList.add('visible');$('web').removeAttribute('aria-hidden');observa(document);
 }
-
-
 
 /* ---------- aparecer ---------- */
 let io;
@@ -831,7 +918,7 @@ const CANCIONES=[
 const audio=new Audio();audio.loop=true;audio.volume=.55;let actual=0;
 $('lista').innerHTML=CANCIONES.map(c=>`<li><button><img src="${c[3]}" alt=""><span><span class="t">${c[0]}</span><span class="s">Soda Stereo · ${c[1]}</span></span><span class="estado">Escuchar</span></button></li>`).join('');
 const filas=[...document.querySelectorAll('#lista li')];
-function pon(i){actual=i;audio.src=CANCIONES[i][2];$('etqImg').src=CANCIONES[i][3];audio.play().catch(()=>{});$('musicaTxt').textContent=CANCIONES[i][0];$('musica').classList.add('ver');marca()}
+function pon(i,fade){actual=i;if(songG&&ac){const t=ac.currentTime;songG.gain.cancelScheduledValues(t);songG.gain.setValueAtTime(fade?0:.5,t);if(fade)songG.gain.linearRampToValueAtTime(.5,t+2.5)}if(audio.src!==CANCIONES[i][2])audio.src=CANCIONES[i][2];else audio.currentTime=0;$('etqImg').src=CANCIONES[i][3];audio.play().catch(()=>{$('musica').classList.add('pausa');$('musica').setAttribute('aria-label','Reproducir música')});$('musicaTxt').textContent=CANCIONES[i][0];$('musica').classList.add('ver');marca()}
 function marca(){filas.forEach((f,k)=>{const on=k===actual&&!audio.paused;f.classList.toggle('sonando',on);f.querySelector('.estado').textContent=on?'Sonando':'Escuchar'});document.body.classList.toggle('pausa-global',audio.paused)}
 filas.forEach((f,i)=>f.querySelector('button').onclick=()=>{if(i===actual)audio.paused?audio.play():audio.pause();else pon(i)});
 $('musica').onclick=()=>{audio.paused?audio.play():audio.pause()};
