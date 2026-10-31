@@ -792,7 +792,6 @@ body.en-puerta{background:#000}
 
 <div id="intro" role="button" tabindex="0" aria-label="Entrar a la casa">
   <canvas id="c3d"></canvas>
-  <img id="mano3d" alt="" src="" hidden>
   <div class="intro-velo"></div>
   <p class="intro-txt mono"><span class="intro-vol">Subí el volumen · usá audífonos</span><b>Tocá para entrar</b></p>
 </div>
@@ -1037,9 +1036,8 @@ const apiIntro={
   }};
 function iniciaIntro(){
   cargaMedia('respira','media/respiracion_breathing-man.ogg');cargaMedia('paso','media/pasos_madera.wav');cargaMedia('rechina','media/puerta_crujido_squeaky-door.ogg');
-  {const m=$('mano3d');m.src='media/mano_recortada.png';m.hidden=false}
   if(!window.THREE||!window.Intro3D){$('intro').remove();document.body.classList.remove('en-puerta');return}
-  try{Intro3D.preparar($('c3d'),$('mano3d'))}catch(e){console.error(e);$('intro').remove();document.body.classList.remove('en-puerta')}
+  try{Intro3D.preparar($('c3d'))}catch(e){console.error(e);$('intro').remove();document.body.classList.remove('en-puerta')}
 }
 let entrando=false;
 function entrar(){if(entrando)return;entrando=true;desbloquea();$('intro').classList.add('andando');
@@ -1151,7 +1149,7 @@ $('cosas').innerHTML=COSAS.map((c,i)=>`<figure class="cosa aparece${c.logo?' log
   <div class="img" style="--fondo:${c.logo?esc(c.color||'#fff'):'#eee'}"><img src="fotos/cosas/${esc(c.imagen)}" alt="${esc(c.nombre)}" loading="lazy"></div>
   <h3>${rico(c.nombre)}</h3>${c.nota?`<p>${rico(c.nota)}</p>`:''}</figure>`).join('');
 $('nCosas').textContent=COSAS.length;
-$('creditos').innerHTML='Imágenes de Wikimedia Commons: '+COSAS.filter(c=>CREDITOS[c.imagen]).map(c=>{const k=CREDITOS[c.imagen];return `${esc(c.nombre)} — <a href="${k[2]}" target="_blank" rel="noopener">${esc(k[0])}</a> (${k[1]})`}).join(' · ')+'. Sonidos y mano de la entrada: Breathing man.ogg — <a href="https://commons.wikimedia.org/wiki/File:Breathing_man.ogg" target="_blank" rel="noopener">hugh</a> (Public domain) · Squeaky door.ogg — <a href="https://commons.wikimedia.org/wiki/File:Squeaky_door.ogg" target="_blank" rel="noopener">leonmire</a> (Public domain) · Modern stress.jpg — <a href="https://commons.wikimedia.org/wiki/File:Modern_stress.jpg" target="_blank" rel="noopener">outcast104 on Flickr</a> (CC BY 2.0, recortada y coloreada) · Walking on small wooden bridge (Gravity Sound).wav — <a href="https://commons.wikimedia.org/wiki/File:Walking_on_small_wooden_bridge_(Gravity_Sound).wav" target="_blank" rel="noopener">Gravity Sound</a> (CC BY 4.0, recortado a 8 s).';
+$('creditos').innerHTML='Imágenes de Wikimedia Commons: '+COSAS.filter(c=>CREDITOS[c.imagen]).map(c=>{const k=CREDITOS[c.imagen];return `${esc(c.nombre)} — <a href="${k[2]}" target="_blank" rel="noopener">${esc(k[0])}</a> (${k[1]})`}).join(' · ')+'. Sonidos y mano de la entrada: Breathing man.ogg — <a href="https://commons.wikimedia.org/wiki/File:Breathing_man.ogg" target="_blank" rel="noopener">hugh</a> (Public domain) · Squeaky door.ogg — <a href="https://commons.wikimedia.org/wiki/File:Squeaky_door.ogg" target="_blank" rel="noopener">leonmire</a> (Public domain) · Walking on small wooden bridge (Gravity Sound).wav — <a href="https://commons.wikimedia.org/wiki/File:Walking_on_small_wooden_bridge_(Gravity_Sound).wav" target="_blank" rel="noopener">Gravity Sound</a> (CC BY 4.0, recortado a 8 s).';
 
 /* ---------- "Solo para ti": texto que se escribe solo ---------- */
 const FRASES=['Abrilo cuando estés sola','Tocá el sello','Sin apuro','Esto es tuyo'];
@@ -1194,7 +1192,7 @@ audio.addEventListener('pause',()=>{$('musica').classList.add('pausa');$('musica
 els[0].focus({preventScroll:true});
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script src="intro3d.js?v=3"></script>
+<script src="intro3d.js?v=9"></script>
 <script>iniciaIntro()</script>
 </body>
 </html>
