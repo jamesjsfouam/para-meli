@@ -590,6 +590,7 @@ body:has(.vista.abierta) #web::after{display:none}
   <div class="niebla"></div><div class="niebla b"></div>
   <div class="haz"></div>
   <div class="polvo" id="polvo"></div>
+  <div class="mesa" aria-hidden="true"></div>
   <span class="esquina a mono">N° 01 · 11 · 2026</span>
   <span class="esquina b mono">Para M.E.L.I.</span>
 
@@ -747,7 +748,7 @@ function fijar(i){fijas[i]=true;if(window.Intro3D&&Intro3D.fija)Intro3D.fija(i);
   const led=document.querySelectorAll('#leds .led')[i];if(led)led.classList.add('on');golpecito();
   sonidoBloqueo(fijas.filter(Boolean).length);
   setTimeout(()=>{const a=els.indexOf(document.activeElement);if(a<0||fijas[a]){const n=fijas.indexOf(false);if(n>=0)els[n].focus({preventScroll:true})}},120);
-  if(fijas.every(Boolean)){if(amb)amb.parar();desbloquea();$('escena').classList.remove('suspenso');pon(0,true);setTimeout(abrir,900)}}
+  if(fijas.every(Boolean)){if(amb)amb.parar();desbloquea();$('escena').classList.remove('suspenso');setTimeout(abrir,900)}}
 /* al bloquear una letra: cerrojo metálico + golpe grave + campana con eco, más aguda en cada letra */
 function sonidoBloqueo(k){const c=ctx();if(!c)return;const t=c.currentTime;
   ruido(.05,1900,5,.5);setTimeout(()=>ruido(.07,900,3,.4),45);golpeGrave(t,110,.5);
@@ -931,7 +932,7 @@ addEventListener('resize',()=>{if(window.Intro3D&&Intro3D.tiene3D&&$('zonas').cl
 $('intro').addEventListener('click',entrar);
 $('intro').addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();entrar()}});
 function desbloquea(){ambiente();const c0=ctx();if(c0&&c0.state!=='running')c0.resume().catch(()=>{});Object.keys(MEDIA).forEach(n=>esperaMedia(n));if(desbloqueado)return;desbloqueado=true;try{if(navigator.audioSession)navigator.audioSession.type='playback'}catch(e){}
-  enlazaCancion();audio.src=CANCIONES[0][2];audio.muted=true;audio.play().then(()=>{audio.pause();audio.currentTime=0;audio.muted=false}).catch(()=>{audio.muted=false})}
+  enlazaCancion();audio.src=CANCIONES[0][2];audio.volume=0;audio.muted=false;audio.play().catch(()=>{})}
 ['pointerup','touchend','click','keydown'].forEach(ev=>$('escena').addEventListener(ev,desbloquea,{passive:true}));
 
 /* ---------- abrir: el candado cae, se va la tapa con el moño y la carta sale entera de la caja ---------- */
@@ -948,7 +949,7 @@ async function abrir(){
   try{
   let r;
   if(window.Intro3D&&Intro3D.tiene3D){
-    escn.classList.add('abriendo');['ruedasWin','zonas'].forEach(id=>{const e=$(id);if(e)e.style.display='none'});clicFuerte();tono(1850,ctx()?ctx().currentTime:0,.003,.03,.25,'triangle');
+    escn.classList.add('abriendo');['ruedasWin','zonas'].forEach(id=>{const e=$(id);if(e)e.style.display='none'});pon(0,true,12);clicFuerte();tono(1850,ctx()?ctx().currentTime:0,.003,.03,.25,'triangle');
     const c=ctx(),gg=(v,f)=>golpeGrave(c?c.currentTime:0,f,v);setTimeout(()=>{gg(.45,140);ruido(.3,2600,6,.25)},780);setTimeout(()=>gg(.18,180),980);setTimeout(()=>ruido(.6,1500,1,.2,true),520);
     setTimeout(()=>ruido(.25,700,2,.15),1100);setTimeout(()=>whoosh(),1600);setTimeout(()=>{gg(.3,95)},2380);setTimeout(()=>acordeRevelacion(),1550);setTimeout(()=>ruido(.7,3200,.9,.2,true),2050);
     await Intro3D.abrirRegalo();r=Intro3D.rectCarta();setTimeout(()=>Intro3D.ocultaCarta(),60);
@@ -962,7 +963,7 @@ async function abrir(){
   const mov=cf.animate([{transform:'none'},{transform:`translate(${dx*.4}px,${dy-30}px) scale(${sc*.55}) rotate(-2deg)`,offset:.45},{transform:`translate(${dx}px,${dy}px) scale(${sc})`}],{duration:reducido?1:850,easing:'cubic-bezier(.25,.7,.3,1)',fill:'forwards'});
   await espera(900);
   cf.classList.add('rompe-sello');ruido(.12,1200,3,.5);setTimeout(()=>ruido(.08,3000,4,.3),60);
-  await espera(260);cf.classList.add('desplegada');ruido(.6,3200,.9,.22,true);pon(0,true);
+  await espera(260);cf.classList.add('desplegada');ruido(.6,3200,.9,.22,true);
   await espera(1700);
   const cubrir=sc*1.25;
   mov.cancel();cf.style.transform=`translate(${dx}px,${dy}px) scale(${sc})`;void cf.offsetWidth;
@@ -1123,7 +1124,7 @@ function tema(i,desde){const t=TEMAS[i],v=$('v-musica');if(!t||!v)return;
 const audio=new Audio();audio.loop=true;audio.volume=.55;let actual=0;
 $('lista').innerHTML=CANCIONES.map(c=>`<li><button><img src="${c[3]}" alt=""><span><span class="t">${c[0]}</span><span class="s">${c[4]||'Soda Stereo'} · ${c[1]}</span></span><span class="estado">Escuchar</span></button></li>`).join('');
 const filas=[...document.querySelectorAll('#lista li')];
-function pon(i,fade){if(temaAct!==i)tema(i);actual=i;if(songG&&ac){const t=ac.currentTime;songG.gain.cancelScheduledValues(t);songG.gain.setValueAtTime(fade?0:.5,t);if(fade)songG.gain.linearRampToValueAtTime(.5,t+2.5)}if(audio.src!==CANCIONES[i][2])audio.src=CANCIONES[i][2];else audio.currentTime=0;$('etqImg').src=CANCIONES[i][3];audio.play().catch(()=>{$('musica').classList.add('pausa');$('musica').setAttribute('aria-label','Reproducir música')});$('musicaTxt').textContent=CANCIONES[i][0];$('musica').classList.add('ver');marca()}
+function pon(i,fade,desde){if(temaAct!==i)tema(i);actual=i;if(songG&&ac){const t=ac.currentTime;songG.gain.cancelScheduledValues(t);songG.gain.setValueAtTime(fade?0:.5,t);if(fade)songG.gain.linearRampToValueAtTime(.5,t+2.5)}if(audio.src!==CANCIONES[i][2])audio.src=CANCIONES[i][2];audio.volume=.55;audio.muted=false;audio.currentTime=desde||0;$('etqImg').src=CANCIONES[i][3];audio.play().catch(()=>{$('musica').classList.add('pausa');$('musica').setAttribute('aria-label','Reproducir música')});$('musicaTxt').textContent=CANCIONES[i][0];$('musica').classList.add('ver');marca()}
 function marca(){filas.forEach((f,k)=>{const on=k===actual&&!audio.paused;f.classList.toggle('sonando',on);f.querySelector('.estado').textContent=on?'Sonando':'Escuchar'});document.body.classList.toggle('pausa-global',audio.paused)}
 filas.forEach((f,i)=>f.querySelector('button').onclick=e=>{if(i===actual)audio.paused?audio.play():audio.pause();else{tema(i,e.currentTarget);pon(i)}});
 tema(0);
