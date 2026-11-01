@@ -715,8 +715,8 @@ function camara(t,dt){
   if(zoomK>=0){if(!zIni){zIni=C.position.clone();zMir=mirada.clone()}
     const k=suave(Math.min(1,zoomK)),asp=W()/H(),fA=MOVIL?Math.min(1.2,Math.max(1,.62/asp)):Math.min(1.55,Math.max(1,.8/asp)),lzT=V(-.045-.05*(fA-1),1.165,-7.0),pzT=lzT.clone().add(V(.01,.085+.03*(fA-1),.57).multiplyScalar(fA)),pz=zIni.clone().lerp(pzT,k),lz=zMir.clone().lerp(lzT,k);
     const b=Math.sin(k*Math.PI*2)*.02*(1-k);const ab=R3&&R3.ab>0?R3.ab:0,atras=Math.sin(Math.min(1,ab/2.2)*Math.PI)*.06,em=suave(Math.min(1,Math.max(0,ab-1.9)/1.8))*.06,sube=suave(Math.min(1,Math.max(0,ab-2.2)/1.6));C.position.set(pz.x+b*.6+.02*Math.min(1,ab/2),pz.y-Math.abs(b)+atras*.5+em*.5,pz.z+atras-em);C.position.y+=sube*.08;C.position.z+=sube*.12;const mira0=V(lz.x+.02*Math.min(1,ab/2),lz.y+em*.9+atras*.3+sube*.3,lz.z);
-    if(R3&&ab>5.9){const tp=R3.carta.getWorldPosition(V(0,0,0)),vis=2*Math.tan(C.fov*Math.PI/360),d=Math.max(.29/(.78*vis),CW_/(.88*vis*C.aspect)),ka=suave(Math.min(1,Math.max(0,ab-5.9)/1.7)),kf=suave(Math.min(1,Math.max(0,ab-9.1)/1.1));
-      const dd=d*(1-kf*.82);C.position.lerp(tp.clone().add(V(0,.004,dd)),ka);C.lookAt(mira0.lerp(tp,ka));return}
+    if(R3&&ab>6.0){const tp=R3.carta.getWorldPosition(V(0,0,0)),vis=2*Math.tan(C.fov*Math.PI/360),d=Math.max(.29/(.78*vis),CW_/(.88*vis*C.aspect)),ka=suave(Math.min(1,Math.max(0,ab-6.0)/1.8)),kf=suave(Math.min(1,Math.max(0,ab-9.0)/1.2));
+      const dd=d*(1-kf*.86),man=.004*(1-kf);C.position.lerp(tp.clone().add(V(Math.sin(ab*.8)*man,.004+Math.sin(ab*1.1)*man,dd)),ka);C.lookAt(mira0.lerp(tp,ka));C.rotateZ(-.03*kf);return}
     C.lookAt(mira0);return}
   let i=0;while(i<RUTA.length-2&&t>RUTA[i+1][0])i++;
   const g=k=>RUTA[Math.max(0,Math.min(RUTA.length-1,k))];
@@ -986,7 +986,9 @@ function crearRegalo3D(){
   // polvo dorado que sube con la luz al abrir
   const np=60,pp=new Float32Array(np*3);for(let i=0;i<np;i++){pp[i*3]=(Math.random()-.5)*.26;pp[i*3+1]=Hh+Math.random()*.4;pp[i*3+2]=(Math.random()-.5)*.26}
   const pgeo=new T.BufferGeometry();pgeo.setAttribute('position',new T.BufferAttribute(pp,3));const motas=new T.Points(pgeo,new T.PointsMaterial({color:'#ffd9a0',size:.006,transparent:true,opacity:0,depthWrite:false,blending:T.AdditiveBlending}));G.add(motas);
-  R3={G,tapa,bandas,cand,arco,ruedas,leds,hueco,luzDentro,carta,sobre,solapa,sello,frags,chispas,mono,motas,etiqueta,giroE:0,objE:0,ab:-1,Hh,LH,D};
+  const halo=new T.Sprite(new T.SpriteMaterial({map:brillo('rgba(255,214,150,1)'),transparent:true,depthWrite:false,blending:T.AdditiveBlending,opacity:0}));halo.scale.set(.5,.5,1);G.add(halo);
+  const hojaZ0=Float32Array.from({length:hojaG.attributes.position.count},(_,k)=>hojaG.attributes.position.getZ(k));
+  R3={hojaG,hojaZ0,iMat,halo,prevC:null,velC:V(0,0,0),G,tapa,bandas,cand,arco,ruedas,leds,hueco,luzDentro,carta,sobre,solapa,sello,frags,chispas,mono,motas,etiqueta,giroE:0,objE:0,ab:-1,Hh,LH,D};
 }
 function regalo3DFrame(dt){if(!R3)return;
   {const h=Math.min(dt,.05)/3;R3.ruedas.forEach(r=>{for(let q=0;q<3;q++){r.vel+=((r.obj-r.ang)*700-r.vel*34)*h;r.ang+=r.vel*h}r.g.rotation.x=r.ang;const v=-r.ang*26/(Math.PI*2);r.tx.offset.y=1-(v+2)/26;r.mt.emissiveIntensity=.07+(R3.ab>=0?.4*Math.max(0,Math.sin(Math.min(1,R3.ab/.6)*Math.PI)):0)})}
@@ -1015,19 +1017,36 @@ function regalo3DFrame(dt){if(!R3)return;
     // 2.0–3.1: la carta sube despacio, se mece y gira hacia ti
     // 1.9–2.9: el sobre sube de la caja; 5.2–6.4: vuelve a bajar
     const sb=R3.sobre,kS=c01((a-1.9)/1.0),kV=c01((a-5.2)/1.2);sb.visible=a>1.8&&kV<1;
-    sb.position.set(0,R3.Hh-.1+.3*s2(kS)-.34*s2(kV),0);sb.lookAt(C.position);sb.rotateZ(.035*Math.sin(a*2.1));
+    sb.position.set(0,R3.Hh-.1+.3*s2(kS)-.34*s2(kV),0);sb.lookAt(C.position);sb.rotateZ(.035*Math.sin(a*2.1));sb.rotateX(-.28*s2(c01((a-3.6)/.8))*(1-kV));
     // 2.9–3.25: el sello se tensa y se parte; 3.15–3.65: se abre la solapa
     const kse=c01((a-2.9)/.35);R3.sello.scale.setScalar(kse<.6?1+.2*Math.sin(kse/.6*Math.PI):Math.max(.001,1-(kse-.6)/.4));R3.sello.visible=kse<1;
     if(a>=3.1&&!R3.partido){R3.partido=true;R3.frags.forEach(f=>{f.m.visible=true;f.m.position.set(rnd(-.012,.012),rnd(-.02,0),.006);f.v.set(rnd(-.22,.22),rnd(-.05,.25),rnd(.05,.2))})}
     if(R3.partido)R3.frags.forEach(f=>{if(!f.m.visible)return;f.v.y-=dt*1.1;f.m.position.addScaledVector(f.v,dt);f.m.rotation.x+=dt*9;f.m.rotation.y+=dt*7;if(f.m.position.y<-.45)f.m.visible=false});
     R3.solapa.rotation.x=-2.75*s2(c01((a-3.15)/.5));
     // 3.6–4.6: la carta sale del sobre; 4.6–6.6: sube girando como por magia; después flota frente a vos
-    const kc=c01((a-3.6)/1.0),kM=c01((a-4.6)/2.0),eM=s2(kM),car=R3.carta;car.visible=a>3.55&&!R3.cartaFuera;
-    const yS=R3.Hh-.1+.3;
-    if(kM<=0)car.position.set(0,yS+.2*s2(kc),0);
-    else car.position.set(Math.sin(kM*Math.PI*2)*.075*(1-kM),yS+.2+.12*eM+.01*Math.sin(a*1.6)*eM,Math.sin(kM*Math.PI*4)*.035*(1-kM)+.02*eM);
+    // 3.6–4.6: la carta sale del sobre; 4.6–6.9: sube en espiral, girando como si flotara; 6.9: llega frente a vos con un rebote suave
+    const kc=c01((a-3.6)/1.0),kM=c01((a-4.6)/2.3),eM=kM<.5?2*kM*kM:1-Math.pow(-2*kM+2,2)/2,kL=c01((a-6.9)/1.0),car=R3.carta;car.visible=a>3.55&&!R3.cartaFuera;
+    const yS=R3.Hh-.1+.3;let px,py,pz;
+    if(kM<=0){px=0;py=yS+.2*(1-Math.pow(1-kc,3));pz=0}
+    else{const rad=.12*Math.sin(kM*Math.PI)*(1-.25*kM),ang=eM*Math.PI*4;px=Math.sin(ang)*rad;pz=(Math.cos(ang)-1)*rad*.55+.03*eM;py=yS+.2+.15*eM+.03*Math.sin(kM*Math.PI)}
+    py+=.018*Math.sin(kL*Math.PI)*(1-kL)+(a>6.9?.005*Math.sin(a*1.4)*kL:0);px+=a>6.9?.003*Math.sin(a*.9)*kL:0;
+    car.position.set(px,py,pz);
+    // velocidad (para la inercia del papel)
+    if(R3.prevC&&dt>0){const v=car.position.clone().sub(R3.prevC).divideScalar(dt);R3.velC.lerp(v,Math.min(1,dt*8))}R3.prevC=car.position.clone();
+    const vel=R3.velC,rap=Math.min(1,vel.length()*5);
     car.scale.set(1,.5+.5*s2(c01((kc-.45)/.55)),1);
-    car.lookAt(C.position);if(kM>0){car.rotateY(eM*Math.PI*4);car.rotateZ(Math.sin(kM*Math.PI*3)*.16*(1-kM))}else car.rotateZ(.03*Math.sin(a*2))
+    car.lookAt(C.position);
+    if(kM>0)car.rotateY(eM*Math.PI*4);
+    car.rotateZ(Math.max(-.45,Math.min(.45,-vel.x*2.2))+.03*Math.sin(a*2)*(1-kL));      // se inclina hacia donde va, como un papel en el aire
+    car.rotateX(Math.max(-.35,Math.min(.35,vel.y*1.4))*(1-kL));
+    // el papel se flexiona con el aire: más curva cuanto más rápido va, y un aleteo suave
+    {const pa=R3.hojaG.attributes.position,z0=R3.hojaZ0,fl=.004+.012*rap;
+     for(let k=0;k<pa.count;k++){const x=pa.getX(k),y=pa.getY(k);pa.setZ(k,z0[k]-Math.pow(x/.1,2)*.006*rap+Math.sin(y*20+a*13+x*8)*fl*(1-kL*.85)+(y/.135)*(y/.135)*.01*rap)}
+     pa.needsUpdate=true;R3.hojaG.computeVertexNormals()}
+    // halo cálido: aparece con la magia, acompaña a la carta y se apaga al llegar
+    R3.halo.position.set(px,py,pz-.03);const hOp=.55*Math.sin(Math.min(1,kM*1.15)*Math.PI)+.25*kL;R3.halo.material.opacity=Math.max(0,hOp);R3.halo.scale.setScalar(.42+.12*Math.sin(a*3)+.15*kM);
+    // al final el papel brilla y se funde con la página
+    R3.iMat.emissiveIntensity=.42+.9*s2(c01((a-9.0)/1.1));
     // estela de chispas
     {const ch=R3.chispas,u=ch.userData,pa=ch.geometry.attributes.position,co=ch.geometry.attributes.color;
      if(a>3.4&&a<7.4)for(let n=0;n<3;n++){const k=u.i++%u.vida.length;u.vida[k]=1;pa.setXYZ(k,car.position.x+rnd(-.1,.1),car.position.y+rnd(-.13,.13),car.position.z+rnd(-.03,.03))}
