@@ -169,7 +169,7 @@ let zonaActual='',LIGERO=false;
 // en celulares la memoria de video es poca: ninguna textura pasa de 1024 px
 const MOVIL=/Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent)||(matchMedia('(pointer:coarse)').matches&&Math.min(screen.width,screen.height)<900);
 // calidad baja solo en celular y solo si ella la eligió (botón "Bajar calidad")
-const BAJO=MOVIL&&(()=>{try{return localStorage.getItem('meliLigero')==='1'}catch(e){return false}})();
+const BAJO=MOVIL&&(()=>{try{return localStorage.getItem('meliLigero')!=='0'||(+localStorage.getItem('meliIntentos')||0)>=2}catch(e){return true}})();
 function achicaTexturas(max){const vistas=new Set();S.traverse(o=>{const ms=o.material?(Array.isArray(o.material)?o.material:[o.material]):[];ms.forEach(m=>Object.keys(m).forEach(k=>{const t=m[k];if(!t||!t.isTexture||vistas.has(t))return;vistas.add(t);const im=t.image;
   if(!im||!im.width||Math.max(im.width,im.height)<=max||t.isDataTexture||t.noResize)return;const f=max/Math.max(im.width,im.height),c=document.createElement('canvas');c.width=Math.round(im.width*f);c.height=Math.round(im.height*f);
   try{c.getContext('2d').drawImage(im,0,0,c.width,c.height);t.image=c;t.needsUpdate=true}catch(e){}}))})}
