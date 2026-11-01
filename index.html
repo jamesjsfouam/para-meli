@@ -602,7 +602,7 @@ body:has(.vista.abierta) #web::after{display:none}
   <p class="instruccion mono"><b class="raton">Girá las ruedas o escribí</b><b class="tactil">Deslizá las ruedas</b> · cuatro letras</p>
 </div>
 
-<button id="ligero" type="button" aria-pressed="false" title="Sin sombras, sin lluvia y menos resolución: para compus más lentas"><span class="pt"></span><span class="mono">Modo ligero</span></button>
+<button id="ligero" type="button" aria-pressed="false" title="Activar una calidad visual más alta"><span class="pt"></span><span class="mono">Mejorar calidad</span></button>
 <button id="saltar" type="button" aria-label="Mantené presionado 5 segundos para saltar la intro"><span class="anillo"></span><span class="txt mono">Mantené para saltar</span></button>
 <div id="intro" role="button" tabindex="0" aria-label="Entrar a la casa">
   <canvas id="c3d"></canvas>
@@ -747,7 +747,7 @@ function fijar(i){fijas[i]=true;if(window.Intro3D&&Intro3D.fija)Intro3D.fija(i);
   const led=document.querySelectorAll('#leds .led')[i];if(led)led.classList.add('on');golpecito();
   sonidoBloqueo(fijas.filter(Boolean).length);
   setTimeout(()=>{const a=els.indexOf(document.activeElement);if(a<0||fijas[a]){const n=fijas.indexOf(false);if(n>=0)els[n].focus({preventScroll:true})}},120);
-  if(fijas.every(Boolean)){if(amb)amb.parar();$('escena').classList.remove('suspenso');setTimeout(abrir,900)}}
+  if(fijas.every(Boolean)){if(amb)amb.parar();desbloquea();$('escena').classList.remove('suspenso');pon(0,true);setTimeout(abrir,900)}}
 /* al bloquear una letra: cerrojo metálico + golpe grave + campana con eco, más aguda en cada letra */
 function sonidoBloqueo(k){const c=ctx();if(!c)return;const t=c.currentTime;
   ruido(.05,1900,5,.5);setTimeout(()=>ruido(.07,900,3,.4),45);golpeGrave(t,110,.5);
@@ -910,10 +910,10 @@ async function iniciaIntro(){
 let entrando=false;
 /* modo ligero: se recuerda en esta compu */
 (()=>{const b=$('ligero');if(!b)return;const movil=matchMedia('(pointer:coarse)').matches||Math.min(screen.width,screen.height)<820;let on=movil;try{const g=localStorage.getItem('meliLigero');if(g!==null&&!movil)on=g==='1'}catch(e){}
-  const pinta=()=>{b.setAttribute('aria-pressed',on);if(window.Intro3D&&Intro3D.ligero_)Intro3D.ligero_(on)};pinta();
-  b.addEventListener('click',e=>{e.stopPropagation();if(movil)return;on=!on;try{localStorage.setItem('meliLigero',on?'1':'0')}catch(e){}pinta()});
+  const etiqueta=b.querySelector('.mono'),pinta=()=>{b.setAttribute('aria-pressed',on);b.title=on?'Activar una calidad visual más alta':'Usar calidad ligera para ahorrar batería';if(etiqueta)etiqueta.textContent=on?'Mejorar calidad':'Calidad alta';if(window.Intro3D&&Intro3D.ligero_)Intro3D.ligero_(on)};pinta();
+  b.addEventListener('click',e=>{e.stopPropagation();on=!on;try{localStorage.setItem('meliLigero',on?'1':'0')}catch(e){}pinta()});
   b.addEventListener('keydown',e=>e.stopPropagation())})();
-function entrar(){if(entrando||!Intro3D.cargado)return;entrando=true;introEnCurso=true;$('saltar').classList.add('ver');desbloquea();$('intro').classList.add('andando');$('ligero').classList.add('fuera');if(reducido)setTimeout(()=>{try{Intro3D.saltar()}catch(e){}},350);
+function entrar(){if(entrando||!Intro3D.cargado)return;entrando=true;introEnCurso=true;$('saltar').classList.add('ver');desbloquea();$('intro').classList.add('andando');if(reducido)setTimeout(()=>{try{Intro3D.saltar()}catch(e){}},350);
   Intro3D.correr(apiIntro,()=>{introEnCurso=false;$('saltar').classList.remove('ver');ambiente();setTimeout(()=>{if(!abierto&&window.Intro3D&&Intro3D.voltea)Intro3D.voltea()},12000);const es=$('escena');es.classList.add('r3d');ubicaCandado();es.classList.add('ver');$('intro').style.cursor='default';
     setTimeout(()=>{document.body.classList.remove('en-puerta');const n=fijas.indexOf(false);if(n>=0)els[n].focus({preventScroll:true})},1400)})}
 /* mantener 5 segundos para saltar */
@@ -956,7 +956,7 @@ async function abrir(){
   // la carta todavía sube: pasa a primer plano sin frenar
   const cf=$('cartaFinal');
   Object.assign(cf.style,{left:r.left+'px',top:(r.top-r.height)+'px',width:r.width+'px',height:(r.height*3)+'px',fontSize:r.width+'px'});
-  cf.classList.add('ver');$('papelGrupo').style.opacity=0;escn.classList.add('atenua');
+  cf.classList.add('ver');const papelGrupo=$('papelGrupo');if(papelGrupo)papelGrupo.style.opacity=0;escn.classList.add('atenua');
   const dx=innerWidth/2-(r.left+r.width/2),dy=innerHeight/2-(r.top+r.height/2);
   const sc=Math.min(innerWidth*.86/r.width,innerHeight*.28/r.height);
   const mov=cf.animate([{transform:'none'},{transform:`translate(${dx*.4}px,${dy-30}px) scale(${sc*.55}) rotate(-2deg)`,offset:.45},{transform:`translate(${dx}px,${dy}px) scale(${sc})`}],{duration:reducido?1:850,easing:'cubic-bezier(.25,.7,.3,1)',fill:'forwards'});

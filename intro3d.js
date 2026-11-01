@@ -172,7 +172,7 @@ function achicaTexturas(max){const vistas=new Set();S.traverse(o=>{const ms=o.ma
 // modo ligero: sin sombras, sin lluvia, sin resplandor y menos resolución
 function ponLigero(on){LIGERO=!!on;if(!R)return;
   R.shadowMap.enabled=!LIGERO;S.traverse(o=>{const ms=o.material?(Array.isArray(o.material)?o.material:[o.material]):[];ms.forEach(m=>m.needsUpdate=true)});
-  if(comp&&comp.passes[1])comp.passes[1].enabled=!LIGERO;prMax=Math.min(devicePixelRatio,1)*(LIGERO?.7:1);pr=Math.min(pr,prMax);if(LIGERO)pr=prMax;aplicaPR();
+  if(comp&&comp.passes[1])comp.passes[1].enabled=!LIGERO;prMax=Math.min(devicePixelRatio,MOVIL?(LIGERO?.9:1.15):1.25);pr=Math.min(pr,prMax);if(LIGERO)pr=prMax;aplicaPR();
   try{if(LUCES.length)compilaZonas();else R.compile(S,C)}catch(e){}}
 const LUCES=[];
 function zonificar(){const b=new T.Box3(),c=V(0,0,0),t=V(0,0,0),w=V(0,0,0);
@@ -257,7 +257,7 @@ function construir(cv){
   const avisaListo=()=>{if(listoAvisado)return;listoAvisado=true;cargado=true;if(LIGERO)ponLigero(true);cargaListo&&cargaListo()};
   LM=new T.LoadingManager(()=>{setTimeout(()=>{if(MOVIL)try{achicaTexturas(768)}catch(e){}try{zonificar();if(!MOVIL)compilaZonas()}catch(e){console.warn(e)}try{if(!MOVIL)calentar()}catch(e){console.warn(e)}},0);avisaListo()},(u,l,t)=>{cargaProg&&cargaProg(l/t)});
   R=new T.WebGLRenderer({canvas:cv,antialias:false,powerPreference:'high-performance'});
-  prMax=Math.min(devicePixelRatio,MOVIL?.9:1.25);pr=prMax;R.setPixelRatio(pr);R.setSize(W(),H());R.outputEncoding=T.sRGBEncoding;
+  prMax=Math.min(devicePixelRatio,MOVIL?(LIGERO?.9:1.15):1.25);pr=prMax;R.setPixelRatio(pr);R.setSize(W(),H());R.outputEncoding=T.sRGBEncoding;
   R.toneMapping=T.ACESFilmicToneMapping;R.toneMappingExposure=1.25;R.shadowMap.enabled=true;R.shadowMap.autoUpdate=false;R.shadowMap.type=T.PCFShadowMap;R.physicallyCorrectLights=false;
   S=new T.Scene();S.fog=new T.FogExp2('#0a0e13',.065);
   C=new T.PerspectiveCamera(W()<H()?76:60,W()/H(),.02,90);C.position.set(0,1.62,11);S.add(C);
