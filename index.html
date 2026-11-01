@@ -253,6 +253,7 @@ body.en-puerta{background:#000}
 #ligero[aria-pressed=true]{color:#f2e6d6;border-color:#c1121f}#ligero[aria-pressed=true] .pt{background:#c1121f;border-color:#c1121f}
 #ligero.fuera{opacity:0;pointer-events:none}
 .cerrado #ligero{opacity:0;pointer-events:none}
+#escena.ver ~ #ligero{opacity:0;pointer-events:none}
 #saltar{position:fixed;right:max(18px,env(safe-area-inset-right));bottom:max(18px,env(safe-area-inset-bottom));z-index:70;display:none;align-items:center;gap:10px;padding:8px 14px 8px 8px;border:1px solid #ffffff22;border-radius:999px;background:#0008;color:#cfc6b8;cursor:pointer;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);touch-action:none;user-select:none;-webkit-user-select:none}
 #saltar.ver{display:flex}
 #saltar .anillo{--p:0;width:26px;height:26px;border-radius:50%;background:conic-gradient(#e2323f calc(var(--p)*1turn),#ffffff1f 0);-webkit-mask:radial-gradient(closest-side,transparent 70%,#000 72%);mask:radial-gradient(closest-side,transparent 70%,#000 72%)}
@@ -285,8 +286,19 @@ body.en-puerta{background:#000}
 #ruedasWin.flotante{position:fixed!important;opacity:0;z-index:45;transform:none!important}#zonas.flotante{position:fixed!important;z-index:46;transform:none!important;pointer-events:auto!important}
 @media (pointer:coarse){
   #ruedasWin.flotante{width:240px!important;height:132px!important}
-  #zonas.flotante{width:260px!important;height:168px!important}
-  #zonas.flotante i{margin:-18px -10px}
+  #zonas.flotante{width:240px!important;height:132px!important}
+  #zonas.flotante i{margin:0}
+  #escena.sobre3d .mesa{height:42%;background:
+    radial-gradient(44% 34% at 50% 8%,#d89b5b55,transparent 70%),
+    radial-gradient(70% 65% at 50% 0%,#8a542d44,transparent 75%),
+    linear-gradient(#382315,#160c07 70%,#090504);
+    border-top:2px solid #8a5a3388;box-shadow:0 -2px 0 #000,inset 0 2px 0 #b47a4788}
+}
+@media (max-width:700px){
+  #zonas.flotante{width:240px!important;height:132px!important}
+  #zonas.flotante i{margin:0}
+  #escena.sobre3d .mesa{height:42%;z-index:1}
+  #regalo{z-index:2}
 }
 
 
