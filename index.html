@@ -974,7 +974,7 @@ addEventListener('resize',()=>{if(window.Intro3D&&Intro3D.tiene3D&&$('zonas')&&$
 $('intro').addEventListener('click',entrar);
 $('intro').addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();entrar()}});
 function desbloquea(){ambiente();const c0=ctx();if(c0&&c0.state!=='running')c0.resume().catch(()=>{});Object.keys(MEDIA).forEach(n=>esperaMedia(n));if(desbloqueado)return;desbloqueado=true;try{if(navigator.audioSession)navigator.audioSession.type='playback'}catch(e){}
-  enlazaCancion();audio.src=CANCIONES[0][2];audio.volume=0;audio.muted=true;audio.play().catch(()=>{})}
+  enlazaCancion();audio.src=CANCIONES[0][2];audio.muted=false;if(songG&&ac){songG.gain.cancelScheduledValues(ac.currentTime);songG.gain.setValueAtTime(0,ac.currentTime);songG.gain.linearRampToValueAtTime(.17,ac.currentTime+3)}else audio.volume=.18;audio.play().catch(()=>{})}
 ['pointerup','touchend','click','keydown'].forEach(ev=>$('escena').addEventListener(ev,desbloquea,{passive:true}));
 
 /* ---------- abrir: el candado cae, se va la tapa con el moño y la carta sale entera de la caja ---------- */
@@ -989,7 +989,7 @@ async function abrir(){
   if(abierto)return;abierto=true;if(amb)amb.parar();
   const escn=$('escena');
   try{
-  let r;pon(0,true,12);
+  let r;subeCancion();
   if(!modo2D&&window.Intro3D&&Intro3D.tiene3D){
     escn.classList.add('abriendo');['ruedasWin','zonas'].forEach(id=>{const e=$(id);if(e)e.style.display='none'});clicFuerte();tono(1850,ctx()?ctx().currentTime:0,.003,.03,.25,'triangle');
     const c=ctx(),gg=(v,f)=>golpeGrave(c?c.currentTime:0,f,v);setTimeout(()=>{gg(.45,140);ruido(.3,2600,6,.25)},780);setTimeout(()=>gg(.18,180),980);setTimeout(()=>ruido(.6,1500,1,.2,true),520);
@@ -1030,7 +1030,7 @@ async function abrir(){
   const cf=$('cartaFinal');if(cf)cf.remove();setTimeout(()=>{const v=$('veloCarta');if(v)v.remove()},1600);escn.remove();['ruedasWin','zonas'].forEach(id=>{const e=$(id);if(e)e.remove()});try{if(lluviaSrc){lluviaSrc.stop();lluviaSrc=null;lluviaG=null}}catch(e){}if($('intro')){try{Intro3D.parar()}catch(e){}$('intro').remove()}document.body.classList.remove('cerrado');$('web').classList.add('visible');$('web').removeAttribute('aria-hidden');observa(document);try{sessionStorage.setItem('meliAbierto','1')}catch(e){}
 }
 // si ya lo abrió en esta pestaña y recarga, vuelve directo a la página
-function directo(){abierto=true;['escena','intro','cartaFinal','veloCarta','ruedasWin','zonas'].forEach(id=>{const e=$(id);if(e)e.remove()});document.body.classList.remove('cerrado','en-puerta');$('web').classList.add('visible');$('web').removeAttribute('aria-hidden');observa(document);if(location.hash){const v=location.hash.slice(1);setTimeout(()=>{if(vistas.includes(v))muestra(v)},80)}}
+function directo(){abierto=true;setTimeout(()=>{try{$('musica').classList.add('ver','pausa');$('musicaTxt').textContent=CANCIONES[0][0]}catch(e){}},100);{try{audio.crossOrigin='anonymous';audio.src=CANCIONES[0][2]}catch(e){}const arranca=e=>{removeEventListener('pointerup',arranca);removeEventListener('keydown',arranca);try{ctx();enlazaCancion();if(e&&e.target&&e.target.closest&&e.target.closest('#musica'))return;if(audio.paused)pon(0,true)}catch(e){}};addEventListener('pointerup',arranca);addEventListener('keydown',arranca)}['escena','intro','cartaFinal','veloCarta','ruedasWin','zonas'].forEach(id=>{const e=$(id);if(e)e.remove()});document.body.classList.remove('cerrado','en-puerta');$('web').classList.add('visible');$('web').removeAttribute('aria-hidden');observa(document);if(location.hash){const v=location.hash.slice(1);setTimeout(()=>{if(vistas.includes(v))muestra(v)},80)}}
 
 /* ---------- aparecer ---------- */
 let io;
@@ -1184,6 +1184,7 @@ function tema(i,desde){const t=TEMAS[i],v=$('v-musica');if(!t||!v)return;
 const audio=new Audio();audio.loop=true;audio.volume=.55;let actual=0;
 $('lista').innerHTML=CANCIONES.map(c=>`<li><button><img src="${c[3]}" alt=""><span><span class="t">${c[0]}</span><span class="s">${c[4]||'Soda Stereo'} · ${c[1]}</span></span><span class="estado">Escuchar</span></button></li>`).join('');
 const filas=[...document.querySelectorAll('#lista li')];
+function subeCancion(){if(!audio.paused&&audio.src===CANCIONES[0][2]){actual=0;if(temaAct!==0)tema(0);if(songG&&ac){songG.gain.cancelScheduledValues(ac.currentTime);songG.gain.setValueAtTime(songG.gain.value,ac.currentTime);songG.gain.linearRampToValueAtTime(.5,ac.currentTime+2.5)}audio.volume=.55;$('etqImg').src=CANCIONES[0][3];$('musicaTxt').textContent=CANCIONES[0][0];$('musica').classList.add('ver');marca()}else pon(0,true,12)}
 function pon(i,fade,desde){if(temaAct!==i)tema(i);actual=i;if(songG&&ac){const t=ac.currentTime;songG.gain.cancelScheduledValues(t);songG.gain.setValueAtTime(fade?0:.5,t);if(fade)songG.gain.linearRampToValueAtTime(.5,t+2.5)}if(audio.src!==CANCIONES[i][2])audio.src=CANCIONES[i][2];audio.volume=.55;audio.muted=false;audio.currentTime=desde||0;$('etqImg').src=CANCIONES[i][3];audio.play().catch(()=>{$('musica').classList.add('pausa');$('musica').setAttribute('aria-label','Reproducir música')});$('musicaTxt').textContent=CANCIONES[i][0];$('musica').classList.add('ver');marca()}
 function marca(){filas.forEach((f,k)=>{const on=k===actual&&!audio.paused;f.classList.toggle('sonando',on);f.querySelector('.estado').textContent=on?'Sonando':'Escuchar'});document.body.classList.toggle('pausa-global',audio.paused)}
 filas.forEach((f,i)=>f.querySelector('button').onclick=e=>{if(i===actual)audio.paused?audio.play():audio.pause();else{tema(i,e.currentTarget);pon(i)}});
