@@ -65,7 +65,6 @@ em{font-style:inherit;color:var(--pasion)}
 .instruccion b{color:#d9cfbf;font-weight:500}
 .sonido-hint{position:absolute;left:0;right:0;bottom:calc(max(40px,env(safe-area-inset-bottom)) + 22px);text-align:center;color:#a39a8d;z-index:6;transition:opacity .6s}
 .sonido-hint.fuera{opacity:0}
-.cinta-regalo{position:absolute;left:0;bottom:92px;white-space:nowrap;font:900 44px/1 var(--display);text-transform:uppercase;color:#1c1714;animation:marquee 28s linear infinite;pointer-events:none}
 .abriendo .instruccion,.abriendo .sonido-hint,.abriendo .esquina{opacity:0}
 /* luz, niebla y polvo */
 .haz{position:absolute;left:50%;top:-5%;width:760px;height:95%;margin-left:-380px;pointer-events:none;
@@ -91,12 +90,6 @@ em{font-style:inherit;color:var(--pasion)}
 .flota{position:absolute;inset:0}
 @keyframes respira{50%{transform:translateY(-3px)}}
 .abriendo .flota{animation:none}
-.sombra{position:absolute;left:24px;width:290px;bottom:16px;height:40px;border-radius:50%;background:radial-gradient(closest-side,#000e,transparent);animation:sombra 1.2s var(--ease) both}
-@keyframes sombra{from{transform:scale(.6);opacity:0}to{transform:none;opacity:1}}
-.caja3d{position:absolute;inset:0;width:100%;height:100%;overflow:visible;filter:none}
-.suspenso .caja3d{animation:latidoSvg var(--latido,1s) ease-out infinite}
-@keyframes latidoSvg{0%,100%{filter:none}12%{filter:drop-shadow(0 0 22px #d4142a66)}}
-.caja3d g{transition:transform .6s var(--ease),opacity .45s}
 @media (min-width:700px) and (min-height:720px){.regalo{scale:1.25}}
 @media (max-width:440px){.regalo{scale:1}}
 @media (max-width:360px){.regalo{scale:.9}}
@@ -201,7 +194,7 @@ em{font-style:inherit;color:var(--pasion)}
 .luz-interior #hazInterior{opacity:1}
 .luz-interior .haz{opacity:.3;transition:opacity .9s}
 .calida{transition:opacity .8s}.luz-interior .calida{opacity:.22}
-#escena.atenua .regalo,#escena.atenua .mesa,#escena.atenua .cinta-regalo,#escena.atenua .niebla{filter:brightness(.28) blur(4px);transition:filter .8s}
+#escena.atenua .regalo,#escena.atenua .mesa,#escena.atenua .niebla{filter:brightness(.28) blur(4px);transition:filter .8s}
 #cartaFinal::before{content:"";position:absolute;inset:-70%;z-index:-1;background:radial-gradient(closest-side,#ffd9a02e,transparent);pointer-events:none}
 .cf-panel{box-shadow:0 14px 28px -8px #000b}
 .cf-panel.medio{background:linear-gradient(#f7f2e8,#ece4d4)}
@@ -218,7 +211,7 @@ em{font-style:inherit;color:var(--pasion)}
 .instruccion .tactil{display:none}
 @media (pointer:coarse){.instruccion .raton{display:none}.instruccion .tactil{display:inline}}
 @media (max-height:640px){.regalo{scale:.82}}
-@media (max-height:520px){.regalo{scale:.66;margin-top:-6vh}.cinta-regalo{display:none}}
+@media (max-height:520px){.regalo{scale:.66;margin-top:-6vh}}
 @media (max-height:420px){.regalo{scale:.56;margin-top:-10vh}.sonido-hint{display:none}.instruccion{bottom:14px}}
 @media (max-width:380px){.esquina{font-size:10px;letter-spacing:.06em}.esquina.a{left:24px}.esquina.b{right:24px}}
 @media (max-width:340px){.esquina.b{display:none}}
@@ -249,9 +242,6 @@ em{font-style:inherit;color:var(--pasion)}
 .piso::after{content:"";position:absolute;inset:0;background:
   radial-gradient(30% 34% at 50% 26%,#e0a86233,transparent 70%),
   linear-gradient(#000c,#0000 30%,#0008)}
-.mesita{position:absolute;left:0;top:300px;width:340px;height:340px;overflow:visible;z-index:-1}
-.cinta-regalo,.regalo .sombra{display:none}
-.caja3d{filter:drop-shadow(0 0 34px #c8192b30)}
 .chispa{transform-box:fill-box;transform-origin:center;opacity:0;animation:chispa 5.5s ease-in-out infinite}
 .chispa.b{animation-delay:-1.9s}.chispa.c{animation-delay:-3.7s}
 @keyframes chispa{0%,70%,100%{opacity:0;transform:scale(.2) rotate(0)}78%{opacity:1;transform:scale(1) rotate(45deg)}88%{opacity:0;transform:scale(.3) rotate(90deg)}}
@@ -296,13 +286,10 @@ body.en-puerta{background:#000}
 /* ===== el regalo dibujado encima del cuarto 3D ===== */
 #escena.sobre3d{background:transparent;z-index:41;opacity:0;pointer-events:none;transition:opacity .7s ease}
 #escena.sobre3d.ver{opacity:1;pointer-events:auto}
-#escena.sobre3d .sala,#escena.sobre3d .foco,#escena.sobre3d .haz,#escena.sobre3d .niebla,#escena.sobre3d .polvo,#escena.sobre3d .mesita,#escena.sobre3d .marco{display:none}
+#escena.sobre3d .sala,#escena.sobre3d .foco,#escena.sobre3d .haz,#escena.sobre3d .niebla,#escena.sobre3d .polvo,#escena.sobre3d .marco{display:none}
 #escena.sobre3d::after{opacity:.05}
 #escena.sobre3d::before{box-shadow:inset 0 0 160px 50px #000a;animation:none}
 #escena.sobre3d .regalo{animation:none;transition:none}
-#escena.sobre3d .caja3d{filter:brightness(.8) sepia(.12)}
-#escena.sobre3d .piso2d{display:none}
-#escena.r3d .caja3d,#escena.r3d .mesita{visibility:hidden}
 #escena.r3d #etiqueta{animation:none}
 #ruedasWin.flotante{position:fixed!important;opacity:0;z-index:45;transform:none!important}#zonas.flotante{position:fixed!important;z-index:46;transform:none!important}
 
@@ -598,268 +585,11 @@ body:has(.vista.abierta) #web::after{display:none}
   <div class="niebla"></div><div class="niebla b"></div>
   <div class="haz"></div>
   <div class="polvo" id="polvo"></div>
-  <div class="cinta-regalo">Para M.E.L.I. · 01 · 11 · Para M.E.L.I. · 01 · 11 · Para M.E.L.I. · 01 · 11 · Para M.E.L.I. · 01 · 11 · </div>
   <span class="esquina a mono">N° 01 · 11 · 2026</span>
   <span class="esquina b mono">Para M.E.L.I.</span>
 
   <div class="regalo" id="regalo">
-    <div class="sombra"></div>
     <div class="flota">
-      <svg class="mesita" viewBox="0 0 340 340" aria-hidden="true">
-        <defs>
-          <linearGradient id="mTope" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4a3020"/><stop offset="1" stop-color="#24170e"/></linearGradient>
-          <radialGradient id="mLuz" cx=".5" cy=".4" r=".55"><stop offset="0" stop-color="#e0a862" stop-opacity=".45"/><stop offset="1" stop-color="#e0a862" stop-opacity="0"/></radialGradient>
-          <linearGradient id="mCanto" x1="0" x2="1"><stop offset="0" stop-color="#140c07"/><stop offset=".35" stop-color="#5a3a22"/><stop offset=".6" stop-color="#3a2414"/><stop offset="1" stop-color="#0e0805"/></linearGradient>
-          <linearGradient id="mPie" x1="0" x2="1"><stop offset="0" stop-color="#0c0704"/><stop offset=".4" stop-color="#4a3020"/><stop offset=".55" stop-color="#2a1a0e"/><stop offset="1" stop-color="#070403"/></linearGradient>
-          <filter id="mBlur" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="10"/></filter>
-        </defs>
-        <ellipse cx="176" cy="300" rx="120" ry="18" fill="#000" opacity=".8" filter="url(#mBlur)"/>
-        <path d="M160 70 C162 150 150 230 128 288 H224 C202 230 190 150 192 70 Z" fill="url(#mPie)"/>
-        <ellipse cx="176" cy="292" rx="70" ry="11" fill="url(#mPie)"/>
-        <path d="M-14 52 V66 A190 36 0 0 0 366 66 V52 Z" fill="url(#mCanto)"/>
-        <ellipse cx="176" cy="52" rx="190" ry="36" fill="url(#mTope)"/>
-        <ellipse cx="176" cy="52" rx="190" ry="36" fill="url(#mLuz)"/>
-        <path d="M-12 56 A190 36 0 0 0 364 56" fill="none" stroke="#c7894a" stroke-opacity=".35" stroke-width="1.2"/>
-      </svg>
-      <svg class="caja3d" viewBox="0 0 340 380" aria-hidden="true">
-        <defs>
-          <!-- papel rojo mate -->
-          <linearGradient id="hFrente" x1="0" x2="1"><stop offset="0" stop-color="#9a0d19"/><stop offset=".45" stop-color="#c41426"/><stop offset="1" stop-color="#930c18"/></linearGradient>
-          <linearGradient id="vFrente" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#000" stop-opacity=".5"/><stop offset=".1" stop-color="#000" stop-opacity=".1"/><stop offset=".55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".38"/></linearGradient>
-          <linearGradient id="hTapa" x1="0" x2="1"><stop offset="0" stop-color="#a3101c"/><stop offset=".45" stop-color="#d61a2c"/><stop offset="1" stop-color="#9c0f1a"/></linearGradient>
-          <linearGradient id="vTapa" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".16"/><stop offset=".22" stop-color="#fff" stop-opacity="0"/><stop offset=".8" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".42"/></linearGradient>
-          <linearGradient id="gTecho" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#df2537"/><stop offset="1" stop-color="#a30f1b"/></linearGradient>
-          <linearGradient id="gInterior" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3a0509"/><stop offset="1" stop-color="#120103"/></linearGradient>
-          <!-- listón de satín mate (gris emo) -->
-          <linearGradient id="satin" x1="0" x2="1"><stop offset="0" stop-color="#9b9ba2"/><stop offset=".1" stop-color="#8f8f96"/><stop offset=".9" stop-color="#88888f"/><stop offset="1" stop-color="#77777e"/></linearGradient>
-          <linearGradient id="satinH" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a6a6ad"/><stop offset=".2" stop-color="#919198"/><stop offset="1" stop-color="#7b7b82"/></linearGradient>
-          <linearGradient id="brilloMovil" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".46" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff" stop-opacity=".08"/><stop offset=".54" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#fff" stop-opacity="0"/>
-            <animateTransform attributeName="gradientTransform" type="translate" values="-1 -1;1 1;1 1" keyTimes="0;.5;1" dur="6s" repeatCount="indefinite"/>
-          </linearGradient>
-          <!-- moño del mismo satín -->
-          <radialGradient id="lazo" cx=".35" cy=".35" r=".85"><stop offset="0" stop-color="#c3c3ca"/><stop offset=".45" stop-color="#9a9aa1"/><stop offset=".85" stop-color="#6b6b72"/><stop offset="1" stop-color="#55555c"/></radialGradient>
-          <radialGradient id="lazoAtras" cx=".5" cy=".45" r=".8"><stop offset="0" stop-color="#85858c"/><stop offset="1" stop-color="#48484e"/></radialGradient>
-          <linearGradient id="cola" x1="0" x2="1"><stop offset="0" stop-color="#9b9ba2"/><stop offset="1" stop-color="#7c7c83"/></linearGradient>
-          <radialGradient id="nudo" cx=".4" cy=".35" r=".8"><stop offset="0" stop-color="#cfcfd5"/><stop offset=".6" stop-color="#93939a"/><stop offset="1" stop-color="#5f5f66"/></radialGradient>
-          <!-- latón del candado: misma luz de arriba -->
-          <linearGradient id="laton" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f1d590"/><stop offset=".35" stop-color="#cfa95e"/><stop offset=".75" stop-color="#a7843f"/><stop offset="1" stop-color="#7f6026"/></linearGradient>
-          <linearGradient id="latonH" x1="0" x2="1"><stop offset="0" stop-color="#000" stop-opacity=".22"/><stop offset=".25" stop-color="#000" stop-opacity="0"/><stop offset=".75" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".25"/></linearGradient>
-          <linearGradient id="arco" x1="0" x2="1"><stop offset="0" stop-color="#6e5320"/><stop offset=".3" stop-color="#e2c27c"/><stop offset=".5" stop-color="#c39d55"/><stop offset=".8" stop-color="#8d6c2c"/><stop offset="1" stop-color="#6a4f1d"/></linearGradient>
-          <pattern id="cepillado" width="4" height="4" patternUnits="userSpaceOnUse"><path d="M0 1 H4" stroke="#fff" stroke-opacity=".07"/></pattern>
-          <!-- cartón kraft de la etiqueta -->
-          <linearGradient id="kraft" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e6d4b2"/><stop offset="1" stop-color="#c9ad80"/></linearGradient>
-          <!-- carta doblada y luz -->
-          <linearGradient id="papelG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f7f2e8"/><stop offset="1" stop-color="#e8e0cf"/></linearGradient>
-          <radialGradient id="selloG" cx=".38" cy=".34" r=".7"><stop offset="0" stop-color="#e2323f"/><stop offset=".62" stop-color="#a10d18"/><stop offset="1" stop-color="#7a0912"/></radialGradient>
-          <radialGradient id="glow" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#ffd9a0" stop-opacity=".95"/><stop offset=".5" stop-color="#ffb35c" stop-opacity=".35"/><stop offset="1" stop-color="#ff9a3c" stop-opacity="0"/></radialGradient>
-          <linearGradient id="hazG" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#ffd9a0" stop-opacity=".8"/><stop offset="1" stop-color="#ffd9a0" stop-opacity="0"/></linearGradient>
-          <!-- textura -->
-          <filter id="textura" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="1.4" numOctaves="2" seed="3"/><feColorMatrix values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .09 0"/><feComposite in2="SourceGraphic" operator="in"/></filter>
-          <filter id="sombraSuave" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="3"/></filter>
-          <filter id="difuso" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="8"/></filter>
-          <filter id="brilloLed" x="-200%" y="-200%" width="500%" height="500%"><feGaussianBlur stdDeviation="2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-          <pattern id="relieve" width="10" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><path d="M0 5 H10" stroke="#000" stroke-opacity=".07"/></pattern>
-          <pattern id="mono" width="64" height="64" patternUnits="userSpaceOnUse"><text x="4" y="16" font-family="JetBrains Mono, monospace" font-size="6" letter-spacing="1.6" fill="#4d0510" opacity=".45">M·E·L·I</text><text x="36" y="48" font-family="JetBrains Mono, monospace" font-size="6" letter-spacing="1.6" fill="#4d0510" opacity=".45">M·E·L·I</text></pattern>
-          <clipPath id="cFrente"><rect x="40" y="178" width="240" height="170" rx="7"/></clipPath>
-          <clipPath id="cTapa"><rect x="30" y="138" width="260" height="44" rx="6"/></clipPath>
-          <!-- volumen 3/4: luz del foco desde arriba-izquierda -->
-          <linearGradient id="fr3" x1="0" x2="1"><stop offset="0" stop-color="#c8192b"/><stop offset=".55" stop-color="#b81424"/><stop offset="1" stop-color="#99101c"/></linearGradient>
-          <linearGradient id="frV" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#000" stop-opacity=".55"/><stop offset=".12" stop-color="#000" stop-opacity=".12"/><stop offset=".4" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".45"/></linearGradient>
-          <radialGradient id="frBrillo" cx=".22" cy=".25" r=".7"><stop offset="0" stop-color="#ff8a8f" stop-opacity=".28"/><stop offset="1" stop-color="#ff8a8f" stop-opacity="0"/></radialGradient>
-          <linearGradient id="lado3" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5e0610"/><stop offset="1" stop-color="#2c0207"/></linearGradient>
-          <linearGradient id="tapaF3" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e02536"/><stop offset=".5" stop-color="#c3172a"/><stop offset="1" stop-color="#8e0c18"/></linearGradient>
-          <linearGradient id="tapaL3" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#86101b"/><stop offset="1" stop-color="#4a050c"/></linearGradient>
-          <radialGradient id="techo3" cx=".4" cy=".6" r=".8"><stop offset="0" stop-color="#f0485a"/><stop offset=".6" stop-color="#d0202f"/><stop offset="1" stop-color="#a51320"/></radialGradient>
-          <linearGradient id="satF" x1="0" x2="1"><stop offset="0" stop-color="#b9b9c0"/><stop offset=".5" stop-color="#a2a2a9"/><stop offset="1" stop-color="#85858c"/></linearGradient>
-          <linearGradient id="satL" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6d6d74"/><stop offset="1" stop-color="#47474d"/></linearGradient>
-          <linearGradient id="satT" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#d6d6dc"/><stop offset="1" stop-color="#a9a9b0"/></linearGradient>
-          <radialGradient id="lazo3" cx=".4" cy=".3" r=".9"><stop offset="0" stop-color="#ececf0"/><stop offset=".35" stop-color="#c0c0c7"/><stop offset=".8" stop-color="#7d7d84"/><stop offset="1" stop-color="#5a5a60"/></radialGradient>
-          <radialGradient id="hueco" cx=".55" cy=".35" r=".6"><stop offset="0" stop-color="#55555c"/><stop offset=".7" stop-color="#7c7c83"/><stop offset="1" stop-color="#9a9aa1" stop-opacity="0"/></radialGradient>
-          <radialGradient id="piso" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#000" stop-opacity=".95"/><stop offset=".6" stop-color="#000" stop-opacity=".55"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient>
-          <radialGradient id="reflejo" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#c8192b" stop-opacity=".3"/><stop offset="1" stop-color="#c8192b" stop-opacity="0"/></radialGradient>
-          <linearGradient id="ladoBrillo" x1="0" x2="1"><stop offset="0" stop-color="#ff6b75" stop-opacity=".18"/><stop offset=".3" stop-color="#ff6b75" stop-opacity="0"/></linearGradient>
-          <linearGradient id="techoBrillo" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".3" stop-color="#fff" stop-opacity=".16"/><stop offset=".45" stop-color="#fff" stop-opacity="0"/></linearGradient>
-          <linearGradient id="banda" x1="0" x2="1"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".1" stop-color="#fff" stop-opacity=".1"/><stop offset=".2" stop-color="#fff" stop-opacity="0"/></linearGradient>
-          <linearGradient id="latonLado" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8a6a2c"/><stop offset="1" stop-color="#3e2c0c"/></linearGradient>
-          <radialGradient id="especular" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#fffbe8" stop-opacity=".75"/><stop offset="1" stop-color="#fffbe8" stop-opacity="0"/></radialGradient>
-          <linearGradient id="rebote" x1="0" y1="0" x2="0" y2="1"><stop offset=".6" stop-color="#e0303f" stop-opacity="0"/><stop offset="1" stop-color="#e0303f" stop-opacity=".28"/></linearGradient>
-          <linearGradient id="lustre" x1="0" y1="0" x2="1" y2=".4">
-            <stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".44" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#ffe2d0" stop-opacity=".16"/><stop offset=".56" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#fff" stop-opacity="0"/>
-            <animateTransform attributeName="gradientTransform" type="translate" values="-1.2 0;1.2 0;1.2 0" keyTimes="0;.35;1" dur="7s" repeatCount="indefinite"/>
-          </linearGradient>
-          <filter id="blur10" x="-30%" y="-100%" width="160%" height="300%"><feGaussianBlur stdDeviation="9"/></filter>
-          <filter id="blur2" x="-10%" y="-100%" width="120%" height="300%"><feGaussianBlur stdDeviation="2"/></filter>
-        </defs>
-
-        <!-- piso: sombra de contacto y reflejo rojo en la mesa -->
-        <ellipse class="piso2d" cx="178" cy="356" rx="182" ry="22" fill="url(#reflejo)"/>
-        <ellipse class="piso2d" cx="184" cy="352" rx="176" ry="18" fill="url(#piso)" filter="url(#blur10)"/><ellipse cx="176" cy="349" rx="140" ry="6" fill="#000" opacity=".9" filter="url(#blur2)"/>
-        <path d="M44 348 H280 L320 318" fill="none" stroke="#000" stroke-width="6" stroke-opacity=".85" filter="url(#blur2)"/>
-
-        <!-- interior de la caja (se ve cuando sale la tapa) -->
-        <path d="M40 178 L80 148 H320 L280 178 Z" fill="url(#gInterior)"/>
-        <path d="M80 148 H320" stroke="#7a0a14" stroke-width="1.5"/>
-        <polygon id="hazInterior" points="70,172 310,160 380,-60 0,-60" fill="url(#hazG)" filter="url(#difuso)"/>
-        <ellipse id="luzInterior" cx="180" cy="163" rx="134" ry="26" fill="url(#glow)"/>
-
-        <!-- la carta doblada, guardada adentro -->
-        <g id="papelGrupo">
-          <rect id="papelSvg" x="84" y="190" width="152" height="62" rx="1.5" fill="url(#papelG)" stroke="#0000001f"/>
-          <path d="M84 196 H236" stroke="#000" stroke-opacity=".06"/>
-          <rect class="calida" x="84" y="190" width="152" height="62" fill="#ffcf8a" opacity="0"/><circle cx="160" cy="221" r="15" fill="url(#selloG)"/>
-          <text x="160" y="225.5" text-anchor="middle" font-family="Unbounded, sans-serif" font-weight="900" font-size="14" fill="#f7d6d4">M</text>
-        </g>
-
-        <!-- cuerpo -->
-        <g class="g-caja">
-          <path class="borde-boca" d="M40 178 L47 173 H287 L280 178 Z" fill="#7e0a15"/>
-          <!-- costado derecho, en sombra -->
-          <path d="M280 178 L320 148 V312 Q320 318 315 322 L285 344 Q280 348 280 342 Z" fill="url(#lado3)"/><path d="M280 178 L320 148 V312 Q320 318 315 322 L285 344 Q280 348 280 342 Z" fill="url(#ladoBrillo)"/>
-          <g class="rib-caja rib-v">
-            <path d="M280 254 L320 224 V248 L280 278 Z" fill="url(#satL)"/>
-          </g>
-          <!-- frente -->
-          <rect x="40" y="178" width="240" height="170" rx="7" fill="url(#fr3)"/>
-          <g clip-path="url(#cFrente)">
-            <rect x="40" y="178" width="240" height="170" fill="url(#mono)" opacity=".7"/>
-            <rect x="40" y="178" width="240" height="170" fill="#fff" filter="url(#textura)"/>
-            <rect x="40" y="178" width="240" height="170" fill="url(#frBrillo)"/><rect x="40" y="178" width="240" height="170" fill="url(#banda)"/><rect x="40" y="178" width="240" height="170" fill="url(#lustre)"/>
-            <g class="rib-caja rib-v">
-              <rect x="40" y="254" width="240" height="24" fill="url(#satF)"/>
-              <rect x="40" y="278" width="240" height="5" fill="#000" opacity=".18" filter="url(#sombraSuave)"/>
-              <rect x="174" y="178" width="5" height="170" fill="#000" opacity=".2" filter="url(#sombraSuave)"/>
-              <rect x="146" y="178" width="28" height="170" fill="url(#satF)"/>
-              <rect x="146" y="178" width="28" height="170" fill="url(#brilloMovil)"/>
-              <path d="M146.5 178 V348 M40 254.5 H146 M174 254.5 H280" stroke="#fff" stroke-opacity=".35"/>
-            </g>
-            <rect x="40" y="178" width="240" height="170" fill="url(#frV)"/>
-            <rect class="sombra-tapa" x="40" y="178" width="240" height="16" fill="#000" opacity=".45" filter="url(#sombraSuave)"/>
-          </g>
-          <!-- arista iluminada entre frente y costado -->
-          <path d="M280 184 V340" stroke="#ff8a93" stroke-opacity=".45" stroke-width="1.6" stroke-linecap="round"/>
-        </g>
-
-        <!-- chispas de brillo -->
-        <g fill="#fff8e6">
-          <path class="chispa" d="M300 112 l2 -9 l2 9 l9 2 l-9 2 l-2 9 l-2 -9 l-9 -2 z"/>
-          <path class="chispa b" d="M44 182 l1.5 -7 l1.5 7 l7 1.5 l-7 1.5 l-1.5 7 l-1.5 -7 l-7 -1.5 z"/>
-          <path class="chispa c" d="M282 236 l1.5 -6 l1.5 6 l6 1.5 l-6 1.5 l-1.5 6 l-1.5 -6 l-6 -1.5 z"/>
-        </g>
-        <!-- candado (misma luz y mismo trazo que la caja) -->
-        <g id="candadoSvg">
-          <rect x="104" y="246" width="120" height="98" rx="14" fill="#000" opacity=".45" filter="url(#sombraSuave)"/>
-          <path d="M131 255 V225 A32 32 0 0 1 195 225 V255" fill="none" stroke="#000" stroke-opacity=".3" stroke-width="12" filter="url(#sombraSuave)"/>
-          <g class="g-arco">
-            <path d="M128 250 V220 A32 32 0 0 1 192 220 V250" fill="none" stroke="#2a1d07" stroke-opacity=".7" stroke-width="15"/>
-            <path d="M128 250 V220 A32 32 0 0 1 192 220 V250" fill="none" stroke="url(#arco)" stroke-width="12"/>
-            <path d="M131 244 V220 A29 29 0 0 1 152 192" fill="none" stroke="#fff4cf" stroke-opacity=".75" stroke-width="2.6" stroke-linecap="round"/><path d="M189 246 V222 A29 29 0 0 0 176 196" fill="none" stroke="#3a2a0a" stroke-opacity=".5" stroke-width="3" stroke-linecap="round"/>
-          </g>
-          <rect x="109" y="233" width="120" height="98" rx="14" fill="url(#latonLado)"/>
-          <path d="M114 236 Q118 233 124 233 H215" stroke="#f6dc9a" stroke-opacity=".55" stroke-width="1.2" fill="none"/>
-          <path d="M228.5 246 V318" stroke="#d9b56a" stroke-opacity=".35" stroke-width="1.2"/>
-          <rect x="100" y="240" width="120" height="98" rx="14" fill="url(#laton)"/>
-          <rect x="100" y="240" width="120" height="98" rx="14" fill="url(#cepillado)"/>
-          <rect x="100" y="240" width="120" height="98" rx="14" fill="url(#latonH)"/>
-          <rect x="100" y="240" width="120" height="98" rx="14" fill="url(#rebote)"/>
-          <ellipse cx="130" cy="262" rx="30" ry="12" fill="url(#especular)"/>
-          <ellipse cx="200" cy="330" rx="16" ry="4" fill="url(#especular)" opacity=".5"/>
-          <rect x="103.5" y="243.5" width="113" height="91" rx="11" fill="none" stroke="#fff3cb" stroke-opacity=".45"/>
-          <rect x="100.5" y="240.5" width="119" height="97" rx="13.5" fill="none" stroke="#2a1d07" stroke-opacity=".75"/>
-          <path d="M112 241.2 H208" stroke="#fff8dc" stroke-opacity=".8" stroke-width="1.2"/>
-          <g id="leds">
-            <circle class="led" cx="126" cy="251" r="2.6"/><circle class="led" cx="149" cy="251" r="2.6"/><circle class="led" cx="171" cy="251" r="2.6"/><circle class="led" cx="194" cy="251" r="2.6"/>
-          </g>
-          <!-- ventana hundida donde van las ruedas -->
-          <rect x="110" y="255" width="100" height="58" rx="6" fill="#120c06"/>
-          <rect x="110.5" y="255.5" width="99" height="57" rx="5.5" fill="none" stroke="#5f4717" stroke-width="1"/>
-          <path d="M111 312.6 H209" stroke="#fff1c4" stroke-opacity=".55"/>
-          <text x="160" y="327" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="6.2" font-weight="700" letter-spacing="2.2" fill="#5b4214" opacity=".85">N° 01 · 11</text>
-          <circle cx="110" cy="327" r="3.2" fill="#8c6a2a"/><path d="M107.8 327 H112.2" stroke="#4b3812" stroke-width="1"/>
-          <circle cx="210" cy="327" r="3.2" fill="#8c6a2a"/><path d="M210 324.8 V329.2" stroke="#4b3812" stroke-width="1"/>
-        </g>
-
-        <!-- el listón pasa por dentro del arco -->
-        <g class="rib-v rib-frente"><rect x="146" y="182" width="28" height="58" fill="url(#satin)"/><path d="M146 182 V240 M174 182 V240" stroke="#2c2c31" stroke-opacity=".45"/><rect x="174" y="182" width="3" height="58" fill="#000" opacity=".22"/></g>
-        <ellipse id="halo" cx="180" cy="160" rx="150" ry="34" fill="url(#glow)" opacity="0"/>
-        <!-- tapa, moño y etiqueta: se van juntos -->
-        <g class="g-tapa">
-          <!-- techo de la tapa, lo que más luz recibe -->
-          <path d="M36 138 Q30 138 34 135 L66 111 Q70 108 76 108 H324 Q332 108 326 113 L294 136 Q291 138 286 138 Z" fill="url(#techo3)"/>
-          <path d="M30 138 L70 108 H330 L290 138 Z" fill="url(#mono)" opacity=".3"/><path d="M30 138 L70 108 H330 L290 138 Z" fill="url(#techoBrillo)"/>
-          <path d="M146 138 L186 108 H214 L174 138 Z" fill="url(#satT)"/><path d="M40 125 L300 121 L296 124 L36 128 Z" fill="none"/>
-          <path d="M72 108.8 H324" stroke="#ffc2c7" stroke-opacity=".55" stroke-width="1.2" stroke-linecap="round"/><path d="M34 137 L68 111" stroke="#ffc2c7" stroke-opacity=".35" stroke-linecap="round"/>
-          <!-- costado de la tapa -->
-          <path d="M290 138 L330 108 V148 Q330 153 326 156 L295 179 Q290 182 290 177 Z" fill="url(#tapaL3)"/><path d="M291 139 L329 110" stroke="#ff8a93" stroke-opacity=".45" stroke-width="1.2"/>
-          <!-- frente de la tapa -->
-          <rect x="30" y="138" width="260" height="44" rx="6" fill="url(#tapaF3)"/>
-          <g clip-path="url(#cTapa)">
-            <rect x="30" y="138" width="260" height="44" fill="#fff" filter="url(#textura)"/><rect x="30" y="138" width="260" height="44" fill="url(#banda)"/>
-            <rect x="146" y="138" width="28" height="44" fill="url(#satF)"/>
-            <rect x="146" y="138" width="28" height="44" fill="url(#brilloMovil)"/>
-            <rect x="174" y="138" width="4" height="44" fill="#000" opacity=".2"/>
-          </g>
-          <path d="M36 139.2 H286" stroke="#ffd0d4" stroke-opacity=".8" stroke-width="1.6" stroke-linecap="round"/><path d="M36 180.5 H286" stroke="#000" stroke-opacity=".35" stroke-width="1.5"/>
-          <path d="M290 141 V178" stroke="#ff6b75" stroke-opacity=".3"/>
-
-          <!-- esquina del papel despegada -->
-          <g class="papel-suelto">
-            <path d="M30 150 L30 141 Q30 138 33 138 L46 138 Q40 148 30 150 Z" fill="#f3e3d6"/>
-            <path d="M30 150 Q40 148 46 138" fill="none" stroke="#7a0a14" stroke-opacity=".5"/>
-          </g>
-          <!-- moño de satín, con volumen -->
-          <g transform="translate(5 -9)"><g class="lazo3">
-            <ellipse cx="176" cy="132" rx="58" ry="9" fill="#000" opacity=".35" filter="url(#sombraSuave)"/>
-            <g class="cola cola-a"><path d="M168 128 C160 142 152 150 140 168 L150 166 L150 178 C160 158 170 144 176 130 Z" fill="url(#satF)"/><path d="M168 128 C160 142 152 150 140 168" fill="none" stroke="#fff" stroke-opacity=".35"/></g>
-            <g class="cola cola-b"><path d="M180 128 C188 142 198 152 214 166 L203 166 L203 177 C192 158 184 144 174 130 Z" fill="url(#satL)"/></g>
-            <!-- lazos de atrás -->
-            <path d="M174 122 C160 92 136 80 128 92 C122 104 148 116 174 124 Z" fill="url(#lazo3)" opacity=".85"/>
-            <path d="M180 122 C196 90 222 80 230 92 C236 104 208 116 180 124 Z" fill="#76767d"/>
-            <g class="loop loop-a">
-              <path d="M176 126 C140 92 96 84 90 108 C86 128 128 136 176 132 Z" fill="url(#lazo3)"/>
-              <ellipse cx="112" cy="112" rx="12" ry="5" transform="rotate(-14 114 112)" fill="url(#hueco)"/>
-              <path d="M98 96 C116 88 140 94 160 110" fill="none" stroke="#fff" stroke-opacity=".6" stroke-width="2.4" stroke-linecap="round"/>
-              <path d="M176 130 C150 128 112 126 96 118" fill="none" stroke="#3a3a40" stroke-opacity=".35" stroke-width="2"/>
-            </g>
-            <g class="loop loop-b">
-              <path d="M176 126 C214 90 260 82 266 106 C270 128 226 136 176 132 Z" fill="url(#lazo3)"/>
-              <ellipse cx="244" cy="110" rx="12" ry="5" transform="rotate(14 242 110)" fill="url(#hueco)"/>
-              <path d="M196 106 C214 92 238 88 254 94" fill="none" stroke="#fff" stroke-opacity=".45" stroke-width="2.2" stroke-linecap="round"/>
-              <path d="M176 130 C204 128 244 126 260 118" fill="none" stroke="#3a3a40" stroke-opacity=".4" stroke-width="2"/>
-            </g>
-            <rect x="163" y="117" width="26" height="20" rx="9" fill="url(#lazo3)"/>
-            <path d="M167 121 C172 124 180 124 185 121" fill="none" stroke="#fff" stroke-opacity=".55" stroke-width="1.4" stroke-linecap="round"/>
-            <path d="M167 133 C172 130 180 130 185 133" fill="none" stroke="#3a3a40" stroke-opacity=".35" stroke-width="1.3"/>
-          </g>
-
-          </g>
-          <!-- hilo: del nudo, sobre el borde de la tapa, hasta el ojal -->
-          <path d="M172 124 C150 134 118 132 104 150 C99 156 97 162 96 168" fill="none" stroke="#2a1d0c" stroke-opacity=".45" stroke-width="2.4"/>
-          <path d="M172 124 C150 134 118 132 104 150 C99 156 97 162 96 168" fill="none" stroke="#eadfc4" stroke-width="1.4"/>
-          <!-- etiqueta colgando, se mece desde el ojal -->
-          <g id="etiqueta">
-            <path d="M70 178 L96 162 L122 178 V236 Q122 240 118 240 H74 Q70 240 70 236 Z" fill="#000" opacity=".5" transform="translate(5 7)" filter="url(#sombraSuave)"/>
-            <g class="cuerpo-tag">
-              <path d="M70 178 L96 162 L122 178 V236 Q122 240 118 240 H74 Q70 240 70 236 Z" fill="url(#kraft)" stroke="#6b5532" stroke-opacity=".6"/>
-              <path d="M71 236 H121" stroke="#7a5f36" stroke-opacity=".25"/>
-              <circle cx="96" cy="170" r="4" fill="#b49464"/><circle cx="96" cy="170" r="2.4" fill="#3b2a12"/>
-              <g class="cara frente" font-family="JetBrains Mono, monospace" text-anchor="middle">
-                <text x="96" y="190" font-size="5.2" letter-spacing="1.4" fill="#3c2f1c">PARA</text>
-                <text x="96" y="204" font-size="9" font-weight="700" fill="#8e0c16">M.E.L.I.</text>
-                <text x="96" y="219" font-size="4.6" fill="#5b4c37">como te tengo</text>
-                <text x="96" y="226" font-size="4.6" fill="#5b4c37">en WhatsApp</text>
-              </g>
-              <g class="cara atras" font-family="JetBrains Mono, monospace" text-anchor="middle">
-                <text x="96" y="190" font-size="5.2" letter-spacing="1.4" fill="#8e0c16">PISTA</text>
-                <text x="96" y="203" font-size="4.6" fill="#3c2f1c">Método de</text>
-                <text x="96" y="211" font-size="4.6" fill="#3c2f1c">Estimación</text>
-                <text x="96" y="219" font-size="4.6" fill="#3c2f1c">Lineal</text>
-                <text x="96" y="227" font-size="4.6" fill="#3c2f1c">Insesgado</text>
-              </g>
-            </g>
-          </g>
-        </g>
-      </svg>
       <div id="zonas"><i></i><i></i><i></i><i></i></div><div id="ruedasWin"><div class="ventana" id="ventana" role="group" aria-label="Candado de cuatro letras"></div></div>
     </div>
   </div>
@@ -1080,9 +810,6 @@ function ambiente(){
   $('sonidoHint').classList.add('fuera');$('escena').classList.add('suspenso');
 }
 ['pointerdown','keydown'].forEach(ev=>$('escena').addEventListener(ev,ambiente));
-$('etiqueta').addEventListener('animationiteration',()=>{if(!abierto&&ac&&!reducido)setTimeout(()=>{if(!abierto)ruido(2.2,700,.6,.18,true,1800)},8000*.53)});
-$('etiqueta').addEventListener('click',e=>{e.stopPropagation();if(!abierto){$('etiqueta').classList.toggle('volteada');clic()}});
-setTimeout(()=>{if(!abierto)$('etiqueta').classList.add('volteada')},12000);
 document.addEventListener('keydown',e=>{if(introEnCurso||document.body.classList.contains('en-puerta'))return;if(abierto||els.includes(document.activeElement)||!/^[a-z]$/i.test(e.key))return;const n=fijas.indexOf(false);if(n>=0){els[n].focus({preventScroll:true});els[n].dispatchEvent(new KeyboardEvent('keydown',{key:e.key}))}});
 /* audio: desbloquear con el primer gesto (iPhone) y dejar la canción lista */
 let songG;
@@ -1166,35 +893,15 @@ const apiIntro={
     else if(n==='flash'){if(c){nota(c,bus(),2600,c.currentTime,.05,.08,'square',6000);ruido(.25,4200,1,.08,true,9000)}}
     else if(n==='alivio'){if(resp)resp.alivio();if(respLoop){respLoop.fade(1.6);respLoop=null}}
   }};
-function sin3D(){if($('ligero'))$('ligero').classList.add('fuera');try{Intro3D.parar()}catch(e){}if($('intro'))$('intro').remove();introEnCurso=false;$('saltar').classList.remove('ver');document.body.classList.remove('en-puerta');const es=$('escena');if(!es)return;es.classList.remove('sobre3d','r3d');es.classList.add('ver');
-  ['ruedasWin','zonas'].forEach(id=>{const e=$(id);if(e&&e.classList.contains('flotante')){e.classList.remove('flotante');e.removeAttribute('style');if(e._padre)e._padre.insertBefore(e,e._sig&&e._sig.parentNode===e._padre?e._sig:null)}});
-  const rg=$('regalo');if(rg){rg.style.scale='';rg.style.translate=''}}
+function sin3D(){if($('ligero'))$('ligero').classList.add('fuera');try{Intro3D.parar()}catch(e){}if($('intro'))$('intro').remove();introEnCurso=false;$('saltar').classList.remove('ver');document.body.classList.remove('en-puerta');const es=$('escena');if(!es)return;es.classList.remove('sobre3d','r3d');es.classList.add('ver')}
 addEventListener('intro3d-perdido',()=>{if(!abierto)sin3D()});
 async function iniciaIntro(){
   cargaMedia('paso','media/pasos_madera.wav');cargaMedia('rechina','media/puerta_crujido_squeaky-door.ogg');
   if(!window.THREE||!window.Intro3D){sin3D();return}
   try{await Promise.all([document.fonts.load('80px "Reenie Beanie"'),document.fonts.load('500 30px "JetBrains Mono"'),document.fonts.load('800 54px "JetBrains Mono"'),document.fonts.load('600 30px "JetBrains Mono"'),document.fonts.load('900 30px Unbounded'),document.fonts.load('900 40px "Inter Tight"')]).catch(()=>{});const txt=$('intro').querySelector('.intro-txt b');txt.textContent='Cargando la escena… 0%';
     try{const g=localStorage.getItem('meliLigero');if(g==='1'||(g===null&&Intro3D.movil))Intro3D.ligero_(true)}catch(e){if(Intro3D.movil)Intro3D.ligero_(true)}
-    Intro3D.preparar($('c3d'),k=>{const v=Math.round(k*100);txt.textContent='Cargando la escena… '+v+'%';$('cvBarra').style.width=v+'%';$('cvTxt').textContent='Cargando… '+v+'%'},()=>{txt.textContent='Tocá para entrar';$('cvBarra').style.width='100%';$('cargaVelo').classList.add('fuera')});try{Intro3D.ruedas(ruedas)}catch(e){}capturaRegalo().then(c=>Intro3D.ponRegalo(c)).catch(e=>console.warn(e))}catch(e){console.error(e);sin3D()}
+    Intro3D.preparar($('c3d'),k=>{const v=Math.round(k*100);txt.textContent='Cargando la escena… '+v+'%';$('cvBarra').style.width=v+'%';$('cvTxt').textContent='Cargando… '+v+'%'},()=>{txt.textContent='Tocá para entrar';$('cvBarra').style.width='100%';$('cargaVelo').classList.add('fuera')});try{Intro3D.ruedas(ruedas)}catch(e){console.warn('No se pudieron inicializar las ruedas',e)}}catch(e){console.error(e);sin3D()}
 }
-async function capturaRegalo(){
-  const org=document.querySelector('.caja3d'),cl=org.cloneNode(true);
-  const a=org.querySelectorAll('*'),b=cl.querySelectorAll('*');
-  a.forEach((el,i)=>{const cs=getComputedStyle(el),d=b[i];d.style.opacity=cs.opacity;d.style.display=cs.display;if(cs.transform&&cs.transform!=='none'&&el.closest('#etiqueta')!==el)d.style.transform=cs.transform;d.style.animation='none'});
-  cl.querySelectorAll('animateTransform').forEach(x=>x.remove());
-  cl.setAttribute('xmlns','http://www.w3.org/2000/svg');cl.setAttribute('width',680);cl.setAttribute('height',760);cl.removeAttribute('class');
-  const url=URL.createObjectURL(new Blob([new XMLSerializer().serializeToString(cl)],{type:'image/svg+xml'}));
-  const img=new Image();await new Promise((ok,no)=>{img.onload=ok;img.onerror=no;img.src=url});
-  const c=document.createElement('canvas');c.width=680;c.height=760;const g=c.getContext('2d');
-  g.save();g.beginPath();g.rect(0,0,680,712);g.clip();g.filter='sepia(.12)';g.drawImage(img,0,0,680,760);g.filter='none';g.restore();
-  // las ruedas del candado (en la página son HTML): mismas letras, misma ventana
-  const W=$('ruedasWin').getBoundingClientRect(),S=org.getBoundingClientRect(),k=680/S.width;
-  const x0=(W.left-S.left)*k,y0=(W.top-S.top)*k,w=W.width*k,h=W.height*k;
-  g.save();g.beginPath();g.rect(x0,y0,w,h);g.clip();
-  els.forEach((el,i)=>{const cx=x0+w*(i+.5)/4,col=g.createLinearGradient(0,y0,0,y0+h);col.addColorStop(0,'#6b6458');col.addColorStop(.5,'#f4eee0');col.addColorStop(1,'#6b6458');
-    g.fillStyle=col;g.fillRect(x0+w*i/4+1.5,y0,w/4-3,h);g.fillStyle='#1b1712';g.font=`700 ${h*.42}px "JetBrains Mono", monospace`;g.textAlign='center';g.textBaseline='middle';
-    const L=el.getAttribute('aria-valuetext')||'A',n=ABC.indexOf(L);[[-1,.12],[0,.5],[1,.88]].forEach(([d,f])=>{g.globalAlpha=d?.45:1;g.fillText(ABC[(n+d+26)%26],cx,y0+h*f)});g.globalAlpha=1});
-  g.restore();URL.revokeObjectURL(url);return c}
 let entrando=false;
 /* modo ligero: se recuerda en esta compu */
 (()=>{const b=$('ligero');if(!b)return;const movil=matchMedia('(pointer:coarse)').matches||Math.min(screen.width,screen.height)<820;let on=movil;try{const g=localStorage.getItem('meliLigero');if(g!==null&&!movil)on=g==='1'}catch(e){}
@@ -1202,9 +909,8 @@ let entrando=false;
   b.addEventListener('click',e=>{e.stopPropagation();if(movil)return;on=!on;try{localStorage.setItem('meliLigero',on?'1':'0')}catch(e){}pinta()});
   b.addEventListener('keydown',e=>e.stopPropagation())})();
 function entrar(){if(entrando||!Intro3D.cargado)return;entrando=true;introEnCurso=true;$('saltar').classList.add('ver');desbloquea();$('intro').classList.add('andando');$('ligero').classList.add('fuera');if(reducido)setTimeout(()=>{try{Intro3D.saltar()}catch(e){}},350);
-  Intro3D.correr(apiIntro,()=>{introEnCurso=false;$('saltar').classList.remove('ver');ambiente();setTimeout(()=>{if(!abierto&&window.Intro3D&&Intro3D.voltea)Intro3D.voltea()},12000);const es=$('escena');if(Intro3D.tiene3D){es.classList.add('r3d');ubicaCandado()}else alinearRegalo();es.classList.add('ver');Intro3D.fundeRegalo(700);$('intro').style.cursor='default';
+  Intro3D.correr(apiIntro,()=>{introEnCurso=false;$('saltar').classList.remove('ver');ambiente();setTimeout(()=>{if(!abierto&&window.Intro3D&&Intro3D.voltea)Intro3D.voltea()},12000);const es=$('escena');es.classList.add('r3d');ubicaCandado();es.classList.add('ver');$('intro').style.cursor='default';
     setTimeout(()=>{document.body.classList.remove('en-puerta');const n=fijas.indexOf(false);if(n>=0)els[n].focus({preventScroll:true})},1400)})}
-/* pone el regalo dibujado exactamente donde está el regalo 3D */
 /* mantener 5 segundos para saltar */
 (()=>{const b=document.getElementById('saltar');if(!b)return;const an=b.querySelector('.anillo');let t0=0,raf=0;
   const fin=()=>{cancelAnimationFrame(raf);t0=0;an.style.setProperty('--p',0)};
@@ -1217,12 +923,6 @@ document.addEventListener('click',e=>{if(!window.Intro3D||!Intro3D.rectEtiqueta|
 function ubicaCandado(){let r=(Intro3D.rectRuedas||Intro3D.rectCandado)();if(!r)return;const w=Math.max(r.w,184),h=Math.max(r.h,120);r={x:r.x+r.w/2-w/2,y:r.y+r.h/2-h/2,w,h};['ruedasWin','zonas'].forEach(id=>{const e=$(id);if(e.parentNode!==document.body){e._padre=e.parentNode;e._sig=e.nextSibling;document.body.appendChild(e)}e.classList.add('flotante');
   Object.assign(e.style,{left:r.x+'px',top:r.y+'px',width:r.w+'px',height:r.h+'px'})})}
 addEventListener('resize',()=>{if(window.Intro3D&&Intro3D.tiene3D&&$('zonas').classList.contains('flotante')&&!abierto)requestAnimationFrame(()=>requestAnimationFrame(ubicaCandado))});
-function alinearRegalo(){const el=$('regalo'),svg=el.querySelector('.caja3d');if(!svg||!window.Intro3D)return;
-  el.style.scale='';el.style.translate='';const r=Intro3D.rectRegalo(),b=svg.getBoundingClientRect();
-  const base=parseFloat(getComputedStyle(el).scale)||1;
-  const k=Math.min(r.w/b.width,r.h/b.height),ex=b.left+b.width/2,ey=b.top+b.height/2;
-  el.style.scale=base*k;el.style.translate=`${r.x+r.w/2-ex}px ${r.y+r.h/2-ey}px`}
-addEventListener('resize',()=>{if($('escena')&&$('escena').classList.contains('ver')&&!abierto)alinearRegalo()});
 $('intro').addEventListener('click',entrar);
 $('intro').addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();entrar()}});
 function desbloquea(){ambiente();const c0=ctx();if(c0&&c0.state!=='running')c0.resume().catch(()=>{});Object.keys(MEDIA).forEach(n=>esperaMedia(n));if(desbloqueado)return;desbloqueado=true;try{if(navigator.audioSession)navigator.audioSession.type='playback'}catch(e){}
@@ -1247,14 +947,7 @@ async function abrir(){
     const c=ctx(),gg=(v,f)=>golpeGrave(c?c.currentTime:0,f,v);setTimeout(()=>{gg(.45,140);ruido(.3,2600,6,.25)},780);setTimeout(()=>gg(.18,180),980);setTimeout(()=>ruido(.6,1500,1,.2,true),520);
     setTimeout(()=>ruido(.25,700,2,.15),1100);setTimeout(()=>whoosh(),1600);setTimeout(()=>{gg(.3,95)},2380);setTimeout(()=>acordeRevelacion(),1550);setTimeout(()=>ruido(.7,3200,.9,.2,true),2050);
     await Intro3D.abrirRegalo();r=Intro3D.rectCarta();setTimeout(()=>Intro3D.ocultaCarta(),60);
-  }else{
-  escn.classList.add('abriendo');clicFuerte();tono(1850,ctx()?ctx().currentTime:0,.003,.03,.25,'triangle');
-  await espera(420);escn.classList.add('cae-candado');setTimeout(()=>{golpeGrave(ctx()?ctx().currentTime:0,140,.45);ruido(.3,2600,6,.25)},360);
-  await espera(300);escn.classList.add('sin-liston');ruido(.5,1800,1.2,.25,true);
-  await espera(320);escn.classList.add('sin-tapa');whoosh();
-  await espera(520);escn.classList.add('luz-interior');acordeRevelacion();
-  await espera(160);escn.classList.add('sube-carta');setTimeout(()=>ruido(.6,3200,.9,.22,true),150);
-  await espera(720);r=$('papelSvg').getBoundingClientRect()}
+  }
   // la carta todavía sube: pasa a primer plano sin frenar
   const cf=$('cartaFinal');
   Object.assign(cf.style,{left:r.left+'px',top:(r.top-r.height)+'px',width:r.width+'px',height:(r.height*3)+'px',fontSize:r.width+'px'});

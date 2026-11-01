@@ -5,7 +5,7 @@
 (function(){
 const T=THREE;
 let R,S,C,reloj,linterna,focoMesa,lampCono,puerta,parpadeo=[],polvo,listo=false,corriendo=false,t0=0,alTerminar=null;
-let tAcum=0,flashT=-1,flashL=null,linMesa=null,lampEsc=null,fadeObj=0,fadeVal=0,lampBulbo=null,zoomK=-1,zIni=null,zMir=null,LM=null,cargaProg=null,cargaListo=null,cargado=false,macetas=[],comp=null,regaloPlano=null,regaloMat=null,manoL,manoR,linternaObj,cintaP,autoPuerta,sirena=[],lluvia,fundeT=-1,fundeDur=1;
+let tAcum=0,flashT=-1,flashL=null,linMesa=null,lampEsc=null,fadeObj=0,fadeVal=0,lampBulbo=null,zoomK=-1,zIni=null,zMir=null,LM=null,cargaProg=null,cargaListo=null,cargado=false,macetas=[],comp=null,manoL,manoR,linternaObj,cintaP,autoPuerta,sirena=[],lluvia;
 const ev=[];
 const W=()=>innerWidth,H=()=>innerHeight;
 function rnd(a,b){return a+Math.random()*(b-a)}
@@ -802,8 +802,6 @@ function cuadroLoop(){
     apagV=v;linterna.intensity=apagonT<.68?3.2*v:0;if(apagonT>.8){if(zoomK<0){zoomK=0;manoL.visible=linternaObj.visible=false}zoomK=Math.min(1,(apagonT-.8)/1.3);if(zoomK>.3&&!camara.p1){camara.p1=1;pisada()}if(zoomK>.75&&!camara.p2){camara.p2=1;pisada()}}}
   if(flashT>=0){flashT+=dt;flashL.intensity=flashT<.08?9:flashT<.16?0:flashT<.24?6:0;if(flashT>.3){flashT=-1;flashL.intensity=0}}
 
-  if(regaloMat){const luz=focoT<0?.04:Math.max(.04,focoMesa.intensity/3)*1.05;regaloMat.color.setScalar(luz)}
-  if(fundeT>=0&&regaloMat){fundeT+=dt;regaloMat.opacity=Math.max(0,1-fundeT/fundeDur);if(regaloMat.opacity<=0){regaloPlano.visible=false;fundeT=-1}}
   parpadeo.forEach(([v,b],i)=>{const f=.78+Math.sin(performance.now()*.011+i*2)*.12+rnd(-.12,.12);if(v.isLight)v.intensity=b*f;else if(v.material)v.material.opacity=b*f});
   {let v=0;if(focoT>=0){focoT+=dt;const seq=[[0,1],[.12,0],[.2,1],[.32,.1],[.42,1],[.55,.3],[.65,1]];v=1;for(const [tt,vv] of seq)if(focoT>=tt)v=vv}
    // parpadeo de misterio: casi siempre estable, cada tanto un bajón corto
@@ -983,16 +981,6 @@ window.Intro3D={
   preparar(cv,prog,listo){cv.addEventListener('webglcontextlost',e=>{e.preventDefault();dispatchEvent(new Event('intro3d-perdido'))},{once:true});cargaProg=prog;cargaListo=listo;construir(cv);camara(0,0);reloj.getDelta();cuadroLoop();if(!T.GLTFLoader)setTimeout(()=>{cargado=true;listo&&listo()},50)},
   get movil(){return MOVIL},get cargado(){return cargado},get ligero(){return LIGERO},ligero_(on){ponLigero(on)},get cuadros(){return cuadros},
   get tiene3D(){return R3api.tiene3D},ruedas:R3api.ruedas,rectRuedas:R3api.rectRuedas,fija:R3api.fija,rectCandado:R3api.rectCandado,abrirRegalo:R3api.abrirRegalo,rectCarta:R3api.rectCarta,ocultaCarta:R3api.ocultaCarta,voltea:R3api.voltea,rectEtiqueta:R3api.rectEtiqueta,
-  rectRegalo(){if(!regaloPlano)return{x:0,y:0,w:0,h:0};let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;const w=regaloPlano.userData.w/2,h=regaloPlano.userData.h/2;
-    [[-w,-h],[w,-h],[-w,h],[w,h]].forEach(([x,y])=>{const p=regaloPlano.localToWorld(V(x,y,0)).project(C);const sx=(p.x*.5+.5)*W(),sy=(-p.y*.5+.5)*H();x0=Math.min(x0,sx);x1=Math.max(x1,sx);y0=Math.min(y0,sy);y1=Math.max(y1,sy)});return{x:x0,y:y0,w:x1-x0,h:y1-y0}},
-  fundeRegalo(ms){if(R3){manoL.visible=linternaObj.visible=false;return}fundeDur=ms/1000;fundeT=0;manoL.visible=linternaObj.visible=false},
-  // el regalo dibujado (capturado del SVG de la página) como una tarjeta en la mesa
-  ponRegalo(canvas){if(R3)return;const t=new T.CanvasTexture(canvas);t.encoding=T.sRGBEncoding;t.anisotropy=8;
-    regaloMat=new T.MeshBasicMaterial({map:t,transparent:true,toneMapped:false,fog:false,depthWrite:false});const w=.5,h=w*380/340;
-    regaloPlano=new T.Mesh(new T.PlaneGeometry(w,h),regaloMat);regaloPlano.userData={w,h};
-    regaloPlano.position.set(0,1.05+(350-190)/380*h,-7.0);regaloPlano.lookAt(V(0,1.42,-6.28));regaloPlano.renderOrder=5;S.add(regaloPlano);
-    const [cs,gs]=lienzo(256,256);const gr=gs.createRadialGradient(128,128,10,128,128,128);gr.addColorStop(0,'rgba(0,0,0,.85)');gr.addColorStop(.45,'rgba(0,0,0,.55)');gr.addColorStop(1,'rgba(0,0,0,0)');gs.fillStyle=gr;gs.fillRect(0,0,256,256);
-    const sh=new T.Mesh(new T.PlaneGeometry(.62,.62),new T.MeshBasicMaterial({map:new T.CanvasTexture(cs),transparent:true,depthWrite:false}));sh.rotation.x=-Math.PI/2;sh.scale.y=.5;sh.scale.x=1.05;sh.position.set(.04,1.054,-6.95);S.add(sh)},
   saltar(){if(!corriendo||apagonT>=0)return;const meta=44.4;sonar('sirena',0);sonar('descubre');ev.forEach(x=>{if(x.t<meta)x.hecho=true});tAcum=meta;focoT=0;manoEst='fuera';cintaObj=0;puertaObj=1.75;fadeObj=0;mirada=null;camara.salto=true;sonar('lluvia',.35);sonar('escena','regalo');sonar('rechina',1)},
   correr(api,fin){pisada=api.paso||pisada;sonar=api.sonar||sonar;linea();alTerminar=fin;t0=performance.now();tAcum=0;corriendo=true},
   parar(){listo=false;try{S.traverse(o=>{if(o.geometry)o.geometry.dispose();const ms=o.material?(Array.isArray(o.material)?o.material:[o.material]):[];ms.forEach(m=>{Object.keys(m).forEach(k=>{if(m[k]&&m[k].isTexture)m[k].dispose()});m.dispose()})});if(comp)comp.passes.forEach(p=>p.dispose&&p.dispose());R.dispose();R.forceContextLoss()}catch(e){}},
