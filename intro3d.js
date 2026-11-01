@@ -53,7 +53,7 @@ function redJohn(){const [c,g]=lienzo(1024,1024);g.lineCap='round';g.lineJoin='r
   for(let k=0;k<5;k++){const a=rnd(Math.PI+.3,Math.PI*2-.3);gota(512+Math.cos(a)*330,492+Math.sin(a)*343+14,rnd(40,140))}
   // salpicaduras
   for(let k=0;k<70;k++){const a=rnd(0,7),r=rnd(250,470);g.fillStyle=`rgba(110,4,8,${rnd(.4,.9)})`;g.beginPath();g.arc(512+Math.cos(a)*r,500+Math.sin(a)*r,rnd(1.5,6),0,7);g.fill()}
-  const t=new T.CanvasTexture(c);t.encoding=T.sRGBEncoding;return t}
+  const t=new T.CanvasTexture(c);t.encoding=T.sRGBEncoding;t.anisotropy=MOVIL?2:8;t.minFilter=T.LinearMipmapLinearFilter;t.magFilter=T.LinearFilter;t.generateMipmaps=true;t.noResize=true;return t}
 function poster(fondo1,fondo2,lineas){const [c,g]=lienzo(512,720);const gr=g.createLinearGradient(0,0,512,720);gr.addColorStop(0,fondo1);gr.addColorStop(1,fondo2);g.fillStyle=gr;g.fillRect(0,0,512,720);
   for(let i=0;i<120;i++){g.fillStyle=`rgba(255,255,255,${rnd(.02,.12)})`;g.beginPath();g.arc(rnd(0,512),rnd(0,720),rnd(1,3),0,7);g.fill()}
   g.textAlign='center';lineas.forEach(([t,f,y,col])=>{g.fillStyle=col||'#fff';g.font=f;g.fillText(t,256,y)});grano(g,512,720,8);const t=new T.CanvasTexture(c);t.encoding=T.sRGBEncoding;return t}
@@ -257,7 +257,7 @@ function construir(cv){
   const avisaListo=()=>{if(listoAvisado)return;listoAvisado=true;cargado=true;if(LIGERO)ponLigero(true);cargaListo&&cargaListo()};
   LM=new T.LoadingManager(()=>{setTimeout(()=>{if(MOVIL)try{achicaTexturas(768)}catch(e){}try{zonificar();if(!MOVIL)compilaZonas()}catch(e){console.warn(e)}try{if(!MOVIL)calentar()}catch(e){console.warn(e)}},0);avisaListo()},(u,l,t)=>{cargaProg&&cargaProg(l/t)});
   R=new T.WebGLRenderer({canvas:cv,antialias:false,powerPreference:'high-performance'});
-  prMax=Math.min(devicePixelRatio,MOVIL?.8:.8);pr=prMax;R.setPixelRatio(pr);R.setSize(W(),H());R.outputEncoding=T.sRGBEncoding;
+  prMax=Math.min(devicePixelRatio,MOVIL?.9:1.25);pr=prMax;R.setPixelRatio(pr);R.setSize(W(),H());R.outputEncoding=T.sRGBEncoding;
   R.toneMapping=T.ACESFilmicToneMapping;R.toneMappingExposure=1.25;R.shadowMap.enabled=true;R.shadowMap.autoUpdate=false;R.shadowMap.type=T.PCFShadowMap;R.physicallyCorrectLights=false;
   S=new T.Scene();S.fog=new T.FogExp2('#0a0e13',.065);
   C=new T.PerspectiveCamera(W()<H()?76:60,W()/H(),.02,90);C.position.set(0,1.62,11);S.add(C);
