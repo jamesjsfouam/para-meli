@@ -742,9 +742,9 @@ let abierto=false;
 const fijas=[false,false,false,false];
 function mueve(i,d){if(abierto||fijas[i])return;ruedas[i]=(ruedas[i]+d+26)%26;pinta(i,d);clic();revisa(i)}
 function revisa(i){if(!fijas[i]&&ABC[ruedas[i]]===CLAVE[i])fijar(i)}
-function golpecito(){['candadoSvg','ruedasWin'].forEach(id=>{const e=$(id);e.classList.remove('golpe');void e.getBoundingClientRect();e.classList.add('golpe')})}
+function golpecito(){['candadoSvg','ruedasWin'].forEach(id=>{const e=$(id);if(!e)return;e.classList.remove('golpe');void e.getBoundingClientRect();e.classList.add('golpe')})}
 function fijar(i){fijas[i]=true;if(window.Intro3D&&Intro3D.fija)Intro3D.fija(i);const el=els[i];el.classList.add('fija');el.setAttribute('aria-disabled','true');
-  document.querySelectorAll('#leds .led')[i].classList.add('on');golpecito();
+  const led=document.querySelectorAll('#leds .led')[i];if(led)led.classList.add('on');golpecito();
   sonidoBloqueo(fijas.filter(Boolean).length);
   setTimeout(()=>{const a=els.indexOf(document.activeElement);if(a<0||fijas[a]){const n=fijas.indexOf(false);if(n>=0)els[n].focus({preventScroll:true})}},120);
   if(fijas.every(Boolean)){if(amb)amb.parar();$('escena').classList.remove('suspenso');setTimeout(abrir,900)}}
@@ -925,7 +925,7 @@ function entrar(){if(entrando||!Intro3D.cargado)return;entrando=true;introEnCurs
   b.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&!t0){e.preventDefault();t0=performance.now();raf=requestAnimationFrame(paso)}});b.addEventListener('keyup',fin)})();
 /* tocar la etiqueta 3D la voltea (frente: para quién; reverso: la pista) */
 document.addEventListener('click',e=>{if(!window.Intro3D||!Intro3D.rectEtiqueta||abierto||!$('escena')||!$('escena').classList.contains('ver'))return;const r=Intro3D.rectEtiqueta();if(r&&e.clientX>=r.x-12&&e.clientX<=r.x+r.w+12&&e.clientY>=r.y-12&&e.clientY<=r.y+r.h+12){Intro3D.voltea();clic()}});
-function ubicaCandado(){let r=(Intro3D.rectRuedas||Intro3D.rectCandado)();if(!r)return;const tactil=!!Intro3D.movil||matchMedia('(pointer:coarse)').matches,w=tactil?240:Math.max(r.w,184),h=tactil?132:Math.max(r.h,120);r={x:r.x+r.w/2-w/2,y:r.y+r.h/2-h/2,w,h};r.x=Math.max(12,Math.min(innerWidth-w-12,r.x));r.y=Math.max(90,Math.min(innerHeight-h-110,r.y));['ruedasWin','zonas'].forEach(id=>{const e=$(id);if(e.parentNode!==document.body){e._padre=e.parentNode;e._sig=e.nextSibling;document.body.appendChild(e)}e.classList.add('flotante');
+function ubicaCandado(){let r=(Intro3D.rectRuedas||Intro3D.rectCandado)();if(!r)return;const tactil=!!Intro3D.movil||matchMedia('(pointer:coarse)').matches,w=tactil?240:Math.max(r.w,184),h=tactil?132:Math.max(r.h,120);r={x:tactil?(innerWidth-w)/2:r.x+r.w/2-w/2,y:tactil?(innerHeight-h)/2:r.y+r.h/2-h/2,w,h};r.x=Math.max(12,Math.min(innerWidth-w-12,r.x));r.y=Math.max(12,Math.min(innerHeight-h-12,r.y));['ruedasWin','zonas'].forEach(id=>{const e=$(id);if(e.parentNode!==document.body){e._padre=e.parentNode;e._sig=e.nextSibling;document.body.appendChild(e)}e.classList.add('flotante');
   Object.assign(e.style,{left:r.x+'px',top:r.y+'px',width:r.w+'px',height:r.h+'px'})})}
 addEventListener('resize',()=>{if(window.Intro3D&&Intro3D.tiene3D&&$('zonas').classList.contains('flotante')&&!abierto)requestAnimationFrame(()=>requestAnimationFrame(ubicaCandado))});
 $('intro').addEventListener('click',entrar);
