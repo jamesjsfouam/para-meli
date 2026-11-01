@@ -5,7 +5,7 @@
 (function(){
 const T=THREE;
 let R,S,C,reloj,linterna,focoMesa,lampCono,puerta,parpadeo=[],polvo,listo=false,corriendo=false,t0=0,alTerminar=null;
-let flashT=-1,flashL=null,linMesa=null,lampEsc=null,bajaAuto=0,fadeObj=0,fadeVal=0,lampBulbo=null,lampVol=null,zoomK=-1,zIni=null,zMir=null,libreta=null,LM=null,cargaProg=null,cargaListo=null,cargado=false,macetas=[],comp=null,regaloPlano=null,regaloMat=null,manoL,manoR,linternaObj,regaloMats=[],regaloG,cintaP,autoPuerta,sirena=[],lluvia,fundeT=-1,fundeDur=1;
+let tAcum=0,flashT=-1,flashL=null,linMesa=null,lampEsc=null,bajaAuto=0,fadeObj=0,fadeVal=0,lampBulbo=null,lampVol=null,zoomK=-1,zIni=null,zMir=null,libreta=null,LM=null,cargaProg=null,cargaListo=null,cargado=false,macetas=[],comp=null,regaloPlano=null,regaloMat=null,manoL,manoR,linternaObj,regaloMats=[],regaloG,cintaP,autoPuerta,sirena=[],lluvia,fundeT=-1,fundeDur=1;
 const ev=[];
 const W=()=>innerWidth,H=()=>innerHeight;
 function rnd(a,b){return a+Math.random()*(b-a)}
@@ -172,7 +172,7 @@ function crearMano(lado=1){
 
 /* ---------- la escena ---------- */
 function construir(cv){
-  LM=new T.LoadingManager(()=>{cargado=true;cargaListo&&cargaListo()},(u,l,t)=>{cargaProg&&cargaProg(l/t)});
+  LM=new T.LoadingManager(()=>{setTimeout(()=>{try{calentar()}catch(e){console.warn(e)}cargado=true;cargaListo&&cargaListo()},60)},(u,l,t)=>{cargaProg&&cargaProg(l/t)});
   R=new T.WebGLRenderer({canvas:cv,antialias:true,powerPreference:'high-performance'});
   R.setPixelRatio(Math.min(devicePixelRatio,1.6));R.setSize(W(),H());R.outputEncoding=T.sRGBEncoding;
   R.toneMapping=T.ACESFilmicToneMapping;R.toneMappingExposure=1.25;R.shadowMap.enabled=true;R.shadowMap.type=T.PCFSoftShadowMap;R.physicallyCorrectLights=false;
@@ -541,6 +541,14 @@ function construir(cv){
   listo=true;
 }
 
+/* ---------- precalentar la escena completa en un buffer oculto ---------- */
+function calentar(){const rt=new T.WebGLRenderTarget(320,200);const vistas=[
+  [[-1.3,1.6,11.2],[0,1.7,0]],[[-1,1.6,9],[0,1,14.4]],[[.15,1.9,.8],[.3,1.3,0]],[[0,1.9,-.5],[0,1.6,-6]],[[-.8,1.9,-3.5],[-4,1.2,-4.6]],
+  [[-.8,1.9,-3.5],[-2.6,1.9,-.2]],[[.2,1.9,-5.1],[4,1.6,-4]],[[.2,1.9,-5.1],[2.8,1.5,-7.7]],[[0,1.72,-6],[0,1.25,-7]]];
+  const p0=C.position.clone(),q0=C.quaternion.clone();focoMesa.intensity=.01;flashL.intensity=.01;
+  vistas.forEach(([a,b])=>{C.position.set(...a);C.lookAt(...b);C.updateMatrixWorld();R.setRenderTarget(rt);R.render(S,C)});
+  R.setRenderTarget(null);rt.dispose();C.position.copy(p0);C.quaternion.copy(q0);focoMesa.intensity=0;flashL.intensity=0}
+
 /* ---------- recorrido ---------- */
 const V=(x,y,z)=>new T.Vector3(x,y,z);
 const RUTA=[
@@ -577,6 +585,28 @@ const cr=(p0,p1,p2,p3,u)=>{const u2=u*u,u3=u2*u;return V(
   .5*((2*p1.z)+(-p0.z+p2.z)*u+(2*p0.z-5*p1.z+4*p2.z-p3.z)*u2+(-p0.z+3*p1.z-3*p2.z+p3.z)*u3))};
 const ruido1=t=>Math.sin(t*1.31)*.5+Math.sin(t*2.73+1.3)*.3+Math.sin(t*.71+2.1)*.2;
 let mirada=null,paso=0;
+// la mano izquierda baja al escritorio, cierra los dedos sobre la linterna y la trae a la posición de sostener
+const sat=x=>Math.max(0,Math.min(1,x));
+function agarrarLinterna(t){
+  const wp=linMesa.getWorldPosition(V(0,0,0)),aM=linMesa.children.find(c=>c.type!=='Mesh'),wq=(aM||linMesa).getWorldQuaternion(new T.Quaternion());
+  const enCam=C.worldToLocal(wp.clone());const qc=C.quaternion.clone().invert();
+  const hijo=linternaObj.children.find(c=>c.type!=='Mesh');const qHijo=hijo?hijo.quaternion.clone():new T.Quaternion();
+  const qMesa=qc.multiply(wq).multiply(qHijo.clone().invert());                    // la orientación que tendría en la mesa
+  const qMano=new T.Quaternion().setFromEuler(new T.Euler(.08,.1,0));
+  const sobre=enCam.clone().add(V(.01,.05,.03));
+  const k1=suave(sat((t-.3)/.6)),k2=suave(sat((t-1.0)/.75));
+  // mano: entra desde abajo, se posa sobre la linterna, y luego sube con ella
+  const fuera=V(-.08,-.55,-.28),sostener=V(-.13,-.15,-.3);
+  const pm=t<1.0?fuera.clone().lerp(sobre,k1):sobre.clone().lerp(sostener,k2);
+  manoL.position.copy(pm);
+  // el antebrazo sale del hombro (abajo a la izquierda), no de la cámara
+  const qSost=new T.Quaternion().setFromEuler(new T.Euler(.15,.12,1.35));
+  const hombro=V(-.34,-.5,.12),dir=pm.clone().sub(hombro).normalize();          // del hombro hacia la mano
+  const m4=new T.Matrix4().lookAt(V(0,0,0),dir,V(0,1,0));const qBrazo=new T.Quaternion().setFromRotationMatrix(m4).multiply(new T.Quaternion().setFromEuler(new T.Euler(0,0,Math.PI*.55)));
+  manoL.quaternion.copy(qBrazo.slerp(qSost,k2));
+  manoL.userData.cierra(t<.85?.3:t<1.0?.3+(t-.85)/.15*.7:1);
+  if(t>=1.0){linternaObj.position.copy(enCam.clone().lerp(V(-.12,-.135,-.33),k2));linternaObj.quaternion.copy(qMesa.clone().slerp(qMano,k2));linternaObj.scale.setScalar(1.5+(1-1.5)*k2);linMesa.visible=false}
+}
 function camara(t,dt){
   if(zoomK>=0){if(!zIni){zIni=C.position.clone();zMir=mirada.clone()}
     const k=suave(Math.min(1,zoomK)),pz=zIni.clone().lerp(V(0,1.42,-6.28),k),lz=zMir.clone().lerp(V(0,1.27,-7.0),k);
@@ -609,8 +639,9 @@ function camara(t,dt){
    camara.sx=(camara.sx||0)*Math.exp(-dt*5)+(dt>0?-dy*1.6:0);camara.sy=(camara.sy||0)*Math.exp(-dt*5)+(dt>0?-dp*1.2:0);
    const sx=Math.max(-.08,Math.min(.08,camara.sx)),sy=Math.max(-.06,Math.min(.06,camara.sy));
    manoL.position.x=-.13+sx+bobX*.3;linternaObj.position.x=-.12+sx+bobX*.3;manoL.position.y+=sy;linternaObj.position.y+=sy;
-   linternaObj.rotation.y=.1+sx*1.5;manoL.rotation.z=1.35+sx*.8}
-  const enMesa=t<2.55;manoL.visible=linternaObj.visible=!enMesa&&!fin2;linterna.intensity=enMesa?0:(apagonT<0?3.2:linterna.intensity);
+   linternaObj.rotation.y=.1+sx*1.5;manoL.rotation.z=1.35+sx*.8;linternaObj.rotation.x=.08;linternaObj.rotation.z=0;linternaObj.scale.setScalar(1);manoL.position.z=-.3;linternaObj.position.z=-.33;manoL.rotation.x=.15;manoL.rotation.y=.12}
+  if(t<2.55&&t>0)agarrarLinterna(t);
+  const enMesa=t<2.55;manoL.visible=(!enMesa||t>.3)&&!fin2;linternaObj.visible=(!enMesa||t>=1.0)&&!fin2;linterna.intensity=enMesa?0:(apagonT<0?3.2:linterna.intensity);
   const cab=linternaObj.localToWorld(V(0,0,-.13));linterna.position.copy(cab);
   const dir=new T.Vector3();C.getWorldDirection(dir);
   linterna.target.position.lerp(C.position.clone().add(dir.multiplyScalar(6)),dt>0?Math.min(1,dt*4):1);
@@ -624,11 +655,9 @@ let apagonT=-1,zoomCam=false,puertaObj=0,puertaVel=1,manoEst='fuera',manoK=0,gir
 function linea(){
   ev.length=0;const e=(t,f)=>ev.push({t,f,hecho:false});
   e(.05,()=>{sonar('lluvia',1);sonar('respira')});
-  e(.25,()=>{manoA='lint';manoEst='sube'});
-  e(1.0,()=>{manoEst='agarra';sonar('pestillo')});
-  e(1.35,()=>manoEst='levanta');
-  e(1.7,()=>fadeObj=1);
-  e(2.55,()=>{fadeObj=0;lampEsc.intensity=0;manoEst='fuera';linMesa.visible=false;sonar('hoja')});
+  e(1.0,()=>sonar('tomar'));
+  e(1.95,()=>fadeObj=1);
+  e(2.55,()=>{fadeObj=0;lampEsc.intensity=0;sonar('hoja')});
   e(.06,()=>sonar('escena','escritorio'));e(2.6,()=>sonar('escena','afuera'));
   e(2.9,()=>sonar('portazo'));e(3.4,()=>sonar('radio'));
   e(9.4,()=>{manoA='cinta';manoEst='sube'});
@@ -668,7 +697,7 @@ function pintaManoR(dt){
 function cuadroLoop(){
   if(!listo)return;requestAnimationFrame(cuadroLoop);
   const dt=Math.min(reloj.getDelta(),.05);
-  const t=corriendo?(window.Intro3D._fijo!=null?window.Intro3D._fijo:(performance.now()-t0)/1000):0;
+  if(corriendo)tAcum+=dt;const t=corriendo?(window.Intro3D._fijo!=null?window.Intro3D._fijo:tAcum):0;
   camara(Math.min(t,FIN),corriendo?dt:0);
   if(corriendo)ev.forEach(x=>{if(!x.hecho&&t>=x.t){x.hecho=true;x.f()}});
   puerta.rotation.y+=(puertaObj-puerta.rotation.y)*Math.min(1,dt*puertaVel*2.2);
@@ -686,7 +715,7 @@ function cuadroLoop(){
   parpadeo.forEach(([v,b],i)=>{const f=.78+Math.sin(performance.now()*.011+i*2)*.12+rnd(-.12,.12);if(v.isLight)v.intensity=b*f;else if(v.material)v.material.opacity=b*f});
   if(focoT>=0){focoT+=dt;const seq=[[0,1],[.12,0],[.2,1],[.32,.1],[.42,1],[.55,.3],[.65,1]];let v=1;for(const [tt,vv] of seq)if(focoT>=tt)v=vv;focoMesa.intensity=v*3;lampCono.material.uniforms.uOp.value=v}
   polvo.rotation.y+=dt*.008;
-  if(comp){fadeVal+=(fadeObj-fadeVal)*Math.min(1,dt*7);comp.passes[2].uniforms.uT.value=performance.now()%1000;comp.passes[2].uniforms.uF.value=fadeVal;comp.render()}else R.render(S,C);
+  if(comp){fadeVal+=(fadeObj-fadeVal)*Math.min(1,dt*(fadeObj?9:6));comp.passes[2].uniforms.uT.value=performance.now()%1000;comp.passes[2].uniforms.uF.value=fadeVal;comp.render()}else R.render(S,C);
   if(corriendo&&t>=FIN&&alTerminar){const f=alTerminar;alTerminar=null;f()}
 }
 
@@ -702,7 +731,7 @@ window.Intro3D={
     regaloPlano=new T.Mesh(new T.PlaneGeometry(w,h),regaloMat);regaloPlano.userData={w,h};
     regaloPlano.position.set(0,1.05+(350-190)/380*h,-7.0);regaloPlano.lookAt(V(0,1.42,-6.28));regaloPlano.renderOrder=5;S.add(regaloPlano);
     const sh=new T.Mesh(new T.CircleGeometry(.3,32),new T.MeshBasicMaterial({color:'#000',transparent:true,opacity:.55,depthWrite:false}));sh.rotation.x=-Math.PI/2;sh.scale.y=.45;sh.scale.x=.78;sh.position.set(.02,1.053,-6.98);S.add(sh)},
-  correr(api,fin){pisada=api.paso||pisada;sonar=api.sonar||sonar;linea();alTerminar=fin;t0=performance.now();corriendo=true},
+  correr(api,fin){pisada=api.paso||pisada;sonar=api.sonar||sonar;linea();alTerminar=fin;t0=performance.now();tAcum=0;corriendo=true},
   parar(){listo=false;try{R.dispose()}catch(e){}},
   get FIN(){return FIN}
 };
