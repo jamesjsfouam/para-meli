@@ -12,7 +12,7 @@ Un regalo de cumpleaños hecho a mano: una página web con una entrada en 3D y, 
    - El de un caso de Red John.
    - El de BTS.
 4. **El regalo.** Al fondo del pasillo, bajo un foco que parpadea. Tiene un candado de 4 letras con una pista en la etiqueta.
-5. **La carta.** Sale del regalo y abre la página principal:
+5. **La carta.** Se cae el candado, la tapa sale volando y el listón queda sobre la mesa. Del regalo sale un sobre, se rompe el sello y la carta sube dando vueltas en el aire, siempre en 3D, hasta llenar la pantalla. Ahí empieza *Entre Caníbales* y se abre la página principal:
    - La línea de tiempo.
    - Las cosas que me recuerdan a vos.
    - La carta.
@@ -21,14 +21,18 @@ Un regalo de cumpleaños hecho a mano: una página web con una entrada en 3D y, 
 Detalles de la entrada:
 
 - **Saltar la intro:** hay un botón que se mantiene presionado 5 s.
-- **Modo ligero:** sin sombras, sin lluvia y con menos resolución. En celular viene activado.
+- **Calidad:** en compu arranca en alta, con un botón "Bajar calidad". En celular arranca en modo ligero (sin sombras, sin lluvia y con menos resolución) y el botón dice "Mejorar calidad". La elección se guarda.
+- **Música:** la lluvia y el ambiente suenan durante la entrada. *Entre Caníbales* arranca recién cuando se abre la carta.
+- **Si se recarga** después de haberla abierto, en la misma pestaña, va directo a la página.
 
 ## Estructura
 
 | Archivo | Qué es |
 |---|---|
-| `index.html` | La página completa: estilos, el candado, la carta que sale del regalo y las cuatro secciones. |
-| `intro3d.js` | La entrada en 3D (Three.js r128): escenas, recorrido de la cámara, regalo y candado. |
+| `index.html` | La página completa: estilos, sonido, el candado y las cuatro secciones. |
+| `intro3d.js` | La entrada en 3D (Three.js r128): escritorio, escenas, recorrido de la cámara, regalo, candado y la carta. |
+| `vendor/` | Three.js y sus complementos, servidos desde el propio sitio. |
+| `og.jpg`, `favicon*`, `apple-touch-icon.png` | La vista previa al compartir el link (WhatsApp, etc.) y el ícono del sello. |
 | `contenido.js` | **Lo único que hace falta editar:** la línea de tiempo, la carta, las cosas y las fotos de decoración. |
 | `fotos/` | Fotos de la línea de tiempo y de decoración; `fotos/cosas/` son las imágenes de "Cosas que me recuerdan a vos". |
 | `pbr/` | Texturas y modelos 3D (Poly Haven, CC0). Los `*_col_1k.jpg` son las versiones livianas que usa el celular. |
@@ -50,14 +54,23 @@ python -m http.server 8765
 
 Después abrí http://localhost:8765 en el navegador.
 
+Para ver por qué falló el 3D en un celular, agregá `?diag=1` al link. Aparece un texto verde en la esquina con el motivo y la cantidad de reintentos.
+
+Al cambiar `intro3d.js`, subí el número en `intro3d.js?v=…` dentro de `index.html`, para que los navegadores no usen la versión vieja guardada.
+
 ## Rendimiento
 
 La entrada está pensada para correr bien en compus modestas y en celular:
 
-- **Preparación en pasos.** Al terminar de descargar, los shaders se compilan zona por zona, con respiros, antes de mostrar "Tocá para entrar": nada se congela al entrar.
-- **Por zonas.** El escritorio, el exterior y el interior solo se dibujan y se iluminan cuando la cámara está ahí. Las combinaciones de luces se compilan antes de entrar.
-- **Ajuste automático.** La resolución baja sola si los fps caen. Si aun así no alcanza, se apaga el resplandor.
-- **En celular.** Las texturas y fotos se achican a 768 px, no se cargan los muebles 3D ni el cielo HDR y no hay resplandor. Si el 3D falla, se pierde o se traba, la página salta directo a la carta.
+- **Preparación en pasos.** Al terminar de descargar, los shaders se compilan zona por zona (también en celular), con respiros, antes de mostrar "Tocá para entrar": no hay tirones al entrar a cada parte.
+- **Por zonas.** El escritorio, el exterior y el interior solo se dibujan y se iluminan cuando la cámara está ahí.
+- **Matrices congeladas.** Los objetos quietos no recalculan su posición en cada cuadro. Si algo los mueve, se despiertan solos.
+- **Sombras a demanda.** Solo se recalculan cuando se mueve algo que las proyecta: la cámara con la linterna, las puertas, la cinta o el regalo.
+- **Ajuste automático.** La resolución baja sola si los fps caen. Si aun así no alcanza, se apaga el resplandor. En el escritorio la resolución no baja, para que las notas se lean.
+- **En celular.** Las texturas y fotos se achican; las notas del escritorio conservan su resolución. No se cargan los muebles 3D ni el cielo HDR y no hay resplandor.
+- **Safari (iPhone).** Texturas más chicas, menos gotas de lluvia, y las imágenes se sueltan de la memoria apenas están en la GPU.
+- **Si el 3D se pierde.** Por ejemplo, Safari lo suelta al cambiar de app. La página recarga sola la escena, hasta 3 veces. Nunca cambia a una versión 2D.
+- **La página principal.** No anima nada mientras está tapada por el 3D. Las secciones cerradas pausan sus animaciones.
 - **Al terminar la intro.** Se libera toda la memoria de video antes de mostrar la página.
 
 ## Créditos
