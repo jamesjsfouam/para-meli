@@ -614,6 +614,8 @@ body:has(.vista.abierta) #web::after{display:none}
   .aparece,.slide-in,.pegatina{opacity:1!important;transform:rotate(var(--r,0))!important;filter:none!important}
 }
 </style>
+<script>if(/iPhone|iPad|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1))document.documentElement.classList.add('ios')</script>
+<style>.ios .marq,.ios .liquid,.ios .fondo-deco{animation:none!important}.ios .liquid{display:none}.ios .visible .pegatina{animation:pega .7s cubic-bezier(.2,.9,.25,1.5) forwards;animation-delay:var(--d)}.ios .cielo i{animation:none}</style>
 </head>
 <body class="cerrado en-puerta">
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
@@ -948,7 +950,7 @@ async function iniciaIntro(){
   try{await Promise.race([new Promise(r=>setTimeout(r,3000)),Promise.all([document.fonts.load('80px "Reenie Beanie"'),document.fonts.load('500 30px "JetBrains Mono"'),document.fonts.load('800 54px "JetBrains Mono"'),document.fonts.load('600 30px "JetBrains Mono"'),document.fonts.load('900 30px Unbounded'),document.fonts.load('900 40px "Inter Tight"')]).catch(()=>{})]);const txt=$('intro').querySelector('.intro-txt b');txt.textContent='Cargando la escena… 0%';
     setTimeout(()=>{if(!Intro3D.cargado&&$('intro')){cargaLenta=true;txt.textContent='Tocá para abrir tu regalo';$('cargaVelo').classList.add('fuera')}},60000);
     {let n=0;try{n=+localStorage.getItem('meliIntentos')||0;localStorage.setItem('meliIntentos',n+1)}catch(e){}
-     if(n>=3){sin3D();return}}
+     if(n>=(Intro3D.ios?2:3)){sin3D();return}}
     try{const g=localStorage.getItem('meliLigero');if(g==='1'||(Intro3D.movil&&g!=='0'))Intro3D.ligero_(true)}catch(e){}
     Intro3D.preparar($('c3d'),k=>{if(Intro3D.cargado||!$('cvBarra')||!$('intro'))return;if(k<0){txt.textContent='Preparando la escena…';$('cvTxt').textContent='Preparando la escena…';$('cvBarra').style.width='100%';return}const v=Math.round(k*100);txt.textContent='Cargando la escena… '+v+'%';$('cvBarra').style.width=v+'%';$('cvTxt').textContent='Cargando… '+v+'%'},()=>{if(!$('intro'))return;txt.textContent='Tocá para entrar';$('cvBarra').style.width='100%';$('cargaVelo').classList.add('fuera')});try{Intro3D.ruedas(ruedas)}catch(e){console.warn('No se pudieron inicializar las ruedas',e)}}catch(e){console.error(e);sin3D()}
 }
@@ -1211,7 +1213,7 @@ els[0].focus({preventScroll:true});
 <script src="vendor/RenderPass.js"></script>
 <script src="vendor/ShaderPass.js"></script>
 <script src="vendor/UnrealBloomPass.js"></script>
-<script src="intro3d.js?v=220"></script>
+<script src="intro3d.js?v=230"></script>
 <script>iniciaIntro()</script>
 </body>
 </html>

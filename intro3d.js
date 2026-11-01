@@ -130,7 +130,7 @@ function sombra(o){o.traverse(m=>{if(m.isMesh){m.castShadow=true;m.receiveShadow
 function caja(w,h,d,mat,x,y,z,ry=0,padre=S){const m=new T.Mesh(new T.BoxGeometry(w,h,d),mat);m.position.set(x,y,z);m.rotation.y=ry;m.castShadow=m.receiveShadow=true;padre.add(m);return m}
 function calco(textura,w,h,x,y,z,rx,ry,op=1){const m=new T.Mesh(new T.PlaneGeometry(w,h),new T.MeshStandardMaterial({map:textura,transparent:true,depthWrite:false,roughness:.25,metalness:.05,opacity:op,polygonOffset:true,polygonOffsetFactor:-2}));m.position.set(x,y,z);m.rotation.set(rx,ry,0);m.receiveShadow=true;S.add(m);return m}
 const FOTOC={};
-function texFoto(img){if(FOTOC[img])return FOTOC[img];const tx=new T.TextureLoader(LM||undefined).load(img,t=>{const im=t.image;if(MOVIL&&im&&Math.max(im.width,im.height)>(BAJO?768:1024)){const f=(BAJO?768:1024)/Math.max(im.width,im.height),c=document.createElement('canvas');c.width=Math.round(im.width*f);c.height=Math.round(im.height*f);c.getContext('2d').drawImage(im,0,0,c.width,c.height);t.image=c;t.needsUpdate=true}});tx.encoding=T.sRGBEncoding;return FOTOC[img]=tx}
+function texFoto(img){if(FOTOC[img])return FOTOC[img];const tx=new T.TextureLoader(LM||undefined).load(img,t=>{const im=t.image;if(MOVIL&&im&&Math.max(im.width,im.height)>(IOS?512:(BAJO?768:1024))){const f=(IOS?512:(BAJO?768:1024))/Math.max(im.width,im.height),c=document.createElement('canvas');c.width=Math.round(im.width*f);c.height=Math.round(im.height*f);c.getContext('2d').drawImage(im,0,0,c.width,c.height);t.image=c;t.needsUpdate=true}});tx.encoding=T.sRGBEncoding;return FOTOC[img]=tx}
 function foto(img,w,h,x,y,z,ry,rz=0){const tx=texFoto(img);
   const g=new T.Group();const marco=new T.Mesh(new T.BoxGeometry(w+.04,h+.06,.004),M({color:'#e9e4d8',roughness:.8}));g.add(marco);
   const p=new T.Mesh(new T.PlaneGeometry(w,h),M({map:tx,roughness:.6}));p.position.set(0,.01,.003);g.add(p);
@@ -169,14 +169,20 @@ let zonaActual='',LIGERO=false;
 // en celulares la memoria de video es poca: ninguna textura pasa de 1024 px
 const MOVIL=/Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent)||(matchMedia('(pointer:coarse)').matches&&Math.min(screen.width,screen.height)<900);
 // calidad baja solo en celular y solo si ella la eligió (botón "Bajar calidad")
+// Safari (iPhone/iPad) guarda copias de cada imagen y lienzo aunque ya estén en la GPU y cierra la página mucho antes que Chrome
+const IOS=/[?&]ios=1/.test(location.search)||/iPhone|iPad|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
 const BAJO=MOVIL&&(()=>{try{return localStorage.getItem('meliLigero')!=='0'||(+localStorage.getItem('meliIntentos')||0)>=2}catch(e){return true}})();
+function liberaImagenes(){const ts=new Set();
+  S.traverse(o=>{const ms=o.material?(Array.isArray(o.material)?o.material:[o.material]):[];ms.forEach(m=>Object.keys(m).forEach(k=>{const t=m[k];if(t&&t.isTexture&&!t.isDataTexture&&t.image&&t.image.width)ts.add(t)}))});
+  const ok=new Set();ts.forEach(t=>{try{R.initTexture(t);ok.add(t)}catch(e){}});               // primero se suben todas (algunas comparten lienzo)
+  ok.forEach(t=>{const im=t.image;t.image={width:im.width,height:im.height};if(im instanceof HTMLCanvasElement&&![...ok].some(u=>u.image===im)){try{im.width=im.height=0}catch(e){}}})}
 function achicaTexturas(max){const vistas=new Set();S.traverse(o=>{const ms=o.material?(Array.isArray(o.material)?o.material:[o.material]):[];ms.forEach(m=>Object.keys(m).forEach(k=>{const t=m[k];if(!t||!t.isTexture||vistas.has(t))return;vistas.add(t);const im=t.image;
   if(!im||!im.width||Math.max(im.width,im.height)<=max||t.isDataTexture||t.noResize)return;const f=max/Math.max(im.width,im.height),c=document.createElement('canvas');c.width=Math.round(im.width*f);c.height=Math.round(im.height*f);
   try{c.getContext('2d').drawImage(im,0,0,c.width,c.height);t.image=c;t.needsUpdate=true}catch(e){}}))})}
 // modo ligero: sin sombras, sin lluvia, sin resplandor y menos resolución
 function ponLigero(on){LIGERO=!!on;if(!R)return;
   R.shadowMap.enabled=!LIGERO;S.traverse(o=>{const ms=o.material?(Array.isArray(o.material)?o.material:[o.material]):[];ms.forEach(m=>m.needsUpdate=true)});
-  if(comp&&comp.passes[1])comp.passes[1].enabled=!LIGERO;prMax=Math.min(devicePixelRatio,MOVIL?(LIGERO?.9:1.15):1.25);pr=Math.min(pr,prMax);if(LIGERO)pr=prMax;aplicaPR();
+  if(comp&&comp.passes[1])comp.passes[1].enabled=!LIGERO;prMax=Math.min(devicePixelRatio,IOS?.75:(MOVIL?(LIGERO?.9:1.15):1.25));pr=Math.min(pr,prMax);if(LIGERO)pr=prMax;aplicaPR();
   try{if(LUCES.length)compilaZonas();else R.compile(S,C)}catch(e){}}
 const LUCES=[];
 function zonificar(){const b=new T.Box3(),c=V(0,0,0),t=V(0,0,0),w=V(0,0,0);
@@ -262,14 +268,14 @@ function construir(cv){
   let preparado=false;
   // se prepara en pasos cortos (con respiros entre uno y otro) para que la página no se congele
   const prepara=()=>{if(preparado)return;preparado=true;cargaProg&&cargaProg(-1);
-    const pasos=[()=>{if(MOVIL)achicaTexturas(BAJO?768:1024)},()=>zonificar(),
+    const pasos=[()=>{if(MOVIL)achicaTexturas(IOS?512:(BAJO?768:1024))},()=>zonificar(),
       ...(MOVIL?[]:['escritorio','afuera','adentro'].map(z=>()=>{aplicaZona(z);R.compile(S,C)})),
-      ()=>aplicaZona('escritorio'),()=>{if(!MOVIL)calentar()},()=>avisaListo()];
+      ()=>aplicaZona('escritorio'),()=>{if(IOS)liberaImagenes()},()=>{if(!MOVIL)calentar()},()=>avisaListo()];
     const sigue=()=>{const f=pasos.shift();if(!f)return;try{f()}catch(e){console.warn(e)}setTimeout(sigue,30)};setTimeout(sigue,30)};
   LM=new T.LoadingManager(()=>prepara(),(u,l,t)=>{if(!preparado)cargaProg&&cargaProg(l/t)});
   setTimeout(prepara,40000);   // si algún archivo nunca responde, igual se sigue
   R=new T.WebGLRenderer({canvas:cv,antialias:false,powerPreference:'high-performance'});
-  prMax=Math.min(devicePixelRatio,MOVIL?(LIGERO?.9:1.15):1.25);pr=prMax;R.setPixelRatio(pr);R.setSize(W(),H());R.outputEncoding=T.sRGBEncoding;
+  prMax=Math.min(devicePixelRatio,IOS?.75:(MOVIL?(LIGERO?.9:1.15):1.25));pr=prMax;R.setPixelRatio(pr);R.setSize(W(),H());R.outputEncoding=T.sRGBEncoding;
   R.toneMapping=T.ACESFilmicToneMapping;R.toneMappingExposure=1.25;R.shadowMap.enabled=true;R.shadowMap.autoUpdate=false;R.shadowMap.type=T.PCFShadowMap;R.physicallyCorrectLights=false;
   S=new T.Scene();S.fog=new T.FogExp2('#0a0e13',.065);
   C=new T.PerspectiveCamera(W()<H()?76:60,W()/H(),.02,90);C.position.set(0,1.62,11);S.add(C);
@@ -362,7 +368,7 @@ function construir(cv){
    }
 
   // ----- lluvia -----
-  {const n=MOVIL?650:1400,pos=new Float32Array(n*6);for(let i=0;i<n;i++){const x=rnd(-14,14),y=rnd(0,9),z=rnd(-6,22);pos.set([x,y,z,x+.02,y-.32,z],i*6)}
+  {const n=IOS?350:(MOVIL?650:1400),pos=new Float32Array(n*6);for(let i=0;i<n;i++){const x=rnd(-14,14),y=rnd(0,9),z=rnd(-6,22);pos.set([x,y,z,x+.02,y-.32,z],i*6)}
    const g=new T.BufferGeometry();g.setAttribute('position',new T.BufferAttribute(pos,3));
    lluvia=new T.LineSegments(g,new T.LineBasicMaterial({color:'#9fb0c8',transparent:true,opacity:.32,depthWrite:false}));lluvia.userData.zona='propio';S.add(lluvia)}
 
@@ -1070,7 +1076,7 @@ const R3api={
 
 window.Intro3D={
   preparar(cv,prog,listo){cv.addEventListener('webglcontextlost',e=>{e.preventDefault();dispatchEvent(new Event('intro3d-perdido'))},{once:true});cargaProg=prog;cargaListo=listo;construir(cv);camara(0,0);reloj.getDelta();cuadroLoop();if(!T.GLTFLoader)setTimeout(()=>{cargado=true;listo&&listo()},50)},
-  get movil(){return MOVIL},get bajo(){return BAJO},get cargado(){return cargado},get ligero(){return LIGERO},ligero_(on){ponLigero(on)},get cuadros(){return cuadros},
+  get movil(){return MOVIL},get ios(){return IOS},get bajo(){return BAJO},get cargado(){return cargado},get ligero(){return LIGERO},ligero_(on){ponLigero(on)},get cuadros(){return cuadros},
   get tiene3D(){return R3api.tiene3D},ruedas:R3api.ruedas,rectRuedas:R3api.rectRuedas,fija:R3api.fija,rectCandado:R3api.rectCandado,abrirRegalo:R3api.abrirRegalo,rectCarta:R3api.rectCarta,ocultaCarta:R3api.ocultaCarta,voltea:R3api.voltea,rectEtiqueta:R3api.rectEtiqueta,
   saltar(){if(!corriendo||apagonT>=0)return false;const meta=44.4;sonar('sirena',0);sonar('descubre');ev.forEach(x=>{if(x.t<meta)x.hecho=true});tAcum=meta;focoT=0;manoEst='fuera';cintaObj=0;puertaObj=1.75;fadeObj=0;mirada=null;camara.salto=true;sonar('lluvia',.35);sonar('escena','regalo');sonar('rechina',1);return true},
   correr(api,fin){pisada=api.paso||pisada;sonar=api.sonar||sonar;linea();alTerminar=fin;t0=performance.now();tAcum=0;corriendo=true},
