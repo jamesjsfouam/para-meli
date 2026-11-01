@@ -5,7 +5,7 @@
 (function(){
 const T=THREE;
 let R,S,C,reloj,linterna,focoMesa,lampCono,puerta,parpadeo=[],polvo,listo=false,corriendo=false,t0=0,alTerminar=null;
-let comp=null,regaloPlano=null,regaloMat=null,manoL,manoR,linternaObj,regaloMats=[],regaloG,cintaP,autoPuerta,sirena=[],lluvia,fundeT=-1,fundeDur=1;
+let LM=null,cargaProg=null,cargaListo=null,cargado=false,macetas=[],comp=null,regaloPlano=null,regaloMat=null,manoL,manoR,linternaObj,regaloMats=[],regaloG,cintaP,autoPuerta,sirena=[],lluvia,fundeT=-1,fundeDur=1;
 const ev=[];
 const W=()=>innerWidth,H=()=>innerHeight;
 function rnd(a,b){return a+Math.random()*(b-a)}
@@ -79,6 +79,12 @@ function expediente(){const [c,g]=lienzo(256,340);g.fillStyle='#c9b48a';g.fillRe
 function gotas(){const [c,g]=lienzo(512,512);for(let i=0;i<420;i++){const x=rnd(0,512),y=rnd(0,512),r=rnd(1,5);g.fillStyle=`rgba(200,215,235,${rnd(.15,.45)})`;g.beginPath();g.ellipse(x,y,r,r*rnd(1,1.6),0,0,7);g.fill();g.fillStyle='rgba(255,255,255,.5)';g.fillRect(x-r*.3,y-r*.4,1,1)}
   for(let i=0;i<30;i++){const x=rnd(0,512),y=rnd(0,400);g.strokeStyle='rgba(200,215,235,.25)';g.lineWidth=rnd(1.5,3);g.beginPath();g.moveTo(x,y);g.lineTo(x+rnd(-3,3),y+rnd(30,110));g.stroke()}return tex(c)}
 
+/* ---------- materiales PBR (texturas fotográficas de Poly Haven, CC0) ---------- */
+const TXC={};
+function pbr(n,rep=[1,1],o={}){const tl=new T.TextureLoader(LM||undefined),k=t=>{t.wrapS=t.wrapT=T.RepeatWrapping;t.repeat.set(rep[0],rep[1]);t.anisotropy=8;return t};
+  const map=k(tl.load('pbr/'+n+'_col.jpg'));map.encoding=T.sRGBEncoding;
+  return new T.MeshStandardMaterial(Object.assign({map,normalMap:k(tl.load('pbr/'+n+'_nor.jpg')),roughnessMap:k(tl.load('pbr/'+n+'_rough.jpg')),roughness:1,envMapIntensity:.35},o))}
+
 /* ---------- materiales ---------- */
 const M=o=>new T.MeshStandardMaterial(o);
 function madera(opts,rep,rough=.9){const c=tablas(opts);const t=tex(c,rep);const b=tex(c,rep);return M({map:t,bumpMap:b,bumpScale:.02,roughness:rough})}
@@ -91,8 +97,8 @@ function foto(img,w,h,x,y,z,ry,rz=0){const tx=new T.TextureLoader().load(img);tx
   const ch=new T.Mesh(new T.SphereGeometry(.012,8,6),M({color:'#b01020',roughness:.4}));ch.position.set(0,h/2+.01,.01);g.add(ch);
   g.position.set(x,y,z);g.rotation.set(0,ry,rz);S.add(sombra(g));return g}
 function cactus(x,z,esc=1){const g=new T.Group();const verde=M({color:'#3f5a32',roughness:.85});const maceta=M({color:'#7a3f24',roughness:.95});
-  const m=new T.Mesh(new T.CylinderGeometry(.16,.12,.24,16),maceta);m.position.y=.12;g.add(m);
-  const tm=new T.Mesh(new T.CylinderGeometry(.15,.15,.02,16),M({color:'#2a1c10'}));tm.position.y=.235;g.add(tm);
+  macetas.push(g);
+  const tm=new T.Mesh(new T.CylinderGeometry(.115,.115,.02,16),M({color:'#2a1c10'}));tm.position.y=.2;g.add(tm);
   const pts=[];for(let i=0;i<=10;i++){const y=i/10;pts.push(new T.Vector2(.085*(1-Math.pow(y,6)*.6)+(i%2)*.0,y*.55))}
   const cu=new T.Mesh(new T.LatheGeometry(pts,16),verde);cu.position.y=.24;g.add(cu);
   [[-1,.45,.18],[1,.55,.14]].forEach(([s,y,l])=>{const b=new T.Mesh(new T.CylinderGeometry(.045,.05,.14,10),verde);b.rotation.z=s*1.57;b.position.set(s*.13,y,0);g.add(b);
@@ -119,33 +125,34 @@ function crearMano(lado=1){
 
 /* ---------- la escena ---------- */
 function construir(cv){
+  LM=new T.LoadingManager(()=>{cargado=true;cargaListo&&cargaListo()},(u,l,t)=>{cargaProg&&cargaProg(l/t)});
   R=new T.WebGLRenderer({canvas:cv,antialias:true,powerPreference:'high-performance'});
   R.setPixelRatio(Math.min(devicePixelRatio,1.6));R.setSize(W(),H());R.outputEncoding=T.sRGBEncoding;
   R.toneMapping=T.ACESFilmicToneMapping;R.toneMappingExposure=1.25;R.shadowMap.enabled=true;R.shadowMap.type=T.PCFSoftShadowMap;R.physicallyCorrectLights=false;
-  S=new T.Scene();S.fog=new T.FogExp2('#0b1016',.055);
+  S=new T.Scene();S.fog=new T.FogExp2('#0a0e13',.065);
   C=new T.PerspectiveCamera(W()<H()?76:60,W()/H(),.02,90);C.position.set(0,1.62,11);S.add(C);
-  S.add(new T.Mesh(new T.SphereGeometry(70,24,16),new T.MeshBasicMaterial({map:cielo(),side:T.BackSide,fog:false})));
+  const cieloM=new T.Mesh(new T.SphereGeometry(70,24,16),new T.MeshBasicMaterial({map:cielo(),side:T.BackSide,fog:false}));S.add(cieloM);
   const luna=new T.Sprite(new T.SpriteMaterial({map:brillo('rgba(205,215,240,1)'),fog:false,depthWrite:false}));luna.position.set(-16,20,-34);luna.scale.set(12,12,1);S.add(luna);
   const lunaL=new T.DirectionalLight('#8796c4',.55);lunaL.position.set(-9,16,9);lunaL.castShadow=true;lunaL.shadow.mapSize.set(2048,2048);
   Object.assign(lunaL.shadow.camera,{left:-16,right:16,top:16,bottom:-16,near:1,far:50});lunaL.shadow.bias=-.0006;S.add(lunaL);
   S.add(new T.HemisphereLight('#2a3348','#0b0805',.45));
 
   // ----- bosque -----
-  const st=tex(suelo(),[22,22]);const sb=tex(suelo(),[22,22]);
-  const piso=new T.Mesh(new T.PlaneGeometry(90,90,60,60),M({map:st,bumpMap:sb,bumpScale:.05,roughness:1}));
+  const sueloM=pbr('forest_leaves_02',[30,30],{envMapIntensity:.15});
+  const piso=new T.Mesh(new T.PlaneGeometry(90,90,60,60),sueloM);
   const pa=piso.geometry.attributes.position;for(let i=0;i<pa.count;i++){const x=pa.getX(i),y=pa.getY(i);const d=Math.hypot(x,y+2);if(d>9)pa.setZ(i,Math.sin(x*.35)*Math.cos(y*.3)*.35*Math.min(1,(d-9)/6))}piso.geometry.computeVertexNormals();
   piso.rotation.x=-Math.PI/2;piso.receiveShadow=true;S.add(piso);
   const piedraM=M({color:'#4a4640',roughness:.95});
   for(let z=3;z<12;z+=.62){const p=new T.Mesh(new T.DodecahedronGeometry(rnd(.22,.3),0),piedraM);p.scale.y=.18;p.position.set(rnd(-.22,.22),.02,z);p.rotation.y=rnd(0,3);p.receiveShadow=p.castShadow=true;S.add(p)}
   // pinos (instanciados) y algunos troncos secos
-  const n=150,conoG=new T.ConeGeometry(1,1,9),troncoG=new T.CylinderGeometry(.1,.18,1,7);
-  const agujaM=M({color:'#16231a',roughness:.95,flatShading:true}),cortezaM=M({color:'#20160f',roughness:1});
-  const conos=new T.InstancedMesh(conoG,agujaM,n*4),troncos=new T.InstancedMesh(troncoG,cortezaM,n);conos.castShadow=troncos.castShadow=true;conos.receiveShadow=true;
+  const n=150,conoG=(()=>{const g=new T.ConeGeometry(1,1,16,3,true);const pa=g.attributes.position;for(let i=0;i<pa.count;i++){const x=pa.getX(i),z=pa.getZ(i),y=pa.getY(i);if(y<.45){const f=1+Math.sin(Math.atan2(z,x)*7)*.18+(Math.random()-.5)*.12;pa.setX(i,x*f);pa.setZ(i,z*f);pa.setY(i,y-Math.random()*.08)}}g.computeVertexNormals();return g})(),troncoG=new T.CylinderGeometry(.1,.18,1,7);
+  const agujaM=M({color:'#0d1710',roughness:1,side:T.DoubleSide,envMapIntensity:.1}),cortezaM=pbr('pine_bark',[1,3]);
+  const conos=new T.InstancedMesh(conoG,agujaM,n*7),troncos=new T.InstancedMesh(troncoG,cortezaM,n);conos.castShadow=troncos.castShadow=true;conos.receiveShadow=true;
   const o=new T.Object3D();let ci=0,ti=0;
   for(let i=0;i<n;i++){let x,z;do{x=rnd(-36,36);z=rnd(-34,30)}while((Math.abs(x)<7.5&&z>-10&&z<14)||(Math.abs(x)<2.5&&z>-12&&z<30));
     const h=rnd(5,11),w=h*rnd(.26,.34);
     o.position.set(x,h*.12,z);o.scale.set(1,h*.25,1);o.rotation.set(0,0,0);o.updateMatrix();troncos.setMatrixAt(ti++,o.matrix);
-    for(let k=0;k<4;k++){const s=w*(1-k*.2);o.position.set(x,h*(.3+k*.17),z);o.scale.set(s,h*.36,s);o.rotation.y=rnd(0,3);o.updateMatrix();conos.setMatrixAt(ci++,o.matrix)}}
+    for(let k=0;k<7;k++){const s=w*(1-k*.13)*rnd(.9,1.1);o.position.set(x+rnd(-.08,.08),h*(.22+k*.11),z+rnd(-.08,.08));o.scale.set(s,h*.24,s*rnd(.85,1.1));o.rotation.set(rnd(-.04,.04),rnd(0,6.3),rnd(-.04,.04));o.updateMatrix();conos.setMatrixAt(ci++,o.matrix)}}
   conos.count=ci;troncos.count=ti;S.add(conos);S.add(troncos);
   function arbolSeco(x,z,h){const g=new T.Group();function rama(len,rad,prof){const m=new T.Mesh(new T.CylinderGeometry(rad*.6,rad,len,6),cortezaM);m.position.y=len/2;const nd=new T.Group();nd.add(m);
       if(prof>0)for(let i=0;i<3;i++){const h2=rama(len*rnd(.5,.7),rad*.6,prof-1);h2.position.y=len*rnd(.5,.95);h2.rotation.z=rnd(-.9,.9);h2.rotation.y=rnd(0,6.28);nd.add(h2)}return nd}
@@ -157,7 +164,7 @@ function construir(cv){
   // ----- el auto del CBI: SUV negra con carrocería redondeada -----
   const auto=new T.Group();
   const pintura=new T.MeshPhysicalMaterial({color:'#07080a',roughness:.25,metalness:.6,clearcoat:1,clearcoatRoughness:.15});
-  const plastico=M({color:'#0a0a0b',roughness:.85}),tapiz=M({color:'#141416',roughness:.95}),cromo=M({color:'#c8ccd2',roughness:.15,metalness:1});
+  const plastico=M({color:'#0a0a0b',roughness:.85}),tapiz=pbr('fabric_leather_02',[2,2],{color:'#3a3a3e'}),cromo=M({color:'#c8ccd2',roughness:.15,metalness:1});
   const negroV=new T.MeshStandardMaterial({color:'#020304',roughness:.08,metalness:.8,transparent:true,opacity:.78,side:T.DoubleSide,depthWrite:false});
   // carrocería por perfil extruido con bisel
   const perfil=new T.Shape();[[-2.45,.42],[-2.52,.62],[-2.48,.9],[-2.3,1.0],[-1.35,1.08],[-.62,1.8],[1.95,1.87],[2.4,1.78],[2.5,1.2],[2.5,.45],[2.3,.38],[-2.3,.38]].forEach(([u,v],i)=>i?perfil.lineTo(u,v):perfil.moveTo(u,v));
@@ -210,6 +217,25 @@ function construir(cv){
   [-.7,.7].forEach((x,i)=>{const f=new T.SpotLight('#e8eeff',3.6,32,.32,.45,1.1);f.position.set(x,.84,-2.6);f.castShadow=i===0;f.shadow.mapSize.set(1024,1024);auto.add(f);const tg=new T.Object3D();tg.position.set(x*.6,.4,-16);auto.add(tg);f.target=tg;
     const gl=new T.Sprite(new T.SpriteMaterial({map:brillo('rgba(235,240,255,1)'),depthWrite:false,fog:false}));gl.position.set(x,.84,-2.62);gl.scale.set(.8,.55,1);auto.add(gl);
     const cono=new T.Mesh(new T.ConeGeometry(2.6,13,24,1,true),new T.MeshBasicMaterial({color:'#cfd8ff',transparent:true,opacity:.03,depthWrite:false,blending:T.AdditiveBlending,side:T.DoubleSide}));cono.rotation.x=Math.PI/2;cono.position.set(x*.8,.7,-9.1);auto.add(cono)});
+  // --- detalle interior ---
+  const tabCuero=pbr('fabric_leather_02',[3,1],{color:'#1a1a1c'});
+  auto.children.filter(m=>m.geometry===tabG).forEach(m=>m.material=tabCuero);
+  [-.62,-.18,.18,.62].forEach(x=>{const v=caja(.12,.06,.03,plastico,x,1.13,-.75,0,auto);v.rotation.x=-.4;for(let i=0;i<3;i++)caja(.11,.006,.035,cromo,x,1.115+i*.018,-.737,0,auto).rotation.x=-.4});
+  const pant=new T.Mesh(new T.PlaneGeometry(.2,.12),new T.MeshBasicMaterial({color:'#1b3f66'}));pant.position.set(0,1.06,-.78);pant.rotation.x=-.35;auto.add(pant);
+  const brilloP=new T.PointLight('#5aa0ff',.25,.8,2);brilloP.position.set(0,1.05,-.6);auto.add(brilloP);
+  caja(.2,.32,.3,plastico,0,.86,-.62,0,auto);const palanca=new T.Mesh(new T.CylinderGeometry(.012,.012,.12,10),cromo);palanca.position.set(0,1.02,-.25);auto.add(palanca);
+  const pomoC=new T.Mesh(new T.SphereGeometry(.028,14,10),plastico);pomoC.position.set(0,1.09,-.25);auto.add(pomoC);
+  caja(.5,.005,.18,cromo,.45,.98,-.87,0,auto).rotation.x=-.35;                                   // guantera
+  [-1,1].forEach(sd=>{const c=caja(.05,.9,.005,M({color:'#202022',roughness:.8}),sd*.72,1.3,.58,0,auto);c.rotation.z=sd*.55});   // cinturones
+  // --- detalle exterior ---
+  [-1,1].forEach(sd=>{const e=new T.Group();caja(.06,.06,.12,pintura,0,0,0,0,e);caja(.18,.13,.05,pintura,sd*.09,.02,.03,0,e);const vid=new T.Mesh(new T.PlaneGeometry(.16,.1),M({color:'#8fa3b8',roughness:.05,metalness:1}));vid.position.set(sd*.09,.02,.058);e.add(vid);e.position.set(sd*1.03,1.18,-.62);auto.add(e)});
+  [[-1,.25],[-1,1.35],[1,.25],[1,1.35]].forEach(([sd,z])=>caja(.03,.03,.16,cromo,sd*1.0,1.05,z,0,auto));
+  [-.75,.75].forEach(x=>caja(.04,.05,2.4,M({color:'#111',roughness:.5,metalness:.5}),x,1.93,.65,0,auto));
+  [[-1,-1.55],[1,-1.55],[-1,1.62],[1,1.62]].forEach(([sd,z])=>{const ar=new T.Mesh(new T.TorusGeometry(.47,.06,8,20,Math.PI),M({color:'#0b0b0c',roughness:.7}));ar.rotation.y=Math.PI/2;ar.position.set(sd*.97,.42,z);auto.add(ar)});
+  caja(1.94,.02,.05,cromo,0,1.12,.68,0,auto);caja(.06,.1,4.0,M({color:'#111',roughness:.6}),-1.0,.42,.05,0,auto);caja(.06,.1,4.0,M({color:'#111',roughness:.6}),1.0,.42,.05,0,auto);
+  {const [c,g]=lienzo(256,64);g.fillStyle='#f0f0ea';g.fillRect(0,0,256,64);g.fillStyle='#1a2a6a';g.font='900 40px Inter Tight, sans-serif';g.textAlign='center';g.fillText('CBI 0111',128,46);
+   const pl=new T.Mesh(new T.PlaneGeometry(.42,.11),M({map:new T.CanvasTexture(c),roughness:.4}));pl.position.set(0,.5,-2.66);pl.rotation.y=Math.PI;auto.add(pl)}
+  const antena=new T.Mesh(new T.CylinderGeometry(.004,.006,.5,6),M({color:'#111'}));antena.position.set(.5,2.15,1.6);auto.add(antena);
   auto.position.set(0,0,14.4);auto.traverse(m=>{if(m.isMesh&&!m.material.transparent){m.castShadow=true;m.receiveShadow=true}});S.add(auto);
 
   // ----- lluvia -----
@@ -218,7 +244,7 @@ function construir(cv){
    lluvia=new T.LineSegments(g,new T.LineBasicMaterial({color:'#9fb0c8',transparent:true,opacity:.32,depthWrite:false}));S.add(lluvia)}
 
   // ----- la casa -----
-  const mF=madera({base:[62,58,52],n:26,vertical:false,var_:10,sucio:.9},[1.6,1.6]);
+  const mF=pbr('weathered_planks',[3,2.2]);
   const z0=0,ancho=10,alto=5.6,gro=.18;
   caja(ancho/2-.6,alto,gro,mF,-(ancho/4+.3),alto/2,z0);caja(ancho/2-.6,alto,gro,mF,(ancho/4+.3),alto/2,z0);caja(1.2,alto-2.72,gro,mF,0,2.72+(alto-2.72)/2,z0);
   // costados y fondo de la casa (para que proyecte sombra)
@@ -237,7 +263,7 @@ function construir(cv){
   const roseta=new T.Mesh(new T.CylinderGeometry(.045,.045,.02,20),laton);roseta.rotation.x=1.57;roseta.position.set(.88,1.05,.04);puerta.add(roseta);
   puerta.userData.pomo=pomo;
   const nota=new T.Mesh(new T.PlaneGeometry(.22,.28),M({map:new T.TextureLoader().load('fotos/cosas/substack.png'),roughness:.9,color:'#d8c8b0'}));nota.position.set(.3,1.95,.04);nota.rotation.z=.08;puerta.add(nota);
-  const porM=madera({base:[48,40,32],n:12,vertical:false,sucio:.8},[1,1]);
+  const porM=pbr('brown_planks_03',[2,1]);
   caja(4.2,.3,2.2,porM,0,.15,1.1);caja(1.6,.15,.4,porM,0,.075,2.4);
   caja(4.6,.1,2.4,techoM,0,2.95,1.1);
   // barandas rotas
@@ -255,13 +281,13 @@ function construir(cv){
   calco(redJohn(),1.1,1.1,1.5,1.6,z0+.1,0,0,.9);
   // estructura: cimiento de piedra, esquineros, aleros, chimenea, ventana redonda, bajante
   const piedra=(()=>{const [c,g]=lienzo(512,256);g.fillStyle='#2a2826';g.fillRect(0,0,512,256);for(let y=0;y<256;y+=32)for(let x=-(y/32%2)*30;x<512;x+=60){g.fillStyle=`rgb(${rnd(60,90)},${rnd(58,84)},${rnd(52,74)})`;g.fillRect(x+3,y+3,54,26)}grano(g,512,256,18);return tex(c,[6,1])})();
-  const pM=M({map:piedra,bumpMap:piedra,bumpScale:.03,roughness:1});
+  const pM=pbr('castle_brick_07',[5,.4]);
   caja(10.3,.5,.3,pM,0,.25,z0+.06);caja(.3,.5,8.6,pM,-5.05,.25,-4.2);caja(.3,.5,8.6,pM,5.05,.25,-4.2);
   const trim=M({color:'#6e6a62',roughness:.85});
   [-5.02,5.02].forEach(x=>caja(.2,5.2,.22,trim,x,3.0,z0+.08));
   [-1,1].forEach(sd=>{const f=caja(5.9,.26,.08,trim,sd*2.55,alto+1.0,z0+.18);f.rotation.z=-sd*.42});
   caja(10.3,.16,.5,trim,0,alto+.02,z0+.15);
-  const chim=M({map:piedra,roughness:1});caja(.8,3.2,.8,chim,3.3,alto+1.1,-4.5);caja(.95,.15,.95,M({color:'#1a1918',roughness:1}),3.3,alto+2.75,-4.5);
+  const chim=pbr('castle_brick_07',[.6,2]);caja(.8,3.2,.8,chim,3.3,alto+1.1,-4.5);caja(.95,.15,.95,M({color:'#1a1918',roughness:1}),3.3,alto+2.75,-4.5);
   const ojo=new T.Mesh(new T.CircleGeometry(.42,32),new T.MeshBasicMaterial({color:'#ffb060',transparent:true,opacity:.35}));ojo.position.set(0,alto+1.0,z0+.12);S.add(ojo);parpadeo.push([ojo,.35]);
   const aro=new T.Mesh(new T.TorusGeometry(.45,.05,10,32),trim);aro.position.set(0,alto+1.0,z0+.14);S.add(aro);
   caja(.1,alto,.1,M({color:'#3a3a3c',roughness:.5,metalness:.6}),4.85,alto/2,z0+.25);
@@ -275,8 +301,8 @@ function construir(cv){
   const bomb=new T.Sprite(new T.SpriteMaterial({map:brillo('rgba(255,190,110,1)'),depthWrite:false}));bomb.position.copy(farol.position);bomb.scale.set(.45,.45,1);S.add(bomb);parpadeo.push([bomb,.8]);
 
   // ----- adentro: la escena del crimen -----
-  const paredM=madera({base:[40,30,24],n:10,var_:8,sucio:1.3},[2.5,1]);
-  const pisoM=madera({base:[46,32,22],n:8,var_:10,sucio:1},[3,3],.7);
+  const paredM=pbr('old_planks_02',[3,1.2]);
+  const pisoM=pbr('wood_floor_worn',[3,3]);
   const pisoI=new T.Mesh(new T.PlaneGeometry(8,8),pisoM);pisoI.rotation.x=-Math.PI/2;pisoI.position.set(0,.302,-4.1);pisoI.receiveShadow=true;S.add(pisoI);
   const techoI=new T.Mesh(new T.PlaneGeometry(8,8),M({color:'#0d0907',roughness:1}));techoI.rotation.x=Math.PI/2;techoI.position.set(0,3.6,-4.1);S.add(techoI);
   const pared=(w,x,z,ry)=>{const m=new T.Mesh(new T.PlaneGeometry(w,3.3),paredM);m.position.set(x,1.95,z);m.rotation.y=ry;m.receiveShadow=true;S.add(m)};
@@ -285,25 +311,25 @@ function construir(cv){
   const zoc=M({color:'#1a100a',roughness:.8});caja(9.7,.18,.04,zoc,0,.39,-8.07);caja(.04,.18,8,zoc,-4.82,.39,-4.1);caja(.04,.18,8,zoc,4.82,.39,-4.1);
   // al estilo Red John: cuarto ordenado, la víctima en la cama, la carita pintada con su sangre sobre la cabecera
   calco(redJohn(),1.7,1.7,-4.83,2.4,-4.6,0,Math.PI/2);
-  const cama=new T.Group();const mCama=M({color:'#2a1a10',roughness:.6}),colchon=M({color:'#d8d2c6',roughness:.95}),sab=M({color:'#e6e1d6',roughness:1});
-  caja(.08,1.15,1.6,mCama,-4.76,.88,-4.6,0,cama);           // cabecera
-  caja(2.1,.28,1.55,mCama,-3.75,.44,-4.6,0,cama);           // base
-  caja(.06,.6,1.55,mCama,-2.72,.6,-4.6,0,cama);             // pie de cama
-  caja(2.0,.2,1.45,colchon,-3.78,.68,-4.6,0,cama);
-  [-4.95,-4.25].forEach(z=>{const a=new T.Mesh(new T.SphereGeometry(1,18,12),colchon);a.scale.set(.18,.07,.3);a.position.set(-4.48,.86,z);cama.add(a)});
+  const cama=new T.Group();const mCama=M({color:'#2a1a10',roughness:.6}),colchon=M({color:'#d8d2c6',roughness:.95}),sab=pbr('rough_linen',[2,2],{color:'#e9e4da'});
+
+
+
+  caja(1.92,.2,.9,colchon,-3.8,.68,-4.6,0,cama);
+  [-4.8,-4.4].forEach(z=>{const a=new T.Mesh(new T.SphereGeometry(1,18,12),colchon);a.scale.set(.15,.06,.19);a.position.set(-4.5,.84,z);cama.add(a)});
   // la sábana sobre el cuerpo
-  const tor=new T.Mesh(new T.SphereGeometry(1,24,16),sab);tor.scale.set(.5,.13,.24);tor.position.set(-3.85,.86,-4.62);cama.add(tor);
+  const tor=new T.Mesh(new T.SphereGeometry(1,24,16),sab);tor.scale.set(.48,.12,.2);tor.position.set(-3.85,.85,-4.6);cama.add(tor);
   const cab=new T.Mesh(new T.SphereGeometry(.13,18,14),sab);cab.position.set(-4.42,.92,-4.6);cab.scale.y=.75;cama.add(cab);
-  const pier=new T.Mesh(new T.SphereGeometry(1,18,12),sab);pier.scale.set(.5,.1,.2);pier.position.set(-3.1,.83,-4.6);cama.add(pier);
-  caja(2.02,.04,1.58,sab,-3.75,.795,-4.6,0,cama);
-  [-1,1].forEach(sd=>{const d=caja(1.9,.34,.02,sab,-3.75,.62,-4.6+sd*.8,0,cama);d.rotation.x=sd*.08});
+  const pier=new T.Mesh(new T.SphereGeometry(1,18,12),sab);pier.scale.set(.48,.09,.17);pier.position.set(-3.1,.83,-4.6);cama.add(pier);
+  caja(1.96,.03,.96,sab,-3.78,.795,-4.6,0,cama);
+  [-1,1].forEach(sd=>{const d=caja(1.9,.3,.02,sab,-3.78,.65,-4.6+sd*.49,0,cama);d.rotation.x=sd*.06});
   S.add(sombra(cama));
   calco(sangre('charco'),.9,.6,-3.85,1.0,-4.62,-Math.PI/2,0,.95);
-  calco(sangre('charco'),.6,.45,-3.55,.82,-4.15,-Math.PI/2,0,.85);
-  calco(sangre('salpicadura'),.5,.5,-3.5,.62,-3.79,0,0,.9);                     // chorrea por el costado de la sábana
+  calco(sangre('charco'),.5,.4,-3.55,.82,-4.35,-Math.PI/2,0,.85);
+  calco(sangre('salpicadura'),.45,.45,-3.5,.66,-4.1,0,0,.9);                     // chorrea por el costado de la sábana
   // mesita de noche con lámpara tenue
-  caja(.45,.55,.4,mCama,-4.5,.58,-5.9);const lam=new T.Mesh(new T.CylinderGeometry(.08,.12,.18,16,1,true),M({color:'#d8c8a8',side:T.DoubleSide,emissive:'#6a4020',emissiveIntensity:.6}));lam.position.set(-4.5,1.08,-5.9);S.add(lam);
-  const luzN=new T.PointLight('#ffb070',.5,3.2,2);luzN.position.set(-4.5,1.12,-5.9);luzN.castShadow=true;luzN.shadow.mapSize.set(512,512);S.add(luzN);parpadeo.push([luzN,.5]);
+
+  const luzN=new T.PointLight('#ffb070',.5,3.2,2);luzN.position.set(-4.5,1.25,-5.95);luzN.castShadow=true;luzN.shadow.mapSize.set(512,512);S.add(luzN);parpadeo.push([luzN,.5]);
   // marcadores de evidencia junto a la cama
   [[-2.5,-4.0],[-2.45,-5.2],[-3.2,-3.6],[-3.4,-5.6],[-2.2,-4.6]].forEach(([x,z],i)=>{const g=new T.Group();const m=new T.Mesh(new T.CylinderGeometry(.0001,.07,.12,3),M({map:etiquetaNum(i+1),color:'#f0c419',roughness:.5}));m.position.y=.06;g.add(m);g.position.set(x,.3,z);g.rotation.y=rnd(0,3);S.add(sombra(g))});
   // cinta alrededor de la cama, entre dos parantes, sin cruzar el paso
@@ -338,19 +364,19 @@ function construir(cv){
   const colores=['#5a1e1e','#2c3a4a','#4a3a20','#203a2c','#3a2a3a','#6a5030','#1e2a3a'];
   [.02,.47].forEach(y=>{let x=-.6;while(x<.55){const w=rnd(.04,.08),h=rnd(.26,.38);const lb=caja(w,h,.22,M({color:colores[Math.floor(rnd(0,colores.length))],roughness:.75}),x+w/2,y+h/2+.02,0,0,est);lb.rotation.z=rnd(-.05,.05);x+=w+.005}});
   for(let i=0;i<5;i++){const lb=caja(.24,.04,.17,M({color:colores[i],roughness:.75}),-.3+i*.14,.95+i*.0,0,0,est);lb.rotation.y=rnd(-.3,.3);lb.position.y=.94+i*.0}
-  est.position.set(2.8,.3,-7.85);S.add(est);
+  est.visible=false;
   cactus(3.6,-7.4,1);cactus(-4.2,-7.5,.85);cactus(4.2,-.9,1.1);
 
   // ----- la mesa y el regalo -----
   const mesa=new T.Group();const nogal=M({color:'#3a2414',roughness:.5});
   const tope=new T.Mesh(new T.CylinderGeometry(.62,.62,.05,48),nogal);tope.position.y=.78;mesa.add(tope);
   const pie=new T.Mesh(new T.LatheGeometry([new T.Vector2(.3,0),new T.Vector2(.28,.04),new T.Vector2(.08,.08),new T.Vector2(.05,.3),new T.Vector2(.07,.5),new T.Vector2(.05,.74),new T.Vector2(.12,.76)],24),nogal);mesa.add(pie);
-  mesa.position.set(0,.3,-4.6);S.add(sombra(mesa));
+
   const regalo=new T.Object3D();regalo.position.set(0,1.25,-4.6);S.add(regalo);
-  focoMesa=new T.SpotLight('#ffe2b8',0,7,.42,.5,1.3);focoMesa.position.set(0,3.5,-4.5);focoMesa.target=regalo;focoMesa.castShadow=true;focoMesa.shadow.mapSize.set(1024,1024);focoMesa.shadow.bias=-.0004;S.add(focoMesa);
-  const pantalla=new T.Mesh(new T.ConeGeometry(.2,.18,24,1,true),M({color:'#111',side:T.DoubleSide,roughness:.5,metalness:.4}));pantalla.position.set(0,3.46,-4.5);S.add(pantalla);
-  caja(.01,.14,.01,M({color:'#111'}),0,3.6,-4.5);
-  lampCono=new T.Mesh(new T.ConeGeometry(1.2,3.1,32,1,true),new T.MeshBasicMaterial({color:'#ffd9a0',transparent:true,opacity:0,depthWrite:false,side:T.DoubleSide,blending:T.AdditiveBlending,fog:false}));lampCono.position.set(0,1.92,-4.55);S.add(lampCono);
+  focoMesa=new T.SpotLight('#ffe2b8',0,7,.42,.5,1.3);focoMesa.position.set(0,2.25,-4.55);focoMesa.target=regalo;focoMesa.castShadow=true;focoMesa.shadow.mapSize.set(1024,1024);focoMesa.shadow.bias=-.0004;S.add(focoMesa);
+
+
+  lampCono=new T.Mesh(new T.ConeGeometry(.75,1.2,32,1,true),new T.MeshBasicMaterial({color:'#ffd9a0',transparent:true,opacity:0,depthWrite:false,side:T.DoubleSide,blending:T.AdditiveBlending,fog:false}));lampCono.position.set(0,1.65,-4.55);S.add(lampCono);
 
   // polvo
   const np=600,pos=new Float32Array(np*3);for(let i=0;i<np;i++){pos[i*3]=rnd(-4.6,4.6);pos[i*3+1]=rnd(.4,3.4);pos[i*3+2]=rnd(-8,-.3)}
@@ -377,6 +403,25 @@ function construir(cv){
         vec3 srgb(vec3 c){return mix(c*12.92,1.055*pow(c,vec3(1./2.4))-.055,step(.0031308,c));}
         void main(){vec3 c=texture2D(tDiffuse,vUv).rgb;c=srgb(max(c,0.));float d=distance(vUv,vec2(.5));c*=smoothstep(.85,.32,d);c+=(h(vUv*800.)-.5)*.045;gl_FragColor=vec4(c,1.);}`}));
     comp.passes[2].renderToScreen=true;R.outputEncoding=T.LinearEncoding}catch(e){console.warn(e);comp=null;R.outputEncoding=T.sRGBEncoding}}
+  // modelos fotográficos de Poly Haven (CC0)
+  if(T.GLTFLoader){const gl=new T.GLTFLoader(LM);
+    const mod=(n,f)=>gl.load('pbr/m/'+n+'/'+n+'.gltf',g=>{const o=g.scene;o.traverse(m=>{if(m.isMesh){m.castShadow=m.receiveShadow=true;if(m.material)m.material.envMapIntensity=.35}});f(o)});
+    const pon=(o,x,y,z,ry=0,e=1)=>{o.position.set(x,y,z);o.rotation.y=ry;o.scale.setScalar(e);S.add(o);return o};
+    mod('round_wooden_table_01',o=>pon(o,0,.3,-4.6,0,.75));
+    mod('hanging_industrial_lamp',o=>pon(o,0,3.6,-4.55,0,1));
+    mod('old_bed_frame',o=>pon(o,-3.82,.3,-4.6,Math.PI/2,1.05));
+    mod('painted_wooden_nightstand',o=>pon(o,-4.45,.3,-5.95,Math.PI/2,1));
+    mod('vintage_oil_lamp',o=>pon(o,-4.45,.92,-5.95,0,.42));
+    mod('wooden_bookshelf_worn',o=>pon(o,2.8,.3,-7.78,0,1));
+    mod('Rockingchair_01',o=>pon(o,-3.7,.3,-1.4,2.4,1));
+    mod('planter_pot_clay',o=>{macetas.forEach(g=>{const c=o.clone();c.scale.setScalar(1.15);g.add(c)})});
+    mod('dead_tree_trunk',o=>pon(o,-3.2,0,7.5,.6,1.2));
+    mod('tree_stump_01',o=>pon(o,3.4,0,8.8,0,1));
+    mod('rock_moss_set_01',o=>pon(o,-7.2,0,2.5,1,1));
+    mod('fern_02',o=>{[[-1.4,4.5],[1.6,5.8],[-2.6,2.6],[2.7,2.9],[-.9,9],[6,4],[-6,6]].forEach(([x,z],i)=>{const c=o.clone();pon(c,x,0,z,i*1.3,rnd(.8,1.3))})});
+  }
+  if(T.RGBELoader){new T.RGBELoader(LM).setDataType(T.UnsignedByteType).load('pbr/noche.hdr',h=>{const pm=new T.PMREMGenerator(R);S.environment=pm.fromEquirectangular(h).texture;
+    const cubo=new T.WebGLCubeRenderTarget(1024).fromEquirectangularTexture(R,h);S.background=cubo.texture;cieloM.visible=false;h.dispose();pm.dispose()})}
   reloj=new T.Clock();
   addEventListener('resize',()=>{R.setSize(W(),H());if(comp)comp.setSize(W(),H());C.aspect=W()/H();C.fov=W()<H()?76:60;C.updateProjectionMatrix()});
   listo=true;
@@ -404,8 +449,8 @@ const RUTA=[
   [30.6,V(0,1.9,-1.8),    V(2.8,1.0,-7.8),0],
   [31.8,V(0,1.88,-1.8),   V(0,1.3,-4.6),  0],
   [33.2,V(0,1.88,-1.8),   V(0,1.35,-4.6), 0],
-  [36.2,V(0,1.74,-3.35),  V(0,1.25,-4.6), 1],
-  [37.2,V(0,1.74,-3.35),  V(0,1.25,-4.6), 0],
+  [36.2,V(0,1.62,-3.6),   V(0,1.2,-4.6),  1],
+  [37.2,V(0,1.62,-3.6),   V(0,1.2,-4.6),  0],
 ];
 const FIN=37.2;
 const suave=x=>x*x*(3-2*x);
@@ -492,16 +537,17 @@ function cuadroLoop(){
 }
 
 window.Intro3D={
-  preparar(cv){construir(cv);camara(0,0);reloj.getDelta();cuadroLoop()},
+  preparar(cv,prog,listo){cargaProg=prog;cargaListo=listo;construir(cv);camara(0,0);reloj.getDelta();cuadroLoop();if(!T.GLTFLoader)setTimeout(()=>{cargado=true;listo&&listo()},50)},
+  get cargado(){return cargado},
   rectRegalo(){if(!regaloPlano)return{x:0,y:0,w:0,h:0};let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;const w=regaloPlano.userData.w/2,h=regaloPlano.userData.h/2;
     [[-w,-h],[w,-h],[-w,h],[w,h]].forEach(([x,y])=>{const p=regaloPlano.localToWorld(V(x,y,0)).project(C);const sx=(p.x*.5+.5)*W(),sy=(-p.y*.5+.5)*H();x0=Math.min(x0,sx);x1=Math.max(x1,sx);y0=Math.min(y0,sy);y1=Math.max(y1,sy)});return{x:x0,y:y0,w:x1-x0,h:y1-y0}},
   fundeRegalo(ms){fundeDur=ms/1000;fundeT=0;manoL.visible=linternaObj.visible=false},
   // el regalo dibujado (capturado del SVG de la página) como una tarjeta en la mesa
   ponRegalo(canvas){const t=new T.CanvasTexture(canvas);t.encoding=T.sRGBEncoding;t.anisotropy=8;
-    regaloMat=new T.MeshBasicMaterial({map:t,transparent:true,toneMapped:false,fog:false,depthWrite:false});const w=.66,h=w*380/340;
+    regaloMat=new T.MeshBasicMaterial({map:t,transparent:true,toneMapped:false,fog:false,depthWrite:false});const w=.5,h=w*380/340;
     regaloPlano=new T.Mesh(new T.PlaneGeometry(w,h),regaloMat);regaloPlano.userData={w,h};
-    regaloPlano.position.set(0,1.105+(350-190)/380*h,-4.6);regaloPlano.lookAt(V(0,1.74,-3.35));regaloPlano.renderOrder=5;S.add(regaloPlano);
-    const sh=new T.Mesh(new T.CircleGeometry(.3,32),new T.MeshBasicMaterial({color:'#000',transparent:true,opacity:.55,depthWrite:false}));sh.rotation.x=-Math.PI/2;sh.scale.y=.45;sh.position.set(.03,1.107,-4.58);S.add(sh)},
+    regaloPlano.position.set(0,1.05+(350-190)/380*h,-4.6);regaloPlano.lookAt(V(0,1.62,-3.6));regaloPlano.renderOrder=5;S.add(regaloPlano);
+    const sh=new T.Mesh(new T.CircleGeometry(.3,32),new T.MeshBasicMaterial({color:'#000',transparent:true,opacity:.55,depthWrite:false}));sh.rotation.x=-Math.PI/2;sh.scale.y=.45;sh.scale.x=.78;sh.position.set(.02,1.053,-4.58);S.add(sh)},
   correr(api,fin){pisada=api.paso||pisada;sonar=api.sonar||sonar;linea();alTerminar=fin;t0=performance.now();corriendo=true},
   parar(){listo=false;try{R.dispose()}catch(e){}},
   get FIN(){return FIN}

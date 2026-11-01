@@ -1056,7 +1056,8 @@ const apiIntro={
 function iniciaIntro(){
   cargaMedia('respira','media/respiracion_breathing-man.ogg');cargaMedia('paso','media/pasos_madera.wav');cargaMedia('rechina','media/puerta_crujido_squeaky-door.ogg');
   if(!window.THREE||!window.Intro3D){$('intro').remove();document.body.classList.remove('en-puerta');return}
-  try{Intro3D.preparar($('c3d'));capturaRegalo().then(c=>Intro3D.ponRegalo(c)).catch(e=>console.warn(e))}catch(e){console.error(e);$('intro').remove();document.body.classList.remove('en-puerta')}
+  try{const txt=$('intro').querySelector('.intro-txt b');txt.textContent='Cargando la escena… 0%';
+    Intro3D.preparar($('c3d'),k=>{txt.textContent='Cargando la escena… '+Math.round(k*100)+'%'},()=>{txt.textContent='Tocá para entrar'});capturaRegalo().then(c=>Intro3D.ponRegalo(c)).catch(e=>console.warn(e))}catch(e){console.error(e);$('intro').remove();document.body.classList.remove('en-puerta')}
 }
 async function capturaRegalo(){
   const org=document.querySelector('.caja3d'),cl=org.cloneNode(true);
@@ -1077,7 +1078,7 @@ async function capturaRegalo(){
     const L=el.getAttribute('aria-valuetext')||'A',n=ABC.indexOf(L);[[-1,.12],[0,.5],[1,.88]].forEach(([d,f])=>{g.globalAlpha=d?.45:1;g.fillText(ABC[(n+d+26)%26],cx,y0+h*f)});g.globalAlpha=1});
   g.restore();URL.revokeObjectURL(url);return c}
 let entrando=false;
-function entrar(){if(entrando)return;entrando=true;desbloquea();$('intro').classList.add('andando');
+function entrar(){if(entrando||!Intro3D.cargado)return;entrando=true;desbloquea();$('intro').classList.add('andando');
   Intro3D.correr(apiIntro,()=>{const es=$('escena');alinearRegalo();es.classList.add('ver');Intro3D.fundeRegalo(2400);$('intro').style.cursor='default';
     setTimeout(()=>{document.body.classList.remove('en-puerta');const n=fijas.indexOf(false);if(n>=0)els[n].focus({preventScroll:true})},1400)})}
 /* pone el regalo dibujado exactamente donde está el regalo 3D */
@@ -1193,7 +1194,7 @@ $('cosas').innerHTML=COSAS.map((c,i)=>`<figure class="cosa aparece${c.logo?' log
   <div class="img" style="--fondo:${c.logo?esc(c.color||'#fff'):'#eee'}"><img src="fotos/cosas/${esc(c.imagen)}" alt="${esc(c.nombre)}" loading="lazy"></div>
   <h3>${rico(c.nombre)}</h3>${c.nota?`<p>${rico(c.nota)}</p>`:''}</figure>`).join('');
 $('nCosas').textContent=COSAS.length;
-$('creditos').innerHTML='Imágenes de Wikimedia Commons: '+COSAS.filter(c=>CREDITOS[c.imagen]).map(c=>{const k=CREDITOS[c.imagen];return `${esc(c.nombre)} — <a href="${k[2]}" target="_blank" rel="noopener">${esc(k[0])}</a> (${k[1]})`}).join(' · ')+'. Sonidos y mano de la entrada: Breathing man.ogg — <a href="https://commons.wikimedia.org/wiki/File:Breathing_man.ogg" target="_blank" rel="noopener">hugh</a> (Public domain) · Squeaky door.ogg — <a href="https://commons.wikimedia.org/wiki/File:Squeaky_door.ogg" target="_blank" rel="noopener">leonmire</a> (Public domain) · Walking on small wooden bridge (Gravity Sound).wav — <a href="https://commons.wikimedia.org/wiki/File:Walking_on_small_wooden_bridge_(Gravity_Sound).wav" target="_blank" rel="noopener">Gravity Sound</a> (CC BY 4.0, recortado a 8 s).';
+$('creditos').innerHTML='Imágenes de Wikimedia Commons: '+COSAS.filter(c=>CREDITOS[c.imagen]).map(c=>{const k=CREDITOS[c.imagen];return `${esc(c.nombre)} — <a href="${k[2]}" target="_blank" rel="noopener">${esc(k[0])}</a> (${k[1]})`}).join(' · ')+'. Texturas, modelos 3D y cielo HDR de la entrada: <a href="https://polyhaven.com" target="_blank" rel="noopener">Poly Haven</a> (CC0). Sonidos de la entrada: Breathing man.ogg — <a href="https://commons.wikimedia.org/wiki/File:Breathing_man.ogg" target="_blank" rel="noopener">hugh</a> (Public domain) · Squeaky door.ogg — <a href="https://commons.wikimedia.org/wiki/File:Squeaky_door.ogg" target="_blank" rel="noopener">leonmire</a> (Public domain) · Walking on small wooden bridge (Gravity Sound).wav — <a href="https://commons.wikimedia.org/wiki/File:Walking_on_small_wooden_bridge_(Gravity_Sound).wav" target="_blank" rel="noopener">Gravity Sound</a> (CC BY 4.0, recortado a 8 s).';
 
 /* ---------- "Solo para ti": texto que se escribe solo ---------- */
 const FRASES=['Abrilo cuando estés sola','Tocá el sello','Sin apuro','Esto es tuyo'];
@@ -1236,13 +1237,15 @@ audio.addEventListener('pause',()=>{$('musica').classList.add('pausa');$('musica
 els[0].focus({preventScroll:true});
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/RGBELoader.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/CopyShader.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/LuminosityHighPassShader.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/EffectComposer.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/RenderPass.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/ShaderPass.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
-<script src="intro3d.js?v=25"></script>
+<script src="intro3d.js?v=33"></script>
 <script>iniciaIntro()</script>
 </body>
 </html>
