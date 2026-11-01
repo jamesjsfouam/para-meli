@@ -1056,8 +1056,26 @@ const apiIntro={
 function iniciaIntro(){
   cargaMedia('respira','media/respiracion_breathing-man.ogg');cargaMedia('paso','media/pasos_madera.wav');cargaMedia('rechina','media/puerta_crujido_squeaky-door.ogg');
   if(!window.THREE||!window.Intro3D){$('intro').remove();document.body.classList.remove('en-puerta');return}
-  try{Intro3D.preparar($('c3d'))}catch(e){console.error(e);$('intro').remove();document.body.classList.remove('en-puerta')}
+  try{Intro3D.preparar($('c3d'));capturaRegalo().then(c=>Intro3D.ponRegalo(c)).catch(e=>console.warn(e))}catch(e){console.error(e);$('intro').remove();document.body.classList.remove('en-puerta')}
 }
+async function capturaRegalo(){
+  const org=document.querySelector('.caja3d'),cl=org.cloneNode(true);
+  const a=org.querySelectorAll('*'),b=cl.querySelectorAll('*');
+  a.forEach((el,i)=>{const cs=getComputedStyle(el),d=b[i];d.style.opacity=cs.opacity;d.style.display=cs.display;if(cs.transform&&cs.transform!=='none'&&el.closest('#etiqueta')!==el)d.style.transform=cs.transform;d.style.animation='none'});
+  cl.querySelectorAll('animateTransform').forEach(x=>x.remove());
+  cl.setAttribute('xmlns','http://www.w3.org/2000/svg');cl.setAttribute('width',680);cl.setAttribute('height',760);cl.removeAttribute('class');
+  const url=URL.createObjectURL(new Blob([new XMLSerializer().serializeToString(cl)],{type:'image/svg+xml'}));
+  const img=new Image();await new Promise((ok,no)=>{img.onload=ok;img.onerror=no;img.src=url});
+  const c=document.createElement('canvas');c.width=680;c.height=760;const g=c.getContext('2d');
+  g.save();g.beginPath();g.rect(0,0,680,712);g.clip();g.drawImage(img,0,0,680,760);g.restore();
+  // las ruedas del candado (en la página son HTML): mismas letras, misma ventana
+  const W=$('ruedasWin').getBoundingClientRect(),S=org.getBoundingClientRect(),k=680/S.width;
+  const x0=(W.left-S.left)*k,y0=(W.top-S.top)*k,w=W.width*k,h=W.height*k;
+  g.save();g.beginPath();g.rect(x0,y0,w,h);g.clip();
+  els.forEach((el,i)=>{const cx=x0+w*(i+.5)/4,col=g.createLinearGradient(0,y0,0,y0+h);col.addColorStop(0,'#6b6458');col.addColorStop(.5,'#f4eee0');col.addColorStop(1,'#6b6458');
+    g.fillStyle=col;g.fillRect(x0+w*i/4+1.5,y0,w/4-3,h);g.fillStyle='#1b1712';g.font=`700 ${h*.42}px "JetBrains Mono", monospace`;g.textAlign='center';g.textBaseline='middle';
+    const L=el.getAttribute('aria-valuetext')||'A',n=ABC.indexOf(L);[[-1,.12],[0,.5],[1,.88]].forEach(([d,f])=>{g.globalAlpha=d?.45:1;g.fillText(ABC[(n+d+26)%26],cx,y0+h*f)});g.globalAlpha=1});
+  g.restore();URL.revokeObjectURL(url);return c}
 let entrando=false;
 function entrar(){if(entrando)return;entrando=true;desbloquea();$('intro').classList.add('andando');
   Intro3D.correr(apiIntro,()=>{const es=$('escena');alinearRegalo();es.classList.add('ver');Intro3D.fundeRegalo(1400);$('intro').style.cursor='default';
@@ -1066,9 +1084,8 @@ function entrar(){if(entrando)return;entrando=true;desbloquea();$('intro').class
 function alinearRegalo(){const el=$('regalo'),svg=el.querySelector('.caja3d');if(!svg||!window.Intro3D)return;
   el.style.scale='';el.style.translate='';const r=Intro3D.rectRegalo(),b=svg.getBoundingClientRect();
   const base=parseFloat(getComputedStyle(el).scale)||1;
-  const gw=300/340*b.width,gh=280/380*b.height,k=(r.w/gw+r.h/gh)/2;
-  const ex=b.left+b.width/2,ey=b.top+b.height/2,ox=180/340*b.width+b.left-ex,oy=210/380*b.height+b.top-ey;
-  el.style.scale=base*k;el.style.translate=`${r.x+r.w/2-ex-ox*k}px ${r.y+r.h/2-ey-oy*k}px`}
+  const k=(r.w/b.width+r.h/b.height)/2,ex=b.left+b.width/2,ey=b.top+b.height/2;
+  el.style.scale=base*k;el.style.translate=`${r.x+r.w/2-ex}px ${r.y+r.h/2-ey}px`}
 addEventListener('resize',()=>{if($('escena')&&$('escena').classList.contains('ver')&&!abierto)alinearRegalo()});
 $('intro').addEventListener('click',entrar);
 $('intro').addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();entrar()}});
@@ -1219,7 +1236,13 @@ audio.addEventListener('pause',()=>{$('musica').classList.add('pausa');$('musica
 els[0].focus({preventScroll:true});
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script src="intro3d.js?v=13"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/CopyShader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/LuminosityHighPassShader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/EffectComposer.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/RenderPass.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/ShaderPass.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
+<script src="intro3d.js?v=21"></script>
 <script>iniciaIntro()</script>
 </body>
 </html>
