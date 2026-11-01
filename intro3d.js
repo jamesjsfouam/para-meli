@@ -178,13 +178,13 @@ function ponLigero(on){LIGERO=!!on;if(!R)return;
   try{if(LUCES.length)compilaZonas();else R.compile(S,C)}catch(e){}}
 const LUCES=[];
 function zonificar(){const b=new T.Box3(),c=V(0,0,0),t=V(0,0,0),w=V(0,0,0);
-  S.traverse(o=>{if(!o.isLight||o.isAmbientLight||o.isHemisphereLight)return;let p=o.parent,enCam=false;while(p){if(p===C)enCam=true;p=p.parent}if(enCam)return;
+  S.traverse(o=>{if(!o.isLight||o.isAmbientLight||o.isHemisphereLight||o===linterna)return;let p=o.parent,enCam=false;while(p){if(p===C)enCam=true;p=p.parent}if(enCam)return;
     o.getWorldPosition(w);o.userData.zonaL=o.isDirectionalLight?'afuera':w.y<-5?'escritorio':w.z>.35?'afuera':'adentro';LUCES.push(o)});
   S.children.forEach(o=>{if(o===C||o.isLight||o.userData.zona)return;b.setFromObject(o);if(b.isEmpty()){o.userData.zona='todo';return}
     b.getCenter(c);b.getSize(t);o.userData.zona=Math.max(t.x,t.z)>12?'todo':c.y<-5?'escritorio':c.z>.35?'afuera':c.z<-.35?'adentro':'todo'})}
 function aplicaZona(z){zonaActual=z;LUCES.forEach(l=>l.visible=l.userData.zonaL===(z==='todas'?'afuera':z));
   S.children.forEach(o=>{const k=o.userData.zona;if(!k||k==='propio'||k==='todo')return;o.visible=z==='todas'?k!=='escritorio':k===z})}
-function zonas(){const p=C.position,cerrada=!puerta||Math.abs(puerta.rotation.y)<.03,fw=C.getWorldDirection(V(0,0,0)),z=p.y<-5?'escritorio':(p.z>3.5||(p.z>.25&&cerrada))?'afuera':(p.z<-1.2||(p.z<1.0&&fw.z<-.55))?'adentro':'todas';if(z!==zonaActual)aplicaZona(z)}
+function zonas(){const p=C.position,cerrada=!puerta||Math.abs(puerta.rotation.y)<.03,fw=C.getWorldDirection(V(0,0,0)),z=p.y<-5?'escritorio':(p.z>3.5||(p.z>.25&&cerrada))?'afuera':(p.z<-1.2||(p.z<-.6&&fw.z<-.55))?'adentro':'todas';if(z!==zonaActual)aplicaZona(z)}
 // cada combinación de luces es un programa distinto: se compilan todas antes de entrar, así cambiar de zona no traba
 function compilaZonas(){const ant=zonaActual;['escritorio','afuera','adentro'].forEach(z=>{aplicaZona(z);try{R.compile(S,C)}catch(e){}});aplicaZona(ant||'escritorio')}
 

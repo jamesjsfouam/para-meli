@@ -152,7 +152,23 @@ em{font-style:inherit;color:var(--pasion)}
 .rompe-sello .cf-sello{transform:translate(-50%,10%) rotate(30deg) scale(.6);opacity:0}
 
 @media (prefers-reduced-motion:reduce){.haz,.niebla,.polvo i,#escena::before,#etiqueta,.flota{animation:none}}
-#cartaFinal.cubre{opacity:0;transition:transform .65s cubic-bezier(.6,0,.3,1),opacity .5s .2s}
+#cartaFinal.cubre{opacity:0;transition:transform 1.1s cubic-bezier(.4,0,.2,1),opacity .9s .15s}
+#veloCarta{position:fixed;inset:0;z-index:79;pointer-events:none;opacity:0;transition:opacity 1.1s ease,background-color 1s ease;
+  background:radial-gradient(circle at 50% 48%,#5a3216aa 0,#1a0f08ee 45%,#070504 80%);overflow:hidden}
+#veloCarta.on{opacity:1}
+#veloCarta.final{background:var(--papel,#f2ece1);transition:opacity 1.2s ease,background .9s ease}
+#veloCarta.fuera{opacity:0;transition:opacity 1.3s ease}
+#veloCarta i{position:absolute;bottom:-10px;width:var(--s,4px);height:var(--s,4px);border-radius:50%;background:#ffd58a;box-shadow:0 0 8px 2px #ffb24a99;opacity:0;animation:chispa var(--t,6s) linear var(--d,0s) infinite}
+#veloCarta i.cor{background:none;box-shadow:none;width:auto;height:auto;color:#ff5a6e;font-size:var(--s,14px);text-shadow:0 0 8px #ff5a6e88}
+@keyframes chispa{0%{opacity:0;transform:translate(0,0)}15%{opacity:.9}100%{opacity:0;transform:translate(var(--dx,0),-110vh)}}
+.cf-frag{position:fixed;z-index:81;width:10px;height:8px;border-radius:40% 60% 50% 50%;background:radial-gradient(circle at 35% 30%,#e2323f,#7a0912);pointer-events:none;animation:frag .9s cubic-bezier(.2,.7,.3,1) forwards}
+@keyframes frag{to{transform:translate(var(--dx),var(--dy)) rotate(var(--rg));opacity:0}}
+.cf-fecha{transition-delay:.35s!important}.cf-texto{transition-delay:.85s!important}.cf-firma{transition-delay:1.5s!important}
+.desplegada .cf-meli{animation:sello .6s cubic-bezier(.3,1.6,.5,1) 1.15s both}
+@keyframes sello{from{transform:rotate(-14deg) scale(1.9);opacity:0}to{transform:rotate(-2deg) scale(1);opacity:1}}
+.cf-firma{clip-path:inset(0 100% 0 0)}
+.desplegada .cf-firma{clip-path:inset(0 0 0 0);transition:opacity .4s 1.5s,clip-path 1.2s ease 1.6s!important}
+@media (prefers-reduced-motion:reduce){#veloCarta i{display:none}.desplegada .cf-meli{animation:none}}
 
 
 /* ===== ajustes tras la revisión ===== */
@@ -286,6 +302,7 @@ body.en-puerta{background:#000}
 #escena.sobre3d .regalo{animation:none;transition:none}
 #escena.abriendo ~ #ligero,#escena.abriendo ~ #saltar{opacity:0!important;visibility:hidden!important;pointer-events:none!important}
 #escena.r3d #etiqueta{animation:none}
+#escena.sobre3d .mesa,#escena.r3d .mesa{display:none!important}
 #ruedasWin.flotante{position:fixed!important;opacity:0;z-index:45;transform:none!important}#zonas.flotante{position:fixed!important;z-index:46;transform:none!important;pointer-events:auto!important}
 @media (pointer:coarse){
   #ruedasWin.flotante{width:240px!important;height:132px!important}
@@ -625,6 +642,7 @@ body:has(.vista.abierta) #web::after{display:none}
   <p class="intro-txt mono"><span class="intro-vol">Subí el volumen · usá audífonos</span><b>Tocá para entrar</b></p>
 </div>
 
+<div id="veloCarta" aria-hidden="true"></div>
 <div id="cartaFinal" aria-hidden="true"><div class="marco3d"><div class="cf-panel arriba"><p class="cf-in cf-fecha">N° 01 · 11 · 2026</p></div><div class="cf-panel medio"><p class="cf-in cf-texto">Feliz cumple,<b class="cf-meli">MELI</b></p></div><div class="cf-panel abajo"><p class="cf-in cf-firma">— James</p></div><span class="cf-sello">M</span></div></div>
 
 <!-- ============ PANTALLA PRINCIPAL ============ -->
@@ -974,24 +992,28 @@ async function abrir(){
   // la carta todavía sube: pasa a primer plano sin frenar
   const cf=$('cartaFinal');
   Object.assign(cf.style,{left:r.left+'px',top:(r.top-r.height)+'px',width:r.width+'px',height:(r.height*3)+'px',fontSize:r.width+'px'});
+  {const v=$('veloCarta');if(v){let h='';for(let k=0;k<38;k++){const cor=k%6===0;h+=`<i class="${cor?'cor':''}" style="left:${(Math.random()*100).toFixed(1)}%;--s:${cor?(10+Math.random()*8).toFixed(0)+'px':(2+Math.random()*4).toFixed(1)+'px'};--t:${(5+Math.random()*5).toFixed(1)}s;--d:${(-Math.random()*8).toFixed(1)}s;--dx:${((Math.random()-.5)*120).toFixed(0)}px">${cor?'♥':''}</i>`}v.innerHTML=h;requestAnimationFrame(()=>v.classList.add('on'))}}
   cf.classList.add('ver');escn.classList.add('atenua','fuera');if($('intro'))$('intro').classList.add('sale');$('saltar').classList.remove('ver');
   const dx=innerWidth/2-(r.left+r.width/2),dy=innerHeight/2-(r.top+r.height/2);
   const sc=Math.min(innerWidth*.82/r.width,innerHeight*.28/r.height);
   const mov=cf.animate([{transform:'none'},{transform:`translate(${dx*.18}px,${dy*.34-42}px) scale(${sc*.42}) rotate(-2deg)`,offset:.48},{transform:`translate(${dx}px,${dy}px) scale(${sc})`}],{duration:reducido?1:1250,easing:'cubic-bezier(.2,.8,.25,1)',fill:'forwards'});
   await espera(900);
   cf.classList.add('rompe-sello');ruido(.12,1200,3,.5);setTimeout(()=>ruido(.08,3000,4,.3),60);
-  await espera(260);cf.classList.add('desplegada');ruido(.6,3200,.9,.22,true);
-  await espera(1700);
-  const cubrir=sc*1.25;
+  {const sl=cf.querySelector('.cf-sello'),b=sl?sl.getBoundingClientRect():{left:innerWidth/2,top:innerHeight/2,width:0,height:0};for(let k=0;k<14;k++){const f=document.createElement('i');f.className='cf-frag';const a=Math.random()*Math.PI*2,d=40+Math.random()*110;f.style.cssText=`left:${b.left+b.width/2}px;top:${b.top+b.height/2}px;--dx:${Math.cos(a)*d}px;--dy:${Math.sin(a)*d+40}px;--rg:${(Math.random()-.5)*720}deg`;document.body.appendChild(f);setTimeout(()=>f.remove(),1000)}}
+  await espera(260);cf.classList.add('desplegada');ruido(.6,3200,.9,.22,true);setTimeout(()=>{try{tono(1318.51,ctx().currentTime,.01,.03,1.4)}catch(e){}},1150);
+  await espera(3300);
+  const cubrir=sc*1.12;
   mov.cancel();cf.style.transform=`translate(${dx}px,${dy}px) scale(${sc})`;void cf.offsetWidth;
   cf.classList.add('cubre');cf.style.transform=`translate(${dx}px,${dy}px) scale(${cubrir})`;
-  scrollTo(0,0);$('web').classList.add('visible');
+  {const v=$('veloCarta');if(v)v.classList.add('final')}
+  await espera(900);scrollTo(0,0);$('web').classList.add('visible');
+  {const v=$('veloCarta');if(v){v.classList.add('fuera');setTimeout(()=>v.remove(),1500)}}
   await espera(1150);
   }catch(err){console.error(err)}
-  const cf=$('cartaFinal');if(cf)cf.remove();escn.remove();['ruedasWin','zonas'].forEach(id=>{const e=$(id);if(e)e.remove()});try{if(lluviaSrc){lluviaSrc.stop();lluviaSrc=null;lluviaG=null}}catch(e){}if($('intro')){try{Intro3D.parar()}catch(e){}$('intro').remove()}document.body.classList.remove('cerrado');$('web').classList.add('visible');$('web').removeAttribute('aria-hidden');observa(document);try{sessionStorage.setItem('meliAbierto','1')}catch(e){}
+  const cf=$('cartaFinal');if(cf)cf.remove();setTimeout(()=>{const v=$('veloCarta');if(v)v.remove()},1600);escn.remove();['ruedasWin','zonas'].forEach(id=>{const e=$(id);if(e)e.remove()});try{if(lluviaSrc){lluviaSrc.stop();lluviaSrc=null;lluviaG=null}}catch(e){}if($('intro')){try{Intro3D.parar()}catch(e){}$('intro').remove()}document.body.classList.remove('cerrado');$('web').classList.add('visible');$('web').removeAttribute('aria-hidden');observa(document);try{sessionStorage.setItem('meliAbierto','1')}catch(e){}
 }
 // si ya lo abrió en esta pestaña y recarga, vuelve directo a la página
-function directo(){abierto=true;['escena','intro','cartaFinal','ruedasWin','zonas'].forEach(id=>{const e=$(id);if(e)e.remove()});document.body.classList.remove('cerrado','en-puerta');$('web').classList.add('visible');$('web').removeAttribute('aria-hidden');observa(document);if(location.hash){const v=location.hash.slice(1);setTimeout(()=>{if(vistas.includes(v))muestra(v)},80)}}
+function directo(){abierto=true;['escena','intro','cartaFinal','veloCarta','ruedasWin','zonas'].forEach(id=>{const e=$(id);if(e)e.remove()});document.body.classList.remove('cerrado','en-puerta');$('web').classList.add('visible');$('web').removeAttribute('aria-hidden');observa(document);if(location.hash){const v=location.hash.slice(1);setTimeout(()=>{if(vistas.includes(v))muestra(v)},80)}}
 
 /* ---------- aparecer ---------- */
 let io;
@@ -1165,7 +1187,7 @@ els[0].focus({preventScroll:true});
 <script src="vendor/RenderPass.js"></script>
 <script src="vendor/ShaderPass.js"></script>
 <script src="vendor/UnrealBloomPass.js"></script>
-<script src="intro3d.js?v=173"></script>
+<script src="intro3d.js?v=180"></script>
 <script>iniciaIntro()</script>
 </body>
 </html>
