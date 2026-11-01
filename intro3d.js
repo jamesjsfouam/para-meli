@@ -700,7 +700,7 @@ let mirada=null,paso=0;
 const sat=x=>Math.max(0,Math.min(1,x));
 function camara(t,dt){
   if(zoomK>=0){if(!zIni){zIni=C.position.clone();zMir=mirada.clone()}
-    const k=suave(Math.min(1,zoomK)),asp=W()/H(),fA=Math.min(1.55,Math.max(1,.8/asp)),lzT=V(-.045-.05*(fA-1),1.165,-7.0),pzT=lzT.clone().add(V(.01,.085+.03*(fA-1),.57).multiplyScalar(fA)),pz=zIni.clone().lerp(pzT,k),lz=zMir.clone().lerp(lzT,k);
+    const k=suave(Math.min(1,zoomK)),asp=W()/H(),fA=MOVIL?Math.min(1.2,Math.max(1,.62/asp)):Math.min(1.55,Math.max(1,.8/asp)),lzT=V(-.045-.05*(fA-1),1.165,-7.0),pzT=lzT.clone().add(V(.01,.085+.03*(fA-1),.57).multiplyScalar(fA)),pz=zIni.clone().lerp(pzT,k),lz=zMir.clone().lerp(lzT,k);
     const b=Math.sin(k*Math.PI*2)*.02*(1-k);const ab=R3&&R3.ab>0?R3.ab:0,atras=Math.sin(Math.min(1,ab/2.2)*Math.PI)*.06,em=suave(Math.min(1,Math.max(0,ab-1.9)/1.8))*.06,sube=suave(Math.min(1,Math.max(0,ab-2.2)/1.6));C.position.set(pz.x+b*.6+.02*Math.min(1,ab/2),pz.y-Math.abs(b)+atras*.5+em*.5,pz.z+atras-em);C.position.y+=sube*.08;C.position.z+=sube*.12;C.lookAt(lz.x+.02*Math.min(1,ab/2),lz.y+em*.9+atras*.3+sube*.3,lz.z);return}
   let i=0;while(i<RUTA.length-2&&t>RUTA[i+1][0])i++;
   const g=k=>RUTA[Math.max(0,Math.min(RUTA.length-1,k))];
@@ -973,8 +973,8 @@ const R3api={
   rectCandado(){if(!R3)return null;const b=new T.Box3().setFromObject(R3.cand);let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;
     [b.min.x,b.max.x].forEach(x=>[b.min.y,b.max.y].forEach(y=>[b.min.z,b.max.z].forEach(z=>{const p=V(x,y,z).project(C);const sx=(p.x*.5+.5)*W(),sy=(-p.y*.5+.5)*H();x0=Math.min(x0,sx);x1=Math.max(x1,sx);y0=Math.min(y0,sy);y1=Math.max(y1,sy)})));return{x:x0,y:y0,w:x1-x0,h:y1-y0}},
   get cuadros(){return cuadros},
-  rectRuedas(){if(!R3)return null;let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;R3.cand.updateMatrixWorld();[[-.039,-.027],[.039,-.027],[-.039,.019],[.039,.019]].forEach(([x,y])=>{const p=R3.cand.localToWorld(V(x,y,.03)).project(C);const sx=(p.x*.5+.5)*W(),sy=(-p.y*.5+.5)*H();x0=Math.min(x0,sx);x1=Math.max(x1,sx);y0=Math.min(y0,sy);y1=Math.max(y1,sy)});return{x:x0,y:y0,w:x1-x0,h:y1-y0}},
-  abrirRegalo(){return new Promise(ok=>{if(!R3)return ok();R3.ab=0;setTimeout(ok,3950)})},
+  rectRuedas(){if(!R3)return null;let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;C.updateMatrixWorld();C.updateProjectionMatrix();R3.cand.updateMatrixWorld();[[-.039,-.027],[.039,-.027],[-.039,.019],[.039,.019]].forEach(([x,y])=>{const p=R3.cand.localToWorld(V(x,y,.03)).project(C);const sx=(p.x*.5+.5)*W(),sy=(-p.y*.5+.5)*H();x0=Math.min(x0,sx);x1=Math.max(x1,sx);y0=Math.min(y0,sy);y1=Math.max(y1,sy)});return{x:x0,y:y0,w:x1-x0,h:y1-y0}},
+  abrirRegalo(){return new Promise(ok=>{if(!R3)return ok();R3.ab=0;setTimeout(ok,MOVIL?3200:3950)})},
   voltea(){if(R3)R3.objE=R3.objE?0:Math.PI},
   rectEtiqueta(){if(!R3)return null;const b=new T.Box3().setFromObject(R3.etiqueta);let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;[b.min.x,b.max.x].forEach(x=>[b.min.y,b.max.y].forEach(y=>[b.min.z,b.max.z].forEach(z=>{const p=V(x,y,z).project(C);const sx=(p.x*.5+.5)*W(),sy=(-p.y*.5+.5)*H();x0=Math.min(x0,sx);x1=Math.max(x1,sx);y0=Math.min(y0,sy);y1=Math.max(y1,sy)})));return{x:x0,y:y0,w:x1-x0,h:y1-y0}},
   ocultaCarta(){if(R3)R3.cartaFuera=true},

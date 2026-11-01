@@ -292,6 +292,11 @@ body.en-puerta{background:#000}
 #escena.sobre3d .regalo{animation:none;transition:none}
 #escena.r3d #etiqueta{animation:none}
 #ruedasWin.flotante{position:fixed!important;opacity:0;z-index:45;transform:none!important}#zonas.flotante{position:fixed!important;z-index:46;transform:none!important}
+@media (pointer:coarse){
+  #ruedasWin.flotante{width:240px!important;height:132px!important}
+  #zonas.flotante{width:260px!important;height:168px!important}
+  #zonas.flotante i{margin:-18px -10px}
+}
 
 
 /* ============ toque wrapped: piezas comunes ============ */
@@ -920,7 +925,7 @@ function entrar(){if(entrando||!Intro3D.cargado)return;entrando=true;introEnCurs
   b.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&!t0){e.preventDefault();t0=performance.now();raf=requestAnimationFrame(paso)}});b.addEventListener('keyup',fin)})();
 /* tocar la etiqueta 3D la voltea (frente: para quién; reverso: la pista) */
 document.addEventListener('click',e=>{if(!window.Intro3D||!Intro3D.rectEtiqueta||abierto||!$('escena')||!$('escena').classList.contains('ver'))return;const r=Intro3D.rectEtiqueta();if(r&&e.clientX>=r.x-12&&e.clientX<=r.x+r.w+12&&e.clientY>=r.y-12&&e.clientY<=r.y+r.h+12){Intro3D.voltea();clic()}});
-function ubicaCandado(){let r=(Intro3D.rectRuedas||Intro3D.rectCandado)();if(!r)return;const w=Math.max(r.w,184),h=Math.max(r.h,120);r={x:r.x+r.w/2-w/2,y:r.y+r.h/2-h/2,w,h};['ruedasWin','zonas'].forEach(id=>{const e=$(id);if(e.parentNode!==document.body){e._padre=e.parentNode;e._sig=e.nextSibling;document.body.appendChild(e)}e.classList.add('flotante');
+function ubicaCandado(){let r=(Intro3D.rectRuedas||Intro3D.rectCandado)();if(!r)return;const tactil=!!Intro3D.movil||matchMedia('(pointer:coarse)').matches,w=tactil?240:Math.max(r.w,184),h=tactil?132:Math.max(r.h,120);r={x:r.x+r.w/2-w/2,y:r.y+r.h/2-h/2,w,h};r.x=Math.max(12,Math.min(innerWidth-w-12,r.x));r.y=Math.max(90,Math.min(innerHeight-h-110,r.y));['ruedasWin','zonas'].forEach(id=>{const e=$(id);if(e.parentNode!==document.body){e._padre=e.parentNode;e._sig=e.nextSibling;document.body.appendChild(e)}e.classList.add('flotante');
   Object.assign(e.style,{left:r.x+'px',top:r.y+'px',width:r.w+'px',height:r.h+'px'})})}
 addEventListener('resize',()=>{if(window.Intro3D&&Intro3D.tiene3D&&$('zonas').classList.contains('flotante')&&!abierto)requestAnimationFrame(()=>requestAnimationFrame(ubicaCandado))});
 $('intro').addEventListener('click',entrar);
