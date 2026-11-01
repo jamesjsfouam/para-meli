@@ -318,6 +318,8 @@ body.en-puerta{background:#000}
 /* ============ PANTALLA PRINCIPAL ============ */
 #web{position:relative;min-height:100vh;background:var(--papel);opacity:0;transition:opacity .4s;overflow:hidden}
 #web.visible{opacity:1}
+#web:not(.visible){visibility:hidden}.vista.dormida *{animation-play-state:paused!important}#web:not(.visible) *{animation-play-state:paused!important}
+.quieto .marq,.quieto .liquid i,.quieto .cinta div,.quieto .grid,.quieto .pegatina,.quieto .chispa,.quieto .cielo i,.quieto .cielo b,.quieto .llama,.quieto .disco,.quieto .etq,.quieto .brillos i,.quieto .tarjeta,.quieto .muro span{animation-play-state:paused!important}
 #web::after{content:"";position:fixed;inset:0;background-image:var(--grano);opacity:.07;pointer-events:none;z-index:50}
 body:has(.vista.abierta) #web::after{display:none}
 .portada{position:relative;min-height:100svh;display:flex;flex-direction:column;justify-content:center;padding:96px 24px 72px;overflow:hidden}
@@ -665,7 +667,7 @@ body:has(.vista.abierta) #web::after{display:none}
 </main>
 
 <!-- ============ VISTAS ============ -->
-<section class="vista" id="v-linea" aria-hidden="true">
+<section class="vista dormida" id="v-linea" aria-hidden="true">
   <div class="fondo-deco"><div class="grid"></div></div>
   <div class="vista-barra"><button class="volver">← Volver</button><span class="tag">01 / 04</span></div>
   <div class="vista-cuerpo">
@@ -675,7 +677,7 @@ body:has(.vista.abierta) #web::after{display:none}
   </div>
 </section>
 
-<section class="vista" id="v-cosas" aria-hidden="true">
+<section class="vista dormida" id="v-cosas" aria-hidden="true">
   <div class="fondo-deco"><div class="liquid"><i style="width:340px;height:340px;left:-10%;top:10%;--x1:120px;--y1:80px;--x2:40px;--y2:200px;--x3:180px;--y3:40px"></i><i style="width:280px;height:280px;right:-6%;top:40%;--x1:-90px;--y1:110px;--x2:30px;--y2:-40px;--x3:-40px;--y3:140px;--t:11s"></i><i style="width:300px;height:300px;left:30%;bottom:-10%;--x1:-120px;--y1:-80px;--x2:80px;--y2:-140px;--x3:-30px;--y3:-30px;--t:16s"></i></div></div>
   <div class="vista-barra"><button class="volver">← Volver</button><span class="tag">02 / 04</span></div>
   <div class="vista-cuerpo">
@@ -686,7 +688,7 @@ body:has(.vista.abierta) #web::after{display:none}
   </div>
 </section>
 
-<section class="vista" id="v-carta" aria-hidden="true">
+<section class="vista dormida" id="v-carta" aria-hidden="true">
   <div class="cielo" id="cielo" aria-hidden="true"></div>
   <div class="vista-barra"><button class="volver">← Volver</button><span class="tag">03 / 04</span></div>
   <div class="vista-cuerpo">
@@ -701,7 +703,7 @@ body:has(.vista.abierta) #web::after{display:none}
   </div>
 </section>
 
-<section class="vista" id="v-musica" aria-hidden="true">
+<section class="vista dormida" id="v-musica" aria-hidden="true">
   <div class="vista-barra"><button class="volver">← Volver</button><span class="tag">04 / 04</span></div>
   <div class="vista-cuerpo">
     <h2 class="H titulo-vista" style="text-align:center;margin-bottom:28px">Nuestras canciones favoritas</h2>
@@ -985,7 +987,7 @@ async function abrir(){
   setTimeout(()=>{const v=$('veloCarta');if(v)v.remove()},1600);escn.remove();['ruedasWin','zonas'].forEach(id=>{const e=$(id);if(e)e.remove()});try{if(lluviaSrc){lluviaSrc.stop();lluviaSrc=null;lluviaG=null}}catch(e){}if($('intro')){try{Intro3D.parar()}catch(e){}$('intro').remove()}document.body.classList.remove('cerrado');$('web').classList.add('visible');$('web').removeAttribute('aria-hidden');observa(document);try{sessionStorage.setItem('meliAbierto','1');sessionStorage.removeItem('meliRecarga');localStorage.setItem('meliIntentos','0')}catch(e){}
 }
 // si ya lo abrió en esta pestaña y recarga, vuelve directo a la página
-function directo(){abierto=true;setTimeout(()=>{try{$('musica').classList.add('ver','pausa');$('musicaTxt').textContent=CANCIONES[0][0]}catch(e){}},100);{try{audio.crossOrigin='anonymous';audio.src=CANCIONES[0][2]}catch(e){}const arranca=e=>{removeEventListener('pointerup',arranca);removeEventListener('keydown',arranca);try{ctx();enlazaCancion();if(e&&e.target&&e.target.closest&&e.target.closest('#musica'))return;if(audio.paused)pon(0,true)}catch(e){}};addEventListener('pointerup',arranca);addEventListener('keydown',arranca)}['escena','intro','veloCarta','ruedasWin','zonas'].forEach(id=>{const e=$(id);if(e)e.remove()});document.body.classList.remove('cerrado','en-puerta');$('web').classList.add('visible');$('web').removeAttribute('aria-hidden');observa(document);if(location.hash){const v=location.hash.slice(1);setTimeout(()=>{if(vistas.includes(v))muestra(v)},80)}}
+function directo(){abierto=true;if($('ligero'))$('ligero').remove();setTimeout(()=>{try{$('musica').classList.add('ver','pausa');$('musicaTxt').textContent=CANCIONES[0][0]}catch(e){}},100);{try{audio.crossOrigin='anonymous';audio.src=CANCIONES[0][2]}catch(e){}const arranca=e=>{removeEventListener('pointerup',arranca);removeEventListener('keydown',arranca);try{ctx();enlazaCancion();if(e&&e.target&&e.target.closest&&e.target.closest('#musica'))return;if(audio.paused)pon(0,true)}catch(e){}};addEventListener('pointerup',arranca);addEventListener('keydown',arranca)}['escena','intro','veloCarta','ruedasWin','zonas'].forEach(id=>{const e=$(id);if(e)e.remove()});document.body.classList.remove('cerrado','en-puerta');$('web').classList.add('visible');$('web').removeAttribute('aria-hidden');observa(document);if(location.hash){const v=location.hash.slice(1);setTimeout(()=>{if(vistas.includes(v))muestra(v)},80)}}
 
 /* ---------- aparecer ---------- */
 let io;
@@ -1101,7 +1103,7 @@ const FRASES=['Abrilo cuando estés sola','Tocá el sello','Sin apuro','Esto es 
 const vistas=['linea','cosas','carta','musica'];
 let ultimoBoton=null;
 function muestra(nombre){
-  vistas.forEach(v=>{const el=$('v-'+v),on=v===nombre;el.classList.toggle('abierta',on);el.setAttribute('aria-hidden',!on);el.inert=!on;if(on){el.scrollTop=0;observa(el);setTimeout(()=>{const b=el.querySelector('.volver');if(b)b.focus({preventScroll:true})},60)}});
+  vistas.forEach(v=>{const el=$('v-'+v),on=v===nombre;if(on)el.classList.remove('dormida');else if(el.classList.contains('abierta'))setTimeout(()=>{if(!el.classList.contains('abierta'))el.classList.add('dormida')},900);else el.classList.add('dormida');el.classList.toggle('abierta',on);el.setAttribute('aria-hidden',!on);el.inert=!on;if(on){el.scrollTop=0;observa(el);setTimeout(()=>{const b=el.querySelector('.volver');if(b)b.focus({preventScroll:true})},60)}});
   document.body.style.overflow=nombre?'hidden':'';$('web').inert=!!nombre;
   if(nombre)ultimoBoton=document.querySelector(`[data-vista="${nombre}"]`);else if(ultimoBoton){ultimoBoton.focus({preventScroll:true});ultimoBoton=null}
 }
@@ -1164,7 +1166,12 @@ els[0].focus({preventScroll:true});
 <script src="vendor/RenderPass.js"></script>
 <script src="vendor/ShaderPass.js"></script>
 <script src="vendor/UnrealBloomPass.js"></script>
-<script src="intro3d.js?v=245"></script>
+<script src="intro3d.js?v=246"></script>
 <script>iniciaIntro()</script>
+<script>
+// pausa las animaciones infinitas de las secciones que no están en pantalla (no se ven, así que no cambia nada a la vista)
+(()=>{if(!('IntersectionObserver' in window))return;const io=new IntersectionObserver(es=>es.forEach(e=>e.target.classList.toggle('quieto',!e.isIntersecting)),{rootMargin:'150px 0px'});
+  document.querySelectorAll('#web > *, #web section, #web .hito, #web .cinta').forEach(el=>io.observe(el))})();
+</script>
 </body>
 </html>

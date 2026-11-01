@@ -194,7 +194,7 @@ function zonificar(){const b=new T.Box3(),c=V(0,0,0),t=V(0,0,0),w=V(0,0,0);
     b.getCenter(c);b.getSize(t);o.userData.zona=Math.max(t.x,t.z)>12?'todo':c.y<-5?'escritorio':c.z>.35?'afuera':c.z<-.35?'adentro':'todo'})}
 function aplicaZona(z){zonaActual=z;LUCES.forEach(l=>l.visible=l.userData.zonaL===(z==='todas'?'afuera':z));
   S.children.forEach(o=>{const k=o.userData.zona;if(!k||k==='propio'||k==='todo')return;o.visible=z==='todas'?k!=='escritorio':k===z})}
-function zonas(){const p=C.position,cerrada=!puerta||Math.abs(puerta.rotation.y)<.03,fw=C.getWorldDirection(V(0,0,0)),z=p.y<-5?'escritorio':(p.z>3.5||(p.z>.25&&cerrada))?'afuera':(p.z<-1.2||(p.z<-.6&&fw.z<-.55))?'adentro':'todas';if(z!==zonaActual)aplicaZona(z)}
+const _fw=new T.Vector3();function zonas(){const p=C.position,cerrada=!puerta||Math.abs(puerta.rotation.y)<.03,fw=C.getWorldDirection(_fw),z=p.y<-5?'escritorio':(p.z>3.5||(p.z>.25&&cerrada))?'afuera':(p.z<-1.2||(p.z<-.6&&fw.z<-.55))?'adentro':'todas';if(z!==zonaActual)aplicaZona(z)}
 // cada combinación de luces es un programa distinto: se compilan todas antes de entrar, así cambiar de zona no traba
 function compilaZonas(){const ant=zonaActual;['escritorio','afuera','adentro'].forEach(z=>{aplicaZona(z);try{R.compile(S,C)}catch(e){}});aplicaZona(ant||'escritorio')}
 
@@ -809,12 +809,15 @@ function pintaManoR(dt){
 
 /* ---------- bucle ---------- */
 let pendiente=0,apagV=1,parpT=0,parpF=1,parpN=1,impar=false,pr=1,prMax=1,dynT=0,dynN=0,dynBien=0,cuadros=0;
+const SIR=['#2a5bff','#ff2020','#300','#ff1a1a','#012'].map(c=>new T.Color(c));let sirPh=-1,firmaAnt=NaN,sombraPend=true;
+function firmaSombra(){const p=C.position,q=C.quaternion;let f=p.x+p.y*3.1+p.z*7.3+q.x*11.7+q.y*13.9+q.z*17.3+q.w*5.9+puerta.rotation.y*19.1+autoPuerta.rotation.y*23.3+cintaP.position.y*29.9+cintaP.rotation.x*31.7;
+  if(R3){R3.ruedas.forEach((r,i)=>f+=r.ang*(37.1+i));if(R3.tapa)f+=R3.tapa.position.y*41.3+R3.tapa.rotation.x*43.7+R3.tapa.rotation.z*47.9}return f}
 function aplicaPR(){R.setPixelRatio(pr);R.setSize(W(),H());if(comp){if(comp.setPixelRatio)comp.setPixelRatio(pr);comp.setSize(W(),H())}}
 function cuadroLoop(){
   if(!listo)return;requestAnimationFrame(cuadroLoop);
   const crudo=reloj.getDelta()+pendiente,dt=Math.min(crudo,.05);pendiente=0;cuadros++;
   // resolución dinámica: mantiene margen para que la cámara y la interacción no se traben
-  if(R3&&R3.ab<0&&zoomK>=1&&document.visibilityState==='visible'&&(impar=!impar)){pendiente=crudo;return}
+  if(MOVIL&&R3&&R3.ab<0&&zoomK>=1&&document.visibilityState==='visible'&&(impar=!impar)){pendiente=crudo;return}
   if(document.visibilityState==='visible'){dynT+=crudo;dynN++;if(dynT>1.2){const fps=dynN/dynT;dynT=0;dynN=0;
     // en el escritorio (antes de entrar) la escena está quieta: se prioriza que las notas se lean, no los cuadros por segundo
     const piso=corriendo?.5:Math.min(prMax,.9);
@@ -825,7 +828,7 @@ function cuadroLoop(){
   puerta.rotation.y+=(puertaObj-puerta.rotation.y)*Math.min(1,dt*puertaVel*2.2);
   pintaManoR(dt);regalo3DFrame(dt);
   autoPuerta.rotation.y+=(autoObj-autoPuerta.rotation.y)*Math.min(1,dt*(autoObj?1.8:5));
-  {const ph=Math.floor(performance.now()/280)%4,on=C.position.y<-5?0:C.position.z>.3?1.4:.35;sirena[0].intensity=2.4*on;sirena[0].color.set(ph%2?'#2a5bff':'#ff2020');sirena[1].intensity=(ph===1||ph===3?2.6:0)*on;sirena[2].material.color.set(ph%2?'#300':'#ff1a1a');sirena[3].material.color.set(ph%2?'#2a5bff':'#012')}
+  {const ph=Math.floor(performance.now()/280)%4,on=C.position.y<-5?0:C.position.z>.3?1.4:.35;sirena[0].intensity=2.4*on;sirena[1].intensity=(ph===1||ph===3?2.6:0)*on;if(ph!==sirPh){sirPh=ph;sirena[0].color.copy(ph%2?SIR[0]:SIR[1]);sirena[2].material.color.copy(ph%2?SIR[2]:SIR[3]);sirena[3].material.color.copy(ph%2?SIR[0]:SIR[4])}}
   cintaP.position.y+=((cintaObj?1.62:1.18)-cintaP.position.y)*Math.min(1,dt*4);cintaP.rotation.x+=((cintaObj?-.5:0)-cintaP.rotation.x)*Math.min(1,dt*4);
   {lluvia.visible=!LIGERO&&zonaActual!=='adentro'&&C.position.z>-.2;if(lluvia.visible){const a=lluvia.geometry.attributes.position,arr=a.array,cz=C.position.z;for(let i=0;i<arr.length;i+=6){arr[i+1]-=dt*9;arr[i+4]-=dt*9;if(arr[i+4]<0){const y=rnd(7,9);arr[i+1]=y;arr[i+4]=y-.32;const z=cz+rnd(-8,14);arr[i+2]=z;arr[i+5]=z}}a.needsUpdate=true}}
   if(apagonT>=0){apagonT+=dt;const seq=[[0,1],[.12,.15],[.22,1],[.42,.05],[.52,.7],[.68,0],[2.3,.5],[2.38,0],[2.52,1]];let v=1;for(const [tt,vv] of seq)if(apagonT>=tt)v=vv;
@@ -838,7 +841,9 @@ function cuadroLoop(){
    if(parpT>0){parpT-=dt;parpF+=(parpN-parpF)*Math.min(1,dt*30)}else{parpF+=(1-rnd(0,.06)-parpF)*Math.min(1,dt*20);if(Math.random()<dt*.45){parpT=rnd(.05,.3);parpN=rnd(.1,.55)}}
    const vv=v*apagV*parpF;focoMesa.intensity=vv*2.4;if(lampBulbo){lampBulbo.material.color.setScalar(.12+.88*vv);lampBulbo.userData.halo.material.opacity=vv;lampBulbo.userData.rebote.intensity=vv*.5}}
   polvo.rotation.y+=dt*.008;
-  if(cargado)zonas();R.shadowMap.needsUpdate=(cuadros%2===0)||!cargado;
+  if(cargado)zonas();
+  {const f=firmaSombra();if(Math.abs(f-firmaAnt)>1e-6||(R3&&R3.ab>=0)||(corriendo&&linterna.intensity>0))sombraPend=true;firmaAnt=f;
+   if(!cargado||(sombraPend&&cuadros%2===0)||cuadros%90===0){R.shadowMap.needsUpdate=true;sombraPend=false}}
   if(comp){fadeVal+=(fadeObj-fadeVal)*Math.min(1,dt*(fadeObj?9:6));comp.passes[2].uniforms.uT.value=performance.now()%1000;comp.passes[2].uniforms.uF.value=fadeVal;comp.render()}else R.render(S,C);
   if(corriendo&&t>=FIN&&alTerminar){const f=alTerminar;alTerminar=null;f()}
 }
