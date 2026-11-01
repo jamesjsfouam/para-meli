@@ -5,7 +5,7 @@
 (function(){
 const T=THREE;
 let R,S,C,reloj,linterna,focoMesa,lampCono,puerta,parpadeo=[],polvo,listo=false,corriendo=false,t0=0,alTerminar=null;
-let bajaAuto=0,fadeObj=0,fadeVal=0,lampBulbo=null,lampVol=null,zoomK=-1,zIni=null,zMir=null,libreta=null,LM=null,cargaProg=null,cargaListo=null,cargado=false,macetas=[],comp=null,regaloPlano=null,regaloMat=null,manoL,manoR,linternaObj,regaloMats=[],regaloG,cintaP,autoPuerta,sirena=[],lluvia,fundeT=-1,fundeDur=1;
+let lampEsc=null,bajaAuto=0,fadeObj=0,fadeVal=0,lampBulbo=null,lampVol=null,zoomK=-1,zIni=null,zMir=null,libreta=null,LM=null,cargaProg=null,cargaListo=null,cargado=false,macetas=[],comp=null,regaloPlano=null,regaloMat=null,manoL,manoR,linternaObj,regaloMats=[],regaloG,cintaP,autoPuerta,sirena=[],lluvia,fundeT=-1,fundeDur=1;
 const ev=[];
 const W=()=>innerWidth,H=()=>innerHeight;
 function rnd(a,b){return a+Math.random()*(b-a)}
@@ -196,134 +196,40 @@ function construir(cv){
   // niebla baja en capas
   const nieblaT=brillo('rgba(120,130,150,1)');for(let i=0;i<14;i++){const sp=new T.Sprite(new T.SpriteMaterial({map:nieblaT,transparent:true,opacity:.07,depthWrite:false}));sp.position.set(rnd(-14,14),rnd(.3,1.2),rnd(-6,14));sp.scale.set(rnd(8,14),rnd(2,3.5),1);S.add(sp)}
 
-  // ----- el auto del CBI: SUV negra con carrocería redondeada -----
-  const auto=new T.Group();
-  const pintura=new T.MeshPhysicalMaterial({color:'#07080a',roughness:.25,metalness:.6,clearcoat:1,clearcoatRoughness:.15});
-  const plastico=M({color:'#0a0a0b',roughness:.85}),tapiz=pbr('fabric_leather_02',[2,2],{color:'#3a3a3e'}),cromo=M({color:'#c8ccd2',roughness:.15,metalness:1});
-  const negroV=new T.MeshStandardMaterial({color:'#020304',roughness:.08,metalness:.8,transparent:true,opacity:.78,side:T.DoubleSide,depthWrite:false});
-  // carrocería: perfil lateral con los huecos de las ruedas, capó, cintura y defensas
-  const perfil=new T.Shape();perfil.moveTo(-2.3,.32);
-  [[-2.44,.4],[-2.52,.56],[-2.53,.8],[-2.46,.97],[-2.1,1.03],[-1.25,1.1],[2.3,1.15],[2.47,1.1],[2.53,.8],[2.5,.42],[2.32,.32]].forEach(([u,v])=>perfil.lineTo(u,v));
-  perfil.lineTo(2.16,.32);perfil.absarc(1.62,.42,.54,-.186,Math.PI+.186,false);perfil.lineTo(-1.01,.32);perfil.absarc(-1.55,.42,.54,-.186,Math.PI+.186,false);perfil.lineTo(-2.3,.32);
-  // la carrocería es hueca: capó, cola y dos laterales con el perfil completo (así la cabina queda vacía por dentro)
-  const ext=(sh,depth,tx)=>{const g=new T.ExtrudeGeometry(sh,{depth,bevelEnabled:true,bevelThickness:.08,bevelSize:.06,bevelSegments:5,curveSegments:24});g.rotateY(-Math.PI/2);g.translate(tx,0,0);const m=new T.Mesh(g,pintura);auto.add(m);return m};
-  ext(perfil,.1,-.8);ext(perfil,.1,.9);
-  const frente=new T.Shape();frente.moveTo(-2.3,.32);[[-2.44,.4],[-2.52,.56],[-2.53,.8],[-2.46,.97],[-2.1,1.03],[-1.25,1.1],[-.95,1.11],[-.95,.32],[-1.01,.32]].forEach(([u,v])=>frente.lineTo(u,v));
-  frente.absarc(-1.55,.42,.54,-.186,Math.PI+.186,false);frente.lineTo(-2.3,.32);ext(frente,1.8,.9);
-  const cola=new T.Shape();cola.moveTo(2.2,.32);[[2.2,1.15],[2.3,1.15],[2.47,1.1],[2.53,.8],[2.5,.42],[2.32,.32]].forEach(([u,v])=>cola.lineTo(u,v));cola.lineTo(2.2,.32);ext(cola,1.8,.9);
-  caja(1.7,.04,3.2,M({color:'#0b0b0c',roughness:.95}),0,.55,.6,0,auto);   // piso de la cabina
-  // cabina: vidrio polarizado negro, más angosta que la carrocería (como una SUV real)
-  const cabS=new T.Shape();[[-1.2,1.1],[-.5,1.84],[2.05,1.88],[2.38,1.62],[2.42,1.12]].forEach(([u,v],i)=>i?cabS.lineTo(u,v):cabS.moveTo(u,v));
-  const cabG=new T.ExtrudeGeometry(cabS,{depth:1.6,bevelEnabled:true,bevelThickness:.07,bevelSize:.05,bevelSegments:4});cabG.rotateY(-Math.PI/2);cabG.translate(.8,0,0);
-  const vidrioN=new T.MeshPhysicalMaterial({color:'#030405',roughness:.06,metalness:.2,clearcoat:1,clearcoatRoughness:.03});
-  auto.add(new T.Mesh(cabG,vidrioN));
-  caja(1.72,.06,2.55,pintura,0,1.92,.78,0,auto);                                                        // techo color carrocería
-  [-1,1].forEach(sd=>{caja(.04,.74,.12,M({color:'#060606',roughness:.5}),sd*.88,1.5,.42,0,auto);       // parante B
-    caja(.04,.025,3.45,cromo,sd*.93,1.16,.55,0,auto);                                                   // moldura cromada de la ventana
-    [-1.05,.38,1.42].forEach(z=>caja(.012,.66,.012,M({color:'#000'}),sd*1.0,.8,z,0,auto));             // juntas de las puertas
-    [.2,1.25].forEach(z=>caja(.025,.03,.17,cromo,sd*1.0,1.0,z,0,auto));                                 // manijas
-    const e=new T.Group();caja(.07,.07,.1,pintura,0,0,0,0,e);caja(.2,.14,.06,pintura,sd*.1,.03,.02,0,e);const ve=new T.Mesh(new T.PlaneGeometry(.17,.11),M({color:'#9fb3c8',roughness:.02,metalness:1}));ve.position.set(sd*.1,.03,.053);e.add(ve);e.position.set(sd*1.0,1.2,-1.0);auto.add(e);
-    caja(.07,.08,3.0,M({color:'#111',roughness:.6}),sd*1.02,.36,.03,0,auto)});                          // estribos
-  // vidrio del parabrisas con lluvia (por dentro)
-  const para=new T.Mesh(new T.PlaneGeometry(1.7,1.0),new T.MeshStandardMaterial({map:gotas(),color:'#c0ccd8',transparent:true,opacity:.5,roughness:.02,metalness:.3,depthWrite:false,side:T.DoubleSide}));para.position.set(0,1.47,-.86);para.rotation.x=-.81;auto.add(para);
-  [-1,1].forEach(sd=>{const v=new T.Mesh(new T.PlaneGeometry(2.4,.58),negroV);v.position.set(sd*.86,1.47,.68);v.rotation.y=sd*Math.PI/2;auto.add(v)});
-  // ruedas: llanta redondeada, rin de rayos y disco de freno
-  const llantaG=new T.LatheGeometry([[.25,-.14],[.36,-.15],[.41,-.12],[.42,-.06],[.42,.06],[.41,.12],[.36,.15],[.25,.14]].map(([r,y])=>new T.Vector2(r,y)),32);
-  const gomaM=M({color:'#0c0c0c',roughness:.92}),rinM=M({color:'#3a3d42',roughness:.25,metalness:.9}),discoM=M({color:'#5a5a5a',roughness:.4,metalness:.8});
-  [[-.86,-1.55],[.86,-1.55],[-.86,1.62],[.86,1.62]].forEach(([x,z])=>{const g=new T.Group();const ll=new T.Mesh(llantaG,gomaM);ll.rotation.z=Math.PI/2;g.add(ll);
-    const disco=new T.Mesh(new T.CylinderGeometry(.17,.17,.02,24),discoM);disco.rotation.z=Math.PI/2;disco.position.x=-Math.sign(x)*.04;g.add(disco);
-    const aro=new T.Mesh(new T.TorusGeometry(.25,.018,8,32),rinM);aro.rotation.y=Math.PI/2;aro.position.x=Math.sign(x)*.1;g.add(aro);
-    const cubo=new T.Mesh(new T.CylinderGeometry(.06,.07,.06,16),rinM);cubo.rotation.z=Math.PI/2;cubo.position.x=Math.sign(x)*.1;g.add(cubo);
-    for(let i=0;i<6;i++){const ra=caja(.03,.22,.04,rinM,Math.sign(x)*.1,0,0,0,g);ra.rotation.x=i*Math.PI/3;ra.translateY(.13)}
-    g.position.set(x,.42,z);auto.add(g)});
-  // frente: parrilla con marco cromado, faros con LED, antiniebla, defensa
-  caja(1.0,.36,.05,M({color:'#060606',roughness:.35,metalness:.5}),0,.78,-2.56,0,auto);
-  caja(1.04,.03,.06,cromo,0,.97,-2.56,0,auto);caja(1.04,.03,.06,cromo,0,.6,-2.56,0,auto);for(let i=0;i<3;i++)caja(.96,.012,.055,cromo,0,.68+i*.09,-2.565,0,auto);
-  [-1,1].forEach(sd=>{caja(.42,.15,.07,M({color:'#0a0a0b',roughness:.15,metalness:.8}),sd*.74,.86,-2.52,0,auto);
-    caja(.34,.025,.075,new T.MeshBasicMaterial({color:'#f6f9ff'}),sd*.74,.91,-2.53,0,auto);
-    const pr=new T.Mesh(new T.CircleGeometry(.045,20),new T.MeshBasicMaterial({color:'#eef3ff'}));pr.position.set(sd*.68,.84,-2.565);pr.rotation.y=Math.PI;auto.add(pr);
-    const an=new T.Mesh(new T.CircleGeometry(.04,16),new T.MeshBasicMaterial({color:'#fff1d0'}));an.position.set(sd*.72,.52,-2.56);an.rotation.y=Math.PI;auto.add(an);
-    caja(.12,.42,.06,new T.MeshBasicMaterial({color:'#9a000c'}),sd*.86,.98,2.53,0,auto)});                // calaveras
-  caja(2.0,.14,.2,M({color:'#0d0d0e',roughness:.55}),0,.43,-2.55,0,auto);caja(2.0,.14,.2,M({color:'#0d0d0e',roughness:.55}),0,.43,2.55,0,auto);
-  const nI0=auto.children.length;
-  // ----- adentro del auto -----
-  const tab=new T.Shape();[[-1.32,.95],[-1.32,1.1],[-1.05,1.2],[-.78,1.16],[-.72,1.02],[-.72,.95]].forEach(([u,v],i)=>i?tab.lineTo(u,v):tab.moveTo(u,v));
-  const tabG=new T.ExtrudeGeometry(tab,{depth:1.82,bevelEnabled:true,bevelThickness:.02,bevelSize:.02,bevelSegments:2});tabG.rotateY(-Math.PI/2);tabG.translate(.91,0,0);
-  auto.add(new T.Mesh(tabG,plastico));
-  const cuadro=new T.Mesh(new T.PlaneGeometry(.36,.18),new T.MeshBasicMaterial({map:tablero2(),transparent:true,opacity:.9}));cuadro.position.set(-.4,1.13,-.8);cuadro.rotation.x=-.35;auto.add(cuadro);
-  const luzTab=new T.PointLight('#ffb070',.35,1.2,2);luzTab.position.set(-.4,1.15,-.7);auto.add(luzTab);
-  // volante con rayos
-  const vol=new T.Group();vol.add(new T.Mesh(new T.TorusGeometry(.18,.022,12,40),plastico));const cubo=new T.Mesh(new T.CylinderGeometry(.06,.07,.05,20),plastico);cubo.rotation.x=Math.PI/2;vol.add(cubo);
-  [0,2.2,-2.2].forEach(a=>{const r=caja(.17,.035,.02,plastico,0,0,0,0,vol);r.rotation.z=a+Math.PI/2;r.position.set(Math.cos(a-Math.PI/2)*.09,Math.sin(a-Math.PI/2)*.09,0)});
-  vol.position.set(-.4,1.02,-.6);vol.rotation.x=-.42;auto.add(vol);
-  caja(.06,.06,.32,plastico,-.4,.98,-.78,0,auto).rotation.x=-.42;
-  // espejo, viseras, techo, parantes
-  caja(.24,.07,.02,plastico,0,1.7,-.66,0,auto);caja(.6,.02,.22,tapiz,-.42,1.76,-.48,0,auto);caja(.6,.02,.22,tapiz,.42,1.76,-.48,0,auto);
-  const forro=M({color:'#4a4844',roughness:1});const techoA=new T.Mesh(new T.BoxGeometry(1.86,.04,2.7),forro);techoA.position.set(0,1.79,.66);auto.add(techoA);
-  caja(1.86,.1,.12,forro,0,1.75,-.66,0,auto);                                   // franja sobre el parabrisas
-  const domo=caja(.22,.03,.12,new T.MeshBasicMaterial({color:'#ffe2b0'}),0,1.765,.3,0,auto);const luzDomo=new T.PointLight('#ffd9a0',.35,2.2,2);luzDomo.position.set(0,1.7,.3);auto.add(luzDomo);
-  [-1,1].forEach(sd=>{caja(.04,.04,.22,plastico,sd*.76,1.72,.3,0,auto);caja(.03,.3,2.6,forro,sd*.79,1.68,.66,0,auto)});
-  [-1,1].forEach(sd=>{const pa=caja(.06,1.0,.06,plastico,sd*.76,1.45,-.86,0,auto);pa.rotation.x=-.81;caja(.06,.6,.1,plastico,sd*.77,1.45,.42,0,auto)});
-  // asientos
-  [-.45,.45].forEach(x=>{caja(.55,.16,.55,tapiz,x,.92,.35,0,auto);const r=caja(.52,.68,.13,tapiz,x,1.32,.66,0,auto);r.rotation.x=.12;caja(.28,.18,.1,tapiz,x,1.76,.72,0,auto)});
-  caja(.22,.2,.6,plastico,0,.95,.0,0,auto);
-  const exp=new T.Mesh(new T.PlaneGeometry(.26,.34),M({map:expediente(),roughness:.9}));exp.rotation.set(-Math.PI/2,0,.3);exp.position.set(.45,1.01,.3);auto.add(exp);
-  // panel interior derecho
-  caja(.05,.62,2.4,tapiz,.9,.85,.7,0,auto);
-  // puerta del conductor
-  autoPuerta=new T.Group();autoPuerta.position.set(-1.0,0,-.62);auto.add(autoPuerta);
-  caja(.08,.72,1.18,pintura,-.03,.82,.58,0,autoPuerta);caja(.05,.66,1.1,tapiz,.04,.84,.58,0,autoPuerta);caja(.06,.05,.4,cromo,.07,1.0,.75,0,autoPuerta);
-  caja(.06,.06,1.18,pintura,0,1.78,.58,0,autoPuerta);caja(.06,.6,.06,pintura,0,1.48,1.15,0,autoPuerta);
-  const vp=new T.Mesh(new T.PlaneGeometry(1.1,.58),negroV);vp.rotation.y=Math.PI/2;vp.position.set(0,1.47,.58);autoPuerta.add(vp);
-  // baliza portátil en el tablero
-  const bR=caja(.1,.06,.08,new T.MeshBasicMaterial({color:'#ff1a1a'}),.22,1.22,-1.05,0,auto),bA=caja(.1,.06,.08,new T.MeshBasicMaterial({color:'#2a5bff'}),.33,1.22,-1.05,0,auto);
-  const lR=new T.PointLight('#ff2020',0,14,1.6);lR.position.set(-.5,1.0,-2.9);auto.add(lR);const lA=new T.PointLight('#2a5bff',0,14,1.6);lA.position.set(.5,1.0,-2.9);auto.add(lA);sirena=[lR,lA,bR,bA];
-  // faros con conos de luz en la niebla
-  [-.7,.7].forEach((x,i)=>{const f=new T.SpotLight('#e8eeff',3.6,32,.32,.45,1.1);f.position.set(x,.84,-2.6);f.castShadow=i===0;f.shadow.mapSize.set(1024,1024);auto.add(f);const tg=new T.Object3D();tg.position.set(x*.6,.4,-16);auto.add(tg);f.target=tg;
-    const gl=new T.Sprite(new T.SpriteMaterial({map:brillo('rgba(235,240,255,1)'),depthWrite:false,fog:false}));gl.position.set(x,.84,-2.62);gl.scale.set(.8,.55,1);auto.add(gl);
-    const cono=new T.Mesh(new T.ConeGeometry(2.6,13,24,1,true),new T.MeshBasicMaterial({color:'#cfd8ff',transparent:true,opacity:.03,depthWrite:false,blending:T.AdditiveBlending,side:T.DoubleSide}));cono.rotation.x=Math.PI/2;cono.position.set(x*.8,.7,-9.1);auto.add(cono)});
-  // --- detalle interior ---
-  const tabCuero=pbr('fabric_leather_02',[3,1],{color:'#1a1a1c'});
-  auto.children.filter(m=>m.geometry===tabG).forEach(m=>m.material=tabCuero);
-  [-.62,-.18,.18,.62].forEach(x=>{const v=caja(.12,.06,.03,plastico,x,1.13,-.75,0,auto);v.rotation.x=-.4;for(let i=0;i<3;i++)caja(.11,.006,.035,cromo,x,1.115+i*.018,-.737,0,auto).rotation.x=-.4});
-  const pant=new T.Mesh(new T.PlaneGeometry(.2,.12),new T.MeshBasicMaterial({color:'#1b3f66'}));pant.position.set(0,1.06,-.78);pant.rotation.x=-.35;auto.add(pant);
-  const brilloP=new T.PointLight('#5aa0ff',.25,.8,2);brilloP.position.set(0,1.05,-.6);auto.add(brilloP);
-  caja(.2,.32,.3,plastico,0,.86,-.62,0,auto);const palanca=new T.Mesh(new T.CylinderGeometry(.012,.012,.12,10),cromo);palanca.position.set(0,1.02,-.25);auto.add(palanca);
-  const pomoC=new T.Mesh(new T.SphereGeometry(.028,14,10),plastico);pomoC.position.set(0,1.09,-.25);auto.add(pomoC);
-  caja(.5,.005,.18,cromo,.45,.98,-.87,0,auto).rotation.x=-.35;                                   // guantera
-  [-1,1].forEach(sd=>{const c=caja(.05,.9,.005,M({color:'#202022',roughness:.8}),sd*.72,1.3,.58,0,auto);c.rotation.z=sd*.55});   // cinturones
-  const nI1=auto.children.length;
-  // --- detalle exterior ---
-  if(0)[-1,1].forEach(sd=>{const e=new T.Group();caja(.06,.06,.12,pintura,0,0,0,0,e);caja(.18,.13,.05,pintura,sd*.09,.02,.03,0,e);const vid=new T.Mesh(new T.PlaneGeometry(.16,.1),M({color:'#8fa3b8',roughness:.05,metalness:1}));vid.position.set(sd*.09,.02,.058);e.add(vid);e.position.set(sd*1.03,1.18,-.62);auto.add(e)});
-  [-.72,.72].forEach(x=>caja(.04,.05,2.3,M({color:'#111',roughness:.5,metalness:.5}),x,1.97,.75,0,auto));
-  {const [c,g]=lienzo(256,64);g.fillStyle='#f0f0ea';g.fillRect(0,0,256,64);g.fillStyle='#1a2a6a';g.font='900 40px Inter Tight, sans-serif';g.textAlign='center';g.fillText('CBI 0111',128,46);
-   const pl=new T.Mesh(new T.PlaneGeometry(.42,.11),M({map:new T.CanvasTexture(c),roughness:.4}));pl.position.set(0,.5,-2.66);pl.rotation.y=Math.PI;auto.add(pl)}
-  const antena=new T.Mesh(new T.CylinderGeometry(.004,.006,.5,6),M({color:'#111'}));antena.position.set(.5,2.15,1.6);auto.add(antena);
-  const nI2=auto.children.length;
-  // la libreta abierta sobre las piernas
-  {const lib=new T.Group();const pg=new T.PlaneGeometry(.34,.232,40,6);const pa=pg.attributes.position;
-   for(let i=0;i<pa.count;i++){const x=pa.getX(i),ax=Math.abs(x)/.17;pa.setZ(i,(Math.pow(ax,.6)*.018)-(ax<.08?.004:0)+Math.sin(ax*3)*.002)}pg.computeVertexNormals();
-   const hojas=new T.Mesh(pg,new T.MeshStandardMaterial({map:libretaTex(),roughness:.92,side:T.DoubleSide}));lib.add(hojas);
-   const tapa=new T.Mesh(new T.BoxGeometry(.355,.245,.008),pbr('fabric_leather_02',[1,1],{color:'#2a1810'}));tapa.position.z=-.006;lib.add(tapa);
-   const banda=new T.Mesh(new T.BoxGeometry(.006,.25,.004),M({color:'#5a0a0e',roughness:.6}));banda.position.set(.16,0,.004);lib.add(banda);
-   const cinta=new T.Mesh(new T.PlaneGeometry(.008,.16),M({color:'#7a0a12',roughness:.7,side:T.DoubleSide}));cinta.position.set(-.01,-.18,.003);cinta.rotation.z=.15;lib.add(cinta);
-   lib.position.set(-.4,1.1,.1);lib.rotation.set(-Math.PI/2+.75,0,.03);lib.traverse(m=>{if(m.isMesh)m.receiveShadow=true});auto.add(lib);libreta=lib}
+  // ----- el auto del CBI: el Mondeo (modelo real), faros y barra de luces -----
+  const auto=new T.Group();autoPuerta=new T.Group();auto.add(autoPuerta);
+  const bR=caja(.16,.06,.1,new T.MeshBasicMaterial({color:'#ff1a1a'}),-.22,1.6,.05,0,auto),bA=caja(.16,.06,.1,new T.MeshBasicMaterial({color:'#2a5bff'}),.22,1.6,.05,0,auto);
+  const lR=new T.PointLight('#ff2020',0,14,1.6);lR.position.set(-.4,1.75,0);auto.add(lR);const lA=new T.PointLight('#2a5bff',0,14,1.6);lA.position.set(.4,1.75,0);auto.add(lA);sirena=[lR,lA,bR,bA];
+  [-.68,.68].forEach((x,i)=>{const f=new T.SpotLight('#e8eeff',3.6,32,.32,.45,1.1);f.position.set(x,.68,-2.3);f.castShadow=i===0;f.shadow.mapSize.set(1024,1024);auto.add(f);const tg=new T.Object3D();tg.position.set(x*.6,.3,-16);auto.add(tg);f.target=tg;
+    const gl=new T.Sprite(new T.SpriteMaterial({map:brillo('rgba(235,240,255,1)'),depthWrite:false,fog:false}));gl.position.set(x,.68,-2.36);gl.scale.set(.7,.45,1);auto.add(gl);
+    const cono=new T.Mesh(new T.ConeGeometry(2.6,13,24,1,true),new T.MeshBasicMaterial({color:'#cfd8ff',transparent:true,opacity:.03,depthWrite:false,blending:T.AdditiveBlending,side:T.DoubleSide}));cono.rotation.x=Math.PI/2;cono.position.set(x*.8,.5,-8.8);auto.add(cono)});
   if(T.OBJLoader){new T.OBJLoader(LM).load('pbr/mondeo/mondeo.obj',obj=>{
-    const tl=new T.TextureLoader(LM),k=n=>{const t=tl.load('pbr/mondeo/'+n);t.flipY=true;t.anisotropy=8;return t};
+    const tl=new T.TextureLoader(LM),k=n=>{const t=tl.load('pbr/mondeo/'+n);t.anisotropy=8;return t};
     const dif=k('dif.jpg');dif.encoding=T.sRGBEncoding;
     const mat=new T.MeshPhysicalMaterial({map:dif,normalMap:k('nor.jpg'),roughnessMap:k('rough.jpg'),metalnessMap:k('metal.jpg'),alphaMap:k('alpha.jpg'),alphaTest:.4,
       roughness:1,metalness:1,clearcoat:.6,clearcoatRoughness:.2,envMapIntensity:.6});
     obj.traverse(m=>{if(m.isMesh){m.material=mat;m.castShadow=m.receiveShadow=true}});
-    obj.scale.setScalar(.0235);obj.rotation.y=Math.PI;obj.position.y=25.7*.0235;auto.add(obj);
-    // fuera la carrocería de juguete; el interior baja a la altura de un sedán
-    const ext=[...auto.children.slice(0,nI0),...auto.children.slice(nI1,nI2)].filter(m=>m!==obj&&m.material!==para.material);
-    ext.forEach(m=>{if(!m.isLight)m.visible=false});
-    [...auto.children.slice(nI0,nI1),libreta].forEach(m=>{if(!m)return;
-      if((m.isSpotLight||m.isSprite||(m.isMesh&&m.material.blending===T.AdditiveBlending))&&m.position.z<-2.3){m.position.z=m.isSpotLight?-2.3:-2.36;m.position.y=m.material&&m.material.blending===T.AdditiveBlending?.45:.66}
-      else if(!m.isSpotLight)m.position.y-=.3});
-    autoPuerta.traverse(m=>{if(m.isMesh&&m.material===pintura)m.visible=false});
-    auto.userData.int=[...auto.children.slice(nI0,nI1),libreta].filter(m=>m&&!m.isLight&&!m.isSprite&&!(m.material&&m.material.blending===T.AdditiveBlending));bajaAuto=.3})}
-  auto.position.set(0,0,14.4);auto.traverse(m=>{if(m.isMesh&&!m.material.transparent){m.castShadow=true;m.receiveShadow=true}});S.add(auto);
+    obj.scale.setScalar(.0235);obj.rotation.y=Math.PI;obj.position.y=25.7*.0235;auto.add(obj)})}
+  auto.position.set(0,0,14.4);S.add(auto);
+
+  // ----- la pantalla de carga: la libreta sobre un escritorio, bajo una lámpara -----
+  {const E=new T.Group();E.position.set(40,-20,40);S.add(E);
+   const mesaE=new T.Mesh(new T.BoxGeometry(2.4,.06,1.6),pbr('wood_floor_worn',[1.5,1],{color:'#8a6a50'}));mesaE.receiveShadow=true;E.add(mesaE);
+   const lib=new T.Group();const pg=new T.PlaneGeometry(.34,.232,40,6);const pa=pg.attributes.position;
+   for(let i=0;i<pa.count;i++){const x=pa.getX(i),ax=Math.abs(x)/.17;pa.setZ(i,(Math.pow(ax,.6)*.018)-(ax<.08?.004:0)+Math.sin(ax*3)*.002)}pg.computeVertexNormals();
+   const hojas=new T.Mesh(pg,new T.MeshStandardMaterial({map:libretaTex(),roughness:.92,side:T.DoubleSide}));hojas.castShadow=true;lib.add(hojas);
+   const tapa=new T.Mesh(new T.BoxGeometry(.355,.245,.008),pbr('fabric_leather_02',[1,1],{color:'#2a1810'}));tapa.position.z=-.006;lib.add(tapa);
+   const banda=new T.Mesh(new T.BoxGeometry(.006,.25,.004),M({color:'#5a0a0e',roughness:.6}));banda.position.set(.16,0,.004);lib.add(banda);
+   const cinta=new T.Mesh(new T.PlaneGeometry(.008,.07),M({color:'#2a0306',roughness:.8,side:T.DoubleSide}));cinta.position.set(-.004,-.145,.003);cinta.rotation.z=.1;lib.add(cinta);
+   lib.rotation.set(-Math.PI/2,0,.06);lib.position.set(0,.045,0);E.add(lib);libreta=lib;
+   // marcador rojo destapado, la tapa a un lado, y una foto boca abajo
+   const marc=new T.Group();const cu=new T.Mesh(new T.CylinderGeometry(.009,.009,.13,16),M({color:'#2e0205',roughness:.6}));cu.rotation.z=Math.PI/2;marc.add(cu);
+   const pu=new T.Mesh(new T.ConeGeometry(.009,.02,12),M({color:'#5a0508',roughness:.5}));pu.rotation.z=-Math.PI/2;pu.position.x=.075;marc.add(pu);marc.position.set(.24,.04,.05);marc.rotation.y=.6;E.add(sombra(marc));
+   const tap=new T.Mesh(new T.CylinderGeometry(.011,.011,.04,16),M({color:'#2e0205',roughness:.6}));tap.rotation.z=Math.PI/2;tap.position.set(.3,.042,.14);tap.rotation.y=-.4;E.add(tap);
+   const fot=new T.Mesh(new T.BoxGeometry(.1,.002,.12),M({color:'#efe9dc',roughness:.8}));fot.position.set(-.27,.033,.09);fot.rotation.y=.35;E.add(sombra(fot));
+   // la lámpara de escritorio (fuera de cuadro): luz cálida y cerrada
+   lampEsc=new T.SpotLight('#ffd6a0',1.5,3,.55,.8,2);lampEsc.position.set(-.45,.75,-.25);lampEsc.target=lib;lampEsc.castShadow=true;lampEsc.shadow.mapSize.set(1024,1024);lampEsc.shadow.bias=-.0004;E.add(lampEsc);
+   const amb=new T.PointLight('#5a4030',.25,2.5,2);amb.position.set(.4,.6,.5);E.add(amb)}
 
   // ----- lluvia -----
   {const n=2600,pos=new Float32Array(n*6);for(let i=0;i<n;i++){const x=rnd(-14,14),y=rnd(0,9),z=rnd(-6,22);pos.set([x,y,z,x+.02,y-.32,z],i*6)}
@@ -523,30 +429,28 @@ function construir(cv){
 /* ---------- recorrido ---------- */
 const V=(x,y,z)=>new T.Vector3(x,y,z);
 const RUTA=[
-  [0,   V(-.4,1.4,14.78), V(-.42,1.06,14.47), 0],   // la libreta
-  [3.9, V(-.4,1.39,14.77), V(-.36,1.07,14.48), 0],
-  [4.6, V(-.4,1.38,14.75), V(-.2,1.5,0),    0],   // levanta la vista: la casa al fondo
-  [8.0, V(-.42,1.38,14.74),V(.1,1.45,0),    0],
-  [8.4, V(-2.0,1.62,14.1), V(.6,1.6,0),     0],   // (en negro) ya está afuera, junto al auto
-  [9.5, V(-2.0,1.62,14.0), V(0,1.75,0),     0],
-  [15.0,V(0,1.62,3.05),   V(.1,1.25,2.1), 1],   // camina hasta la cinta
-  [15.8,V(0,1.62,3.05),   V(.1,1.3,2.1),  0],
-  [17.1,V(.05,1.15,1.7),  V(.2,1.25,0),   1],   // se agacha y pasa por debajo
-  [18.2,V(.15,1.9,.8),    V(.3,1.3,0),    1],   // se levanta frente a la puerta
-  [22.2,V(.15,1.9,.8),    V(.3,1.3,0),    0],
-  [23.0,V(.05,1.9,.7),    V(-1.6,.7,-3),  0],
-  [25.6,V(-.1,1.9,-1.2),  V(-2.6,.9,-4.6),1],
-  [27.2,V(-.3,1.9,-1.6),  V(-4.8,2.3,-4.6),0],  // la carita
-  [28.8,V(-.3,1.9,-1.6),  V(-3.8,.9,-4.6),0],   // la cama
-  [30.5,V(-.1,1.9,-1.8),  V(4.8,2.0,-3.6),0],   // el tablero
-  [32.0,V(-.1,1.9,-1.8),  V(4.8,1.9,-4.6),0],
-  [33.2,V(0,1.9,-1.8),    V(2.8,1.0,-7.8),0],
-  [34.4,V(0,1.88,-1.8),   V(0,1.3,-4.6),  0],
-  [35.8,V(0,1.88,-1.8),   V(0,1.35,-4.6), 0],
-  [38.8,V(0,1.62,-3.6),   V(0,1.2,-4.6),  1],
-  [39.8,V(0,1.62,-3.6),   V(0,1.2,-4.6),  0],
+  [0,   V(40.01,-19.6,40.2), V(40.015,-19.96,39.995), 0],   // la libreta en el escritorio (pantalla de carga)
+  [1.7, V(40.06,-19.75,40.08),V(40.07,-19.96,39.985),0],   // se acerca a la lista mientras se oscurece
+  [1.9, V(-2.0,1.62,14.1), V(.6,1.6,0),     0],   // (en negro) afuera, junto al auto
+  [3.0, V(-2.0,1.62,14.0), V(0,1.75,0),     0],
+  [8.5,V(0,1.62,3.05),   V(.1,1.25,2.1), 1],   // camina hasta la cinta
+  [9.3,V(0,1.62,3.05),   V(.1,1.3,2.1),  0],
+  [10.6,V(.05,1.15,1.7),  V(.2,1.25,0),   1],   // se agacha y pasa por debajo
+  [11.7,V(.15,1.9,.8),    V(.3,1.3,0),    1],   // se levanta frente a la puerta
+  [15.7,V(.15,1.9,.8),    V(.3,1.3,0),    0],
+  [16.5,V(.05,1.9,.7),    V(-1.6,.7,-3),  0],
+  [19.1,V(-.1,1.9,-1.2),  V(-2.6,.9,-4.6),1],
+  [20.7,V(-.3,1.9,-1.6),  V(-4.8,2.3,-4.6),0],  // la carita
+  [22.3,V(-.3,1.9,-1.6),  V(-3.8,.9,-4.6),0],   // la cama
+  [24.0,V(-.1,1.9,-1.8),  V(4.8,2.0,-3.6),0],   // el tablero
+  [25.5,V(-.1,1.9,-1.8),  V(4.8,1.9,-4.6),0],
+  [26.7,V(0,1.9,-1.8),    V(2.8,1.0,-7.8),0],
+  [27.9,V(0,1.88,-1.8),   V(0,1.3,-4.6),  0],
+  [29.3,V(0,1.88,-1.8),   V(0,1.35,-4.6), 0],
+  [32.3,V(0,1.62,-3.6),   V(0,1.2,-4.6),  1],
+  [33.3,V(0,1.62,-3.6),   V(0,1.2,-4.6),  0],
 ];
-const FIN=42.8;
+const FIN=36.3;
 const suave=x=>x*x*(3-2*x);
 let fase=0;
 const cr=(p0,p1,p2,p3,u)=>{const u2=u*u,u3=u2*u;return V(
@@ -566,15 +470,15 @@ function camara(t,dt){
   const quieto=pa.equals(pb);
   // los tramos quietos usan suavizado; los de caminar avanzan parejo, sin frenar en cada punto
   const uu=quieto?suave(u):u*.75+suave(u)*.25;
-  const p=quieto?pa.clone():cr(g(i-1)[1],pa,pb,g(i+2)[1],uu);if(t<8.3)p.y-=bajaAuto;
-  const l=cr(g(i-1)[2],g(i)[2],g(i+1)[2],g(i+2)[2],suave(u));if(t<3.95)l.y-=bajaAuto;
+  const p=quieto?pa.clone():(t<1.85?pa.clone().lerp(pb,uu):cr(g(i-1)[1],pa,pb,g(i+2)[1],uu));
+  const l=t<1.85?g(i)[2].clone().lerp(g(i+1)[2],suave(u)):cr(g(i-1)[2],g(i)[2],g(i+1)[2],g(i+2)[2],suave(u));
   // la mirada gira con inercia, como una cabeza
   if(!mirada||dt===0)mirada=l.clone();else mirada.lerp(l,1-Math.exp(-dt*3.2));
   const andando=camina&&u>.01&&u<.99&&!quieto;
   const ritmo=andando?1:0;paso+=(ritmo-paso)*Math.min(1,dt*3);
   if(andando){fase+=dt*Math.PI*2*1.75;const sn=Math.sin(fase);if(sn<-.97&&!camara.pisado){camara.pisado=true;pisada()}if(sn>0)camara.pisado=false}
   // paso: dos bajadas por zancada, balanceo lateral una vez; respiración cuando está quieto
-  const resp=Math.sin(t*1.7)*.006,fin=t>=FIN-.6;
+  const resp=Math.sin(t*1.7)*.006,fin=t>=FIN-.6,fin2=zoomK>=0;
   const bobY=(Math.cos(fase*2)*.5+.5)*.032*paso,bobX=Math.sin(fase)*.022*paso;
   const n=fin?0:1;
   C.position.set(p.x+bobX+ruido1(t*.9)*.006*n,p.y-bobY+resp*n,p.z+ruido1(t*.7+5)*.004*n);
@@ -582,6 +486,7 @@ function camara(t,dt){
   if(!fin)C.rotateZ(Math.sin(fase)*.009*paso+ruido1(t*.5+3)*.006);
   const baja=Math.max(0,Math.min(1,(t-(FIN-1.4))/1.2))*.3;
   const mY=-bobY*.35+Math.sin(t*2.1)*.003*n-baja;manoL.position.y=-.15+mY;linternaObj.position.y=-.135+mY;
+  const enMesa=t<1.88;manoL.visible=linternaObj.visible=!enMesa&&!fin2;linterna.intensity=enMesa?0:(apagonT<0?3.2:linterna.intensity);
   const cab=linternaObj.localToWorld(V(0,0,-.13));linterna.position.copy(cab);
   const dir=new T.Vector3();C.getWorldDirection(dir);
   linterna.target.position.lerp(C.position.clone().add(dir.multiplyScalar(6)),dt>0?Math.min(1,dt*4):1);
@@ -595,25 +500,23 @@ let apagonT=-1,zoomCam=false,puertaObj=0,puertaVel=1,manoEst='fuera',manoK=0,gir
 function linea(){
   ev.length=0;const e=(t,f)=>ev.push({t,f,hecho:false});
   e(.05,()=>{sonar('lluvia',1);sonar('respira')});
-  e(1.2,()=>sonar('hoja'));
-  e(.9,()=>sonar('radio'));e(6.7,()=>sonar('radio'));
-  e(7.6,()=>{autoObj=-1.15;sonar('auto');fadeObj=1});
-  e(8.3,()=>{const l=autoPuerta.parent.userData.int;if(l)l.forEach(m=>m.visible=false)});
-  e(8.5,()=>fadeObj=0);
-  e(8.9,()=>{autoObj=0;sonar('portazo');if(bajaAuto)autoPuerta.visible=false});
-  e(15.2,()=>{manoA='cinta';manoEst='sube'});
-  e(15.7,()=>{manoEst='agarra';cintaObj=1});
-  e(17.2,()=>{cintaObj=0;manoEst='baja'});
-  e(18.5,()=>{manoA='pomo';manoEst='sube'});
-  e(19.7,()=>{manoEst='agarra';sonar('pestillo')});
-  e(20.2,()=>{puertaObj=.4;puertaVel=1.2;sonar('rechina',.5)});
-  e(21.6,()=>{puertaObj=1.75;puertaVel=1;sonar('rechina',1)});
-  e(21.8,()=>manoEst='baja');
-  e(23.1,()=>sonar('lluvia',.35));
-  e(27.3,()=>sonar('susto',.5));
-  e(34.5,()=>{focoT=0;sonar('descubre')});
-  e(39.6,()=>{apagonT=0;sonar('apagon')});
-  e(42.4,()=>sonar('alivio'));
+  e(.2,()=>sonar('hoja'));
+  e(.9,()=>fadeObj=1);
+  e(1.9,()=>{fadeObj=0;lampEsc.intensity=0});
+  e(2.4,()=>sonar('portazo'));e(3.1,()=>sonar('radio'));
+  e(8.7,()=>{manoA='cinta';manoEst='sube'});
+  e(9.2,()=>{manoEst='agarra';cintaObj=1});
+  e(10.7,()=>{cintaObj=0;manoEst='baja'});
+  e(12.0,()=>{manoA='pomo';manoEst='sube'});
+  e(13.2,()=>{manoEst='agarra';sonar('pestillo')});
+  e(13.7,()=>{puertaObj=.4;puertaVel=1.2;sonar('rechina',.5)});
+  e(15.1,()=>{puertaObj=1.75;puertaVel=1;sonar('rechina',1)});
+  e(15.3,()=>manoEst='baja');
+  e(16.6,()=>sonar('lluvia',.35));
+  e(20.8,()=>sonar('susto',.5));
+  e(28.0,()=>{focoT=0;sonar('descubre')});
+  e(33.1,()=>{apagonT=0;sonar('apagon')});
+  e(35.9,()=>sonar('alivio'));
 }
 function pintaManoR(dt){
   const obj=manoEst==='sube'||manoEst==='agarra'?1:0;
@@ -640,7 +543,7 @@ function cuadroLoop(){
   puerta.rotation.y+=(puertaObj-puerta.rotation.y)*Math.min(1,dt*puertaVel*2.2);
   pintaManoR(dt);
   autoPuerta.rotation.y+=(autoObj-autoPuerta.rotation.y)*Math.min(1,dt*(autoObj?1.8:5));
-  {const ph=Math.floor(performance.now()/140)%4,on=C.position.z>13.3?0:C.position.z>.3?1.4:.35;sirena[0].intensity=(ph===0||ph===2?2.6:0)*on;sirena[1].intensity=(ph===1||ph===3?2.6:0)*on;sirena[2].material.color.set(ph%2?'#300':'#ff1a1a');sirena[3].material.color.set(ph%2?'#2a5bff':'#012')}
+  {const ph=Math.floor(performance.now()/140)%4,on=C.position.y<-5?0:C.position.z>.3?1.4:.35;sirena[0].intensity=(ph===0||ph===2?2.6:0)*on;sirena[1].intensity=(ph===1||ph===3?2.6:0)*on;sirena[2].material.color.set(ph%2?'#300':'#ff1a1a');sirena[3].material.color.set(ph%2?'#2a5bff':'#012')}
   cintaP.position.y+=((cintaObj?1.62:1.18)-cintaP.position.y)*Math.min(1,dt*4);cintaP.rotation.x+=((cintaObj?-.5:0)-cintaP.rotation.x)*Math.min(1,dt*4);
   {lluvia.visible=C.position.z>-.2;const a=lluvia.geometry.attributes.position,arr=a.array,cz=C.position.z;for(let i=0;i<arr.length;i+=6){arr[i+1]-=dt*9;arr[i+4]-=dt*9;if(arr[i+4]<0){const y=rnd(7,9);arr[i+1]=y;arr[i+4]=y-.32;const z=cz+rnd(-8,14);arr[i+2]=z;arr[i+5]=z}}a.needsUpdate=true}
   if(apagonT>=0){apagonT+=dt;const seq=[[0,1],[.12,.15],[.22,1],[.42,.05],[.52,.7],[.68,0],[2.3,.5],[2.38,0],[2.52,1]];let v=1;for(const [tt,vv] of seq)if(apagonT>=tt)v=vv;
