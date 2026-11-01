@@ -1051,13 +1051,14 @@ const apiIntro={
     else if(n==='radio'){if(c){const t=c.currentTime;ruido(.5,1800,6,.12);tono(1200,t+.05,.005,.025,.12,'square');ruido(.35,900,3,.08)}}
     else if(n==='auto'){clicFuerte();if(c){golpeGrave(c.currentTime+.05,90,.25)}ruido(.6,2400,1,.1,true)}
     else if(n==='portazo'){if(c){golpeGrave(c.currentTime,70,.55);ruido(.12,600,1,.3)}}
+    else if(n==='hoja'){ruido(.35,3800,.8,.12,true,6000)}
     else if(n==='apagon'){if(c){golpeGrave(c.currentTime,48,.4);ruido(.3,140,2,.18)}if(resp)resp.jadeo()}
     else if(n==='alivio'){if(resp)resp.alivio();if(respLoop){const r=respLoop;let v=r.volume;const k=setInterval(()=>{v-=.05;if(v<=0){r.pause();clearInterval(k)}else r.volume=v},80)}}
   }};
-function iniciaIntro(){
+async function iniciaIntro(){
   cargaMedia('respira','media/respiracion_breathing-man.ogg');cargaMedia('paso','media/pasos_madera.wav');cargaMedia('rechina','media/puerta_crujido_squeaky-door.ogg');
   if(!window.THREE||!window.Intro3D){$('intro').remove();document.body.classList.remove('en-puerta');return}
-  try{const txt=$('intro').querySelector('.intro-txt b');txt.textContent='Cargando la escena… 0%';
+  try{await Promise.all([document.fonts.load('80px "Reenie Beanie"'),document.fonts.load('500 30px "JetBrains Mono"')]).catch(()=>{});const txt=$('intro').querySelector('.intro-txt b');txt.textContent='Cargando la escena… 0%';
     Intro3D.preparar($('c3d'),k=>{txt.textContent='Cargando la escena… '+Math.round(k*100)+'%'},()=>{txt.textContent='Tocá para entrar'});capturaRegalo().then(c=>Intro3D.ponRegalo(c)).catch(e=>console.warn(e))}catch(e){console.error(e);$('intro').remove();document.body.classList.remove('en-puerta')}
 }
 async function capturaRegalo(){
@@ -1246,7 +1247,7 @@ els[0].focus({preventScroll:true});
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/RenderPass.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/ShaderPass.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
-<script src="intro3d.js?v=42"></script>
+<script src="intro3d.js?v=56"></script>
 <script>iniciaIntro()</script>
 </body>
 </html>
