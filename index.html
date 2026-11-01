@@ -14,7 +14,8 @@
 <meta property="og:image" content="https://jamesjsfouam.github.io/para-meli/og.png">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='4' y='10' width='24' height='18' rx='2' fill='%23c1121f'/%3E%3Crect x='14' y='10' width='4' height='18' fill='%238a8a91'/%3E%3Crect x='3' y='7' width='26' height='6' rx='1.5' fill='%23c1121f'/%3E%3C/svg%3E">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;800;900&family=Inter+Tight:wght@400;500;600;800;900&family=JetBrains+Mono:wght@500;600;700;800&family=Reenie+Beanie&display=swap" rel="stylesheet">
@@ -278,6 +279,12 @@ body.en-puerta{background:#000}
 .intro-txt b{color:#d9cfbf;font-weight:500}
 .intro-vol{color:#a39a8d}
 #intro.andando .intro-txt{opacity:0}
+#cargaVelo{position:absolute;inset:0;z-index:3;background:#070605;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;color:#a39a8d;transition:opacity .9s}
+#cargaVelo p{letter-spacing:.3em;font-size:12px;color:#d9cfbf}
+#cargaVelo .cv-barra{width:min(260px,60vw);height:2px;background:#2a2420;overflow:hidden}
+#cargaVelo .cv-barra i{display:block;height:100%;width:0;background:#c1121f;transition:width .3s}
+#cargaVelo span{font-size:11px;letter-spacing:.2em}
+#cargaVelo.fuera{opacity:0;pointer-events:none}
 #intro.sale{opacity:0;pointer-events:none}
 
 
@@ -349,19 +356,21 @@ body:has(.vista.abierta) #web::after{display:none}
 .contador-pie{margin-top:14px;color:var(--emo);text-align:center}
 
 /* índice */
-.indice{list-style:none;display:grid;gap:18px;margin-top:64px}
-@media (min-width:760px){.indice{grid-template-columns:repeat(2,1fr)}}
-.indice button{position:relative;width:100%;text-align:left;border:3px solid var(--ink);box-shadow:var(--sombra);padding:20px 20px 18px;min-height:190px;display:flex;flex-direction:column;justify-content:space-between;transition:transform .15s,box-shadow .15s;overflow:hidden}
-.indice li:nth-child(1) button{background:var(--yellow);transform:rotate(-1.2deg)}
-.indice li:nth-child(2) button{background:var(--pink);transform:rotate(.8deg)}
-.indice li:nth-child(3) button{background:var(--papel);transform:rotate(-.6deg)}
-.indice li:nth-child(4) button{background:var(--teal);transform:rotate(.9deg)}
-.indice button:hover,.indice button:focus-visible{transform:rotate(0) translate(-2px,-2px);box-shadow:9px 9px 0 var(--ink);outline:none}
-.indice button:active{transform:translate(4px,4px);box-shadow:2px 2px 0 var(--ink)}
-.indice .n{font:900 52px/1 var(--display);letter-spacing:-.05em;opacity:.18;position:absolute;right:14px;top:10px}
-.indice .t{font:900 clamp(24px,6vw,30px)/1 var(--display);text-transform:uppercase;letter-spacing:-.03em;max-width:12ch}
-.indice .m{display:flex;justify-content:space-between;align-items:center;margin-top:18px;font:800 13px/1 var(--sans)}
-.indice .m i{font-style:normal;width:36px;height:36px;border-radius:50%;background:var(--ink);color:var(--papel);display:grid;place-items:center;font-size:16px}
+.indice{list-style:none;margin-top:64px;border-top:3px solid var(--ink)}
+.indice li{border-bottom:3px solid var(--ink)}
+.indice button{position:relative;width:100%;text-align:left;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:6px 18px;padding:22px 6px;background:none;transition:background .2s,padding .2s}
+.indice li:nth-child(1) button:hover,.indice li:nth-child(1) button:focus-visible{background:var(--yellow)}
+.indice li:nth-child(2) button:hover,.indice li:nth-child(2) button:focus-visible{background:var(--pink)}
+.indice li:nth-child(3) button:hover,.indice li:nth-child(3) button:focus-visible{background:var(--papel)}
+.indice li:nth-child(4) button:hover,.indice li:nth-child(4) button:focus-visible{background:var(--teal)}
+.indice button:hover,.indice button:focus-visible{padding-left:18px;outline:none}
+.indice button:active{transform:translateY(2px)}
+.indice .n{font:900 clamp(28px,6vw,44px)/1 var(--display);letter-spacing:-.05em;opacity:.25;grid-row:span 2}
+.indice .t{font:900 clamp(22px,5.4vw,34px)/1 var(--display);text-transform:uppercase;letter-spacing:-.03em}
+.indice .m{display:contents;font:800 13px/1 var(--sans)}
+.indice .m>span{grid-column:2;opacity:.7}
+.indice .m i{grid-column:3;grid-row:1/span 2;font-style:normal;width:40px;height:40px;border-radius:50%;background:var(--ink);color:var(--papel);display:grid;place-items:center;font-size:16px;transition:transform .2s}
+.indice button:hover .m i{transform:translateX(4px)}
 .rota::after{content:"";display:inline-block;width:2px;height:1em;margin-left:2px;background:currentColor;vertical-align:-2px;animation:parpadea .8s steps(1) infinite}
 @keyframes parpadea{50%{opacity:0}}
 .cinta{position:relative;z-index:2;background:var(--ink);color:var(--yellow);overflow:hidden;padding:12px 0;transform:rotate(-1.5deg);margin:24px -20px}
@@ -747,8 +756,8 @@ body:has(.vista.abierta) #web::after{display:none}
               </g>
               <g class="cara atras" font-family="JetBrains Mono, monospace" text-anchor="middle">
                 <text x="96" y="190" font-size="5.2" letter-spacing="1.4" fill="#8e0c16">PISTA</text>
-                <text x="96" y="203" font-size="4.6" fill="#3c2f1c">Mejor</text>
-                <text x="96" y="211" font-size="4.6" fill="#3c2f1c">Estimador</text>
+                <text x="96" y="203" font-size="4.6" fill="#3c2f1c">Método de</text>
+                <text x="96" y="211" font-size="4.6" fill="#3c2f1c">Estimación</text>
                 <text x="96" y="219" font-size="4.6" fill="#3c2f1c">Lineal</text>
                 <text x="96" y="227" font-size="4.6" fill="#3c2f1c">Insesgado</text>
               </g>
@@ -767,6 +776,7 @@ body:has(.vista.abierta) #web::after{display:none}
 <div id="intro" role="button" tabindex="0" aria-label="Entrar a la casa">
   <canvas id="c3d"></canvas>
   <div class="intro-velo"></div>
+  <div id="cargaVelo" aria-live="polite"><p class="mono">CBI · Caso N° 0111</p><div class="cv-barra"><i id="cvBarra"></i></div><span class="mono" id="cvTxt">Cargando… 0%</span></div>
   <p class="intro-txt mono"><span class="intro-vol">Subí el volumen · usá audífonos</span><b>Tocá para entrar</b></p>
 </div>
 
@@ -806,7 +816,7 @@ body:has(.vista.abierta) #web::after{display:none}
       <li class="aparece"><button data-vista="linea"><span class="n">01</span><span class="t">Línea de tiempo</span><span class="m"><span><span id="nMomentos"></span> momentos</span><i>→</i></span></button></li>
       <li class="aparece"><button data-vista="cosas"><span class="n">02</span><span class="t">Cosas que me recuerdan a vos</span><span class="m"><span><span id="nCosas"></span> cosas</span><i>→</i></span></button></li>
       <li class="aparece"><button data-vista="carta"><span class="n">03</span><span class="t">Solo para vos</span><span class="m"><span class="rota" id="rota"></span><i>→</i></span></button></li>
-      <li class="aparece"><button data-vista="musica"><span class="n">04</span><span class="t">Nuestras canciones favoritas</span><span class="m"><span>Soda Stereo</span><i>→</i></span></button></li>
+      <li class="aparece"><button data-vista="musica"><span class="n">04</span><span class="t">Nuestras canciones favoritas</span><span class="m"><span>Soda, BTS y Álvaro</span><i>→</i></span></button></li>
     </ol>
   </section>
 </main>
@@ -862,7 +872,7 @@ body:has(.vista.abierta) #web::after{display:none}
 
 <script>/* carga contenido.js sin caché, para que los cambios se vean al recargar */
 </script>
-<script src="contenido.js?v=125"></script>
+<script src="contenido.js?v=140"></script>
 <script>
 const $=id=>document.getElementById(id);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -1039,7 +1049,7 @@ function lluviaVol(v){const c=ctx();if(!c)return;if(!lluviaG){const b=c.createBu
 const apiIntro={
   paso(){const m=MEDIA.paso;if(!m||!m.buf){paso();return}suena('paso',.75,false,Math.random()*(m.buf.duration-1),.42)},
   sonar(n,x){const c=ctx();
-    if(n==='respira'){esperaMedia('respira').then(ok=>{respLoop=ok&&suena('respira',.9,true);if(!respLoop){resp=respiracion();resp.ritmo(1.5)}})}
+    if(n==='respira'){}
     else if(n==='sirena'){if(x&&c&&!sirena){const o=c.createOscillator(),lp=c.createBiquadFilter(),g=c.createGain();o.type='triangle';lp.type='lowpass';lp.frequency.value=1500;g.gain.value=0;o.connect(lp).connect(g).connect(bus());
         const t=c.currentTime;for(let k=0;k<40;k++)o.frequency.setValueAtTime(k%2?950:700,t+k*.28);o.start(t);g.gain.setTargetAtTime(.028,t,.4);sirena={o,g}}
       else if(!x&&sirena&&c){const s2=sirena;sirena=null;s2.g.gain.setTargetAtTime(0,c.currentTime,.5);setTimeout(()=>{try{s2.o.stop()}catch(e){}},2500)}}
@@ -1064,10 +1074,10 @@ function sin3D(){try{Intro3D.parar()}catch(e){}if($('intro'))$('intro').remove()
 addEventListener('intro3d-perdido',()=>{if(!abierto)sin3D()});
 let cargaLenta=false;
 async function iniciaIntro(){
-  cargaMedia('respira','media/respiracion_breathing-man.ogg');cargaMedia('paso','media/pasos_madera.wav');cargaMedia('rechina','media/puerta_crujido_squeaky-door.ogg');
+  cargaMedia('paso','media/pasos_madera.wav');cargaMedia('rechina','media/puerta_crujido_squeaky-door.ogg');
   if(!window.THREE||!window.Intro3D){sin3D();return}
   try{await Promise.all([document.fonts.load('80px "Reenie Beanie"'),document.fonts.load('500 30px "JetBrains Mono"'),document.fonts.load('800 54px "JetBrains Mono"'),document.fonts.load('600 30px "JetBrains Mono"'),document.fonts.load('900 30px Unbounded'),document.fonts.load('900 40px "Inter Tight"')]).catch(()=>{});const txt=$('intro').querySelector('.intro-txt b');txt.textContent='Cargando la escena… 0%';
-    Intro3D.preparar($('c3d'),k=>{txt.textContent='Cargando la escena… '+Math.round(k*100)+'%'},()=>{txt.textContent='Tocá para entrar'});setTimeout(()=>{if(!Intro3D.cargado){cargaLenta=true;txt.textContent='Tocá para entrar'}},45000);try{Intro3D.ruedas(ruedas)}catch(e){}capturaRegalo().then(c=>Intro3D.ponRegalo(c)).catch(e=>console.warn(e))}catch(e){console.error(e);sin3D()}
+    Intro3D.preparar($('c3d'),k=>{const v=Math.round(k*100);txt.textContent='Cargando la escena… '+v+'%';$('cvBarra').style.width=v+'%';$('cvTxt').textContent='Cargando… '+v+'%'},()=>{txt.textContent='Tocá para entrar';$('cvBarra').style.width='100%';$('cargaVelo').classList.add('fuera')});setTimeout(()=>{if(!Intro3D.cargado){cargaLenta=true;txt.textContent='Tocá para entrar';$('cargaVelo').classList.add('fuera')}},45000);try{Intro3D.ruedas(ruedas)}catch(e){}capturaRegalo().then(c=>Intro3D.ponRegalo(c)).catch(e=>console.warn(e))}catch(e){console.error(e);sin3D()}
 }
 async function capturaRegalo(){
   const org=document.querySelector('.caja3d'),cl=org.cloneNode(true);
@@ -1088,7 +1098,7 @@ async function capturaRegalo(){
     const L=el.getAttribute('aria-valuetext')||'A',n=ABC.indexOf(L);[[-1,.12],[0,.5],[1,.88]].forEach(([d,f])=>{g.globalAlpha=d?.45:1;g.fillText(ABC[(n+d+26)%26],cx,y0+h*f)});g.globalAlpha=1});
   g.restore();URL.revokeObjectURL(url);return c}
 let entrando=false;
-function entrar(){if(!entrando&&cargaLenta&&!Intro3D.cargado){entrando=true;desbloquea();sin3D();return}if(entrando||!Intro3D.cargado)return;entrando=true;introEnCurso=true;$('saltar').classList.add('ver');desbloquea();$('intro').classList.add('andando');if(reducido)setTimeout(()=>{try{Intro3D.saltar()}catch(e){}},350);
+function entrar(){if(!entrando&&cargaLenta&&!Intro3D.cargado){entrando=true;desbloquea();sin3D();return}if(entrando||!Intro3D.cargado)return;entrando=true;introEnCurso=true;$('saltar').classList.add('ver');desbloquea();$('intro').classList.add('andando');{const c0=Intro3D.cuadros||0;setTimeout(()=>{if(introEnCurso&&(Intro3D.cuadros||0)-c0<8)sin3D()},7000)}if(reducido)setTimeout(()=>{try{Intro3D.saltar()}catch(e){}},350);
   Intro3D.correr(apiIntro,()=>{introEnCurso=false;$('saltar').classList.remove('ver');ambiente();setTimeout(()=>{if(!abierto&&window.Intro3D&&Intro3D.voltea)Intro3D.voltea()},12000);const es=$('escena');if(Intro3D.tiene3D){es.classList.add('r3d');ubicaCandado()}else alinearRegalo();es.classList.add('ver');Intro3D.fundeRegalo(700);$('intro').style.cursor='default';
     setTimeout(()=>{document.body.classList.remove('en-puerta');const n=fijas.indexOf(false);if(n>=0)els[n].focus({preventScroll:true})},1400)})}
 /* pone el regalo dibujado exactamente donde está el regalo 3D */
@@ -1224,7 +1234,7 @@ $('cosas').innerHTML=COSAS.map((c,i)=>`<figure class="cosa aparece${c.logo?' log
   <div class="img" style="--fondo:${c.logo?esc(c.color||'#fff'):'#eee'}"><img src="fotos/cosas/${esc(c.imagen)}" alt="${esc(c.nombre)}" loading="lazy"></div>
   <h3>${rico(c.nombre)}</h3>${c.nota?`<p>${rico(c.nota)}</p>`:''}</figure>`).join('');
 $('nCosas').textContent=COSAS.length;
-$('creditos').innerHTML='Imágenes de Wikimedia Commons: '+COSAS.filter(c=>CREDITOS[c.imagen]).map(c=>{const k=CREDITOS[c.imagen];const LIC={'CC BY-SA 4.0':'https://creativecommons.org/licenses/by-sa/4.0/deed.es','CC BY-SA 3.0':'https://creativecommons.org/licenses/by-sa/3.0/deed.es','CC BY 3.0':'https://creativecommons.org/licenses/by/3.0/deed.es'};return `${esc(c.nombre)} — <a href="${k[2]}" target="_blank" rel="noopener">${esc(k[0])}</a> (${LIC[k[1]]?`<a href="${LIC[k[1]]}" target="_blank" rel="noopener">${k[1]}</a>`:k[1]})`}).join(' · ')+'. Texturas, muebles, cielo HDR y linterna de la entrada: <a href="https://polyhaven.com" target="_blank" rel="noopener">Poly Haven</a> (CC0). Auto: modelo 3D de un Ford Mondeo (archivo «Mondeo_NYPD»), rotulado de nuevo como CBI; autor original sin identificar. Fragmentos de canciones: vistas previas de 30 s del catálogo de Apple Music / iTunes; © Soda Stereo y sus sellos. Sonidos de la entrada: Breathing man.ogg — <a href="https://commons.wikimedia.org/wiki/File:Breathing_man.ogg" target="_blank" rel="noopener">hugh</a> (Public domain) · Squeaky door.ogg — <a href="https://commons.wikimedia.org/wiki/File:Squeaky_door.ogg" target="_blank" rel="noopener">leonmire</a> (Public domain) · Walking on small wooden bridge (Gravity Sound).wav — <a href="https://commons.wikimedia.org/wiki/File:Walking_on_small_wooden_bridge_(Gravity_Sound).wav" target="_blank" rel="noopener">Gravity Sound</a> (<a href="https://creativecommons.org/licenses/by/4.0/deed.es" target="_blank" rel="noopener">CC BY 4.0</a>, recortado y comprimido).';
+$('creditos').innerHTML='Imágenes de Wikimedia Commons: '+COSAS.filter(c=>CREDITOS[c.imagen]).map(c=>{const k=CREDITOS[c.imagen];const LIC={'CC BY-SA 4.0':'https://creativecommons.org/licenses/by-sa/4.0/deed.es','CC BY-SA 3.0':'https://creativecommons.org/licenses/by-sa/3.0/deed.es','CC BY 3.0':'https://creativecommons.org/licenses/by/3.0/deed.es'};return `${esc(c.nombre)} — <a href="${k[2]}" target="_blank" rel="noopener">${esc(k[0])}</a> (${LIC[k[1]]?`<a href="${LIC[k[1]]}" target="_blank" rel="noopener">${k[1]}</a>`:k[1]})`}).join(' · ')+'. Texturas, muebles, cielo HDR y linterna de la entrada: <a href="https://polyhaven.com" target="_blank" rel="noopener">Poly Haven</a> (CC0). Auto: modelo 3D de un Ford Mondeo (archivo «Mondeo_NYPD»), rotulado de nuevo como CBI; autor original sin identificar. Fragmentos de canciones: vistas previas de 30 s del catálogo de Apple Music / iTunes; © Soda Stereo, BTS, Álvaro Díaz y sus sellos. Sonidos de la entrada: Squeaky door.ogg — <a href="https://commons.wikimedia.org/wiki/File:Squeaky_door.ogg" target="_blank" rel="noopener">leonmire</a> (Public domain) · Walking on small wooden bridge (Gravity Sound).wav — <a href="https://commons.wikimedia.org/wiki/File:Walking_on_small_wooden_bridge_(Gravity_Sound).wav" target="_blank" rel="noopener">Gravity Sound</a> (<a href="https://creativecommons.org/licenses/by/4.0/deed.es" target="_blank" rel="noopener">CC BY 4.0</a>, recortado y comprimido).';
 
 /* ---------- "Solo para ti": texto que se escribe solo ---------- */
 const FRASES=['Abrilo cuando estés sola','Tocá el sello','Sin apuro','Esto es tuyo'];
@@ -1252,10 +1262,12 @@ $('sobre').querySelector('button').onclick=()=>{papel();$('sobre').style.display
 const P='https://audio-ssl.itunes.apple.com/itunes-assets/',ART='https://is1-ssl.mzstatic.com/image/thumb/';
 const CANCIONES=[
   ['Entre Caníbales','Canción Animal · 1990',P+'AudioPreview211/v4/8a/91/24/8a912485-d981-b94d-7421-181e85561483/mzaf_5103759541156854575.plus.aac.p.m4a',ART+'Music125/v4/60/18/68/601868f7-68ba-9416-af42-b26b2f68035f/mzi.qyqtvoxs.jpg/300x300bb.jpg'],
+  ['Butter','Proof · 2021',P+'AudioPreview211/v4/80/c8/46/80c84615-efb7-b538-d818-226cf7803358/mzaf_11498582023380901573.plus.aac.p.m4a',ART+'Music122/v4/f7/68/9c/f7689ce3-6d41-60cd-62d2-57a91ddf5b9d/196922067341_Cover.jpg/300x300bb.jpg','BTS'],
+  ['No podemos ser amigos','OMAKASE · 2026',P+'AudioPreview211/v4/2c/b1/7f/2cb17ff1-d78f-63a7-de73-353eaea93470/mzaf_5995714279816360865.plus.aac.p.m4a',ART+'Music211/v4/53/3a/bd/533abda9-b144-defd-84d8-bc203757c32a/26UMGIM52886.rgb.jpg/300x300bb.jpg','Álvaro Díaz'],
   ['Prófugos','Signos · 1986',P+'AudioPreview221/v4/5a/db/2d/5adb2db8-07da-5291-32af-e6ed5a15e0c5/mzaf_12974375574856683232.plus.aac.p.m4a',ART+'Music114/v4/05/e3/65/05e365e6-c318-e16d-0a27-1d896ba231f2/mzi.hvktyhmz.jpg/300x300bb.jpg'],
   ['Final Caja Negra','Signos · 1986',P+'AudioPreview221/v4/a1/69/88/a1698828-c296-54ec-2289-5e3ad56b43c7/mzaf_602680185580868013.plus.aac.p.m4a',ART+'Music114/v4/05/e3/65/05e365e6-c318-e16d-0a27-1d896ba231f2/mzi.hvktyhmz.jpg/300x300bb.jpg']];
 const audio=new Audio();audio.loop=true;audio.volume=.55;let actual=0;
-$('lista').innerHTML=CANCIONES.map(c=>`<li><button><img src="${c[3]}" alt=""><span><span class="t">${c[0]}</span><span class="s">Soda Stereo · ${c[1]}</span></span><span class="estado">Escuchar</span></button></li>`).join('');
+$('lista').innerHTML=CANCIONES.map(c=>`<li><button><img src="${c[3]}" alt=""><span><span class="t">${c[0]}</span><span class="s">${c[4]||'Soda Stereo'} · ${c[1]}</span></span><span class="estado">Escuchar</span></button></li>`).join('');
 const filas=[...document.querySelectorAll('#lista li')];
 function pon(i,fade){actual=i;if(songG&&ac){const t=ac.currentTime;songG.gain.cancelScheduledValues(t);songG.gain.setValueAtTime(fade?0:.5,t);if(fade)songG.gain.linearRampToValueAtTime(.5,t+2.5)}if(audio.src!==CANCIONES[i][2])audio.src=CANCIONES[i][2];else audio.currentTime=0;$('etqImg').src=CANCIONES[i][3];audio.play().catch(()=>{$('musica').classList.add('pausa');$('musica').setAttribute('aria-label','Reproducir música')});$('musicaTxt').textContent=CANCIONES[i][0];$('musica').classList.add('ver');marca()}
 function marca(){filas.forEach((f,k)=>{const on=k===actual&&!audio.paused;f.classList.toggle('sonando',on);f.querySelector('.estado').textContent=on?'Sonando':'Escuchar'});document.body.classList.toggle('pausa-global',audio.paused)}
@@ -1277,7 +1289,7 @@ els[0].focus({preventScroll:true});
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/RenderPass.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/ShaderPass.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
-<script src="intro3d.js?v=131"></script>
+<script src="intro3d.js?v=143"></script>
 <script>iniciaIntro()</script>
 </body>
 </html>

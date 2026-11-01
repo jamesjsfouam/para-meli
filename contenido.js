@@ -97,14 +97,14 @@ const CARTA = {
    Para cambiar una, poné otro nombre de archivo de la carpeta fotos/. */
 
 const FOTOS_DECORACION = [
+  "meli-sonrisa.jpg",
+  "meli-pelirroja.jpg",
+  "meli-feria.jpg",
   "selfie.jpg",
-  "linea-perritos-1.jpg",
+  "meli-bosque.jpg",
   "lentes.jpg",
-  "linea-rally-uam.webp",
-  "osito.jpg",
-  "sillon.jpg",
-  "patio.jpg",
-  "linea-perritos-2.jpg",
+  "linea-perritos-1.jpg",
+  "meli-dorado.jpg",
 ];
 
 
