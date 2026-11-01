@@ -1,9 +1,9 @@
-PARA M.E.L.I. - VERSION DESCARGABLE
+PARA M.E.L.I. - VERSIÓN DESCARGABLE
 
-1. Extrae todo el contenido del ZIP en una carpeta.
-2. Ejecuta "Abrir Para Meli.bat".
-3. Se abrira la experiencia en el navegador.
-4. No abras index.html con doble clic: el navegador bloquearia algunos recursos.
+1. Extraé todo el contenido del ZIP en una carpeta.
+2. Abrí "Abrir Para Meli.bat".
+3. La experiencia se abrirá en el navegador.
+4. No abras index.html con doble clic: el navegador bloquearía algunos recursos.
 
-La carpeta vendor contiene las dependencias locales de Three.js. La experiencia
-tambien conserva los modelos, texturas, fotos y sonidos necesarios.
+La carpeta vendor tiene las dependencias locales de Three.js. También están
+los modelos, las texturas, las fotos y los sonidos que hacen falta.

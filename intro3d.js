@@ -77,7 +77,7 @@ function pbr(n,rep=[1,1],o={}){const tl0=new T.TextureLoader(LM||undefined),tl={
   return new T.MeshStandardMaterial(Object.assign({map,normalMap:k(tl.load('pbr/'+n+'_nor.jpg')),roughnessMap:k(tl.load('pbr/'+n+'_rough.jpg')),roughness:1,envMapIntensity:.35},o))}
 
 /* la libreta: cuatro nombres, tres tachados en rojo */
-function libretaTex(){const [c,g]=lienzo(2048,1400);
+function libretaTex(){const [c,g]=lienzo(MOVIL?1024:2048,MOVIL?700:1400);if(MOVIL)g.scale(.5,.5);
   const papel=g.createLinearGradient(0,0,2048,0);papel.addColorStop(0,'#cfc3a6');papel.addColorStop(.47,'#e6dcc3');papel.addColorStop(.5,'#b9ad92');papel.addColorStop(.53,'#e6dcc3');papel.addColorStop(1,'#d3c7aa');
   g.fillStyle=papel;g.fillRect(0,0,2048,1400);
   manchas(g,2048,1400,70,a=>`rgba(${rnd(110,150)},${rnd(80,105)},${rnd(40,60)},${a*.8})`);
@@ -109,7 +109,7 @@ function libretaTex(){const [c,g]=lienzo(2048,1400);
       // una gota roja, todavía fresca, junto a su nombre
       g.fillStyle='rgba(175,8,18,.95)';g.beginPath();g.ellipse(x+w+200,y-70,16,20,.3,0,7);g.fill();g.fillStyle='rgba(255,255,255,.35)';g.beginPath();g.ellipse(x+w+194,y-78,4,5,0,0,7);g.fill();
       for(let k=0;k<7;k++){g.fillStyle='rgba(165,8,18,.85)';g.beginPath();g.arc(x+w+200+rnd(-60,60),y-70+rnd(-50,50),rnd(2,6),0,7);g.fill()}}});
-  grano(g,2048,1400,10);const t=new T.CanvasTexture(c);t.encoding=T.sRGBEncoding;t.anisotropy=8;t.noResize=true;return t}
+  grano(g,c.width,c.height,10);const t=new T.CanvasTexture(c);t.encoding=T.sRGBEncoding;t.anisotropy=MOVIL?2:8;t.noResize=true;return t}
 
 function postit(lineas,col='#f2e27a',rot=0){const [c,g]=lienzo(320,320);g.fillStyle=col;g.fillRect(0,0,320,320);
   const sh=g.createLinearGradient(0,0,0,320);sh.addColorStop(0,'rgba(0,0,0,.08)');sh.addColorStop(.15,'rgba(0,0,0,0)');sh.addColorStop(1,'rgba(0,0,0,.12)');g.fillStyle=sh;g.fillRect(0,0,320,320);
@@ -129,7 +129,9 @@ function madera(opts,rep,rough=.9){const c=tablas(opts);const t=tex(c,rep);const
 function sombra(o){o.traverse(m=>{if(m.isMesh){m.castShadow=true;m.receiveShadow=true}});return o}
 function caja(w,h,d,mat,x,y,z,ry=0,padre=S){const m=new T.Mesh(new T.BoxGeometry(w,h,d),mat);m.position.set(x,y,z);m.rotation.y=ry;m.castShadow=m.receiveShadow=true;padre.add(m);return m}
 function calco(textura,w,h,x,y,z,rx,ry,op=1){const m=new T.Mesh(new T.PlaneGeometry(w,h),new T.MeshStandardMaterial({map:textura,transparent:true,depthWrite:false,roughness:.25,metalness:.05,opacity:op,polygonOffset:true,polygonOffsetFactor:-2}));m.position.set(x,y,z);m.rotation.set(rx,ry,0);m.receiveShadow=true;S.add(m);return m}
-function foto(img,w,h,x,y,z,ry,rz=0){const tx=new T.TextureLoader().load(img);tx.encoding=T.sRGBEncoding;
+const FOTOC={};
+function texFoto(img){if(FOTOC[img])return FOTOC[img];const tx=new T.TextureLoader(LM||undefined).load(img,t=>{const im=t.image;if(MOVIL&&im&&Math.max(im.width,im.height)>768){const f=768/Math.max(im.width,im.height),c=document.createElement('canvas');c.width=Math.round(im.width*f);c.height=Math.round(im.height*f);c.getContext('2d').drawImage(im,0,0,c.width,c.height);t.image=c;t.needsUpdate=true}});tx.encoding=T.sRGBEncoding;return FOTOC[img]=tx}
+function foto(img,w,h,x,y,z,ry,rz=0){const tx=texFoto(img);
   const g=new T.Group();const marco=new T.Mesh(new T.BoxGeometry(w+.04,h+.06,.004),M({color:'#e9e4d8',roughness:.8}));g.add(marco);
   const p=new T.Mesh(new T.PlaneGeometry(w,h),M({map:tx,roughness:.6}));p.position.set(0,.01,.003);g.add(p);
   const ch=new T.Mesh(new T.SphereGeometry(.012,8,6),M({color:'#b01020',roughness:.4}));ch.position.set(0,h/2+.01,.01);g.add(ch);
@@ -165,7 +167,7 @@ function crearMano(lado=1){
    (Three ya descarta lo que queda fuera del encuadre; esto además apaga cuartos enteros detrás de las paredes) */
 let zonaActual='',LIGERO=false;
 // en celulares la memoria de video es poca: ninguna textura pasa de 1024 px
-const MOVIL=matchMedia('(pointer:coarse)').matches||Math.min(screen.width,screen.height)<820;
+const MOVIL=/Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent)||(matchMedia('(pointer:coarse)').matches&&Math.min(screen.width,screen.height)<900);
 function achicaTexturas(max){const vistas=new Set();S.traverse(o=>{const ms=o.material?(Array.isArray(o.material)?o.material:[o.material]):[];ms.forEach(m=>Object.keys(m).forEach(k=>{const t=m[k];if(!t||!t.isTexture||vistas.has(t))return;vistas.add(t);const im=t.image;
   if(!im||!im.width||Math.max(im.width,im.height)<=max||t.isDataTexture||t.noResize)return;const f=max/Math.max(im.width,im.height),c=document.createElement('canvas');c.width=Math.round(im.width*f);c.height=Math.round(im.height*f);
   try{c.getContext('2d').drawImage(im,0,0,c.width,c.height);t.image=c;t.needsUpdate=true}catch(e){}}))})}
@@ -180,11 +182,11 @@ function zonificar(){const b=new T.Box3(),c=V(0,0,0),t=V(0,0,0),w=V(0,0,0);
     o.getWorldPosition(w);o.userData.zonaL=o.isDirectionalLight?'afuera':w.y<-5?'escritorio':w.z>.35?'afuera':'adentro';LUCES.push(o)});
   S.children.forEach(o=>{if(o===C||o.isLight||o.userData.zona)return;b.setFromObject(o);if(b.isEmpty()){o.userData.zona='todo';return}
     b.getCenter(c);b.getSize(t);o.userData.zona=Math.max(t.x,t.z)>12?'todo':c.y<-5?'escritorio':c.z>.35?'afuera':c.z<-.35?'adentro':'todo'})}
-function aplicaZona(z){zonaActual=z;LUCES.forEach(l=>l.visible=z==='todas'?l.userData.zonaL!=='escritorio':l.userData.zonaL===z);
+function aplicaZona(z){zonaActual=z;LUCES.forEach(l=>l.visible=l.userData.zonaL===(z==='todas'?'afuera':z));
   S.children.forEach(o=>{const k=o.userData.zona;if(!k||k==='propio'||k==='todo')return;o.visible=z==='todas'?k!=='escritorio':k===z})}
 function zonas(){const p=C.position,cerrada=!puerta||Math.abs(puerta.rotation.y)<.03,fw=C.getWorldDirection(V(0,0,0)),z=p.y<-5?'escritorio':(p.z>3.5||(p.z>.25&&cerrada))?'afuera':(p.z<-1.2||(p.z<1.0&&fw.z<-.55))?'adentro':'todas';if(z!==zonaActual)aplicaZona(z)}
 // cada combinación de luces es un programa distinto: se compilan todas antes de entrar, así cambiar de zona no traba
-function compilaZonas(){const ant=zonaActual;['escritorio','afuera','todas','adentro'].forEach(z=>{aplicaZona(z);try{R.compile(S,C)}catch(e){}});aplicaZona(ant||'escritorio')}
+function compilaZonas(){const ant=zonaActual;['escritorio','afuera','adentro'].forEach(z=>{aplicaZona(z);try{R.compile(S,C)}catch(e){}});aplicaZona(ant||'escritorio')}
 
 /* ---------- abandono: telarañas, mugre, humedad, hojas secas, escombros, y los cuartos amueblados ---------- */
 function telarana(){const [c,g]=lienzo(256,256);g.strokeStyle='rgba(230,230,235,.55)';g.lineWidth=1;const n=9;
@@ -255,7 +257,15 @@ function abandono(){const P2=Math.PI/2;
 function construir(cv){
   let listoAvisado=false;
   const avisaListo=()=>{if(listoAvisado)return;listoAvisado=true;cargado=true;if(LIGERO)ponLigero(true);cargaListo&&cargaListo()};
-  LM=new T.LoadingManager(()=>{setTimeout(()=>{if(MOVIL)try{achicaTexturas(768)}catch(e){}try{zonificar();if(!MOVIL)compilaZonas()}catch(e){console.warn(e)}try{if(!MOVIL)calentar()}catch(e){console.warn(e)}},0);avisaListo()},(u,l,t)=>{cargaProg&&cargaProg(l/t)});
+  let preparado=false;
+  // se prepara en pasos cortos (con respiros entre uno y otro) para que la página no se congele
+  const prepara=()=>{if(preparado)return;preparado=true;cargaProg&&cargaProg(-1);
+    const pasos=[()=>{if(MOVIL)achicaTexturas(768)},()=>zonificar(),
+      ...(MOVIL?[]:['escritorio','afuera','adentro'].map(z=>()=>{aplicaZona(z);R.compile(S,C)})),
+      ()=>aplicaZona('escritorio'),()=>{if(!MOVIL)calentar()},()=>avisaListo()];
+    const sigue=()=>{const f=pasos.shift();if(!f)return;try{f()}catch(e){console.warn(e)}setTimeout(sigue,30)};setTimeout(sigue,30)};
+  LM=new T.LoadingManager(()=>prepara(),(u,l,t)=>{if(!preparado)cargaProg&&cargaProg(l/t)});
+  setTimeout(prepara,40000);   // si algún archivo nunca responde, igual se sigue
   R=new T.WebGLRenderer({canvas:cv,antialias:false,powerPreference:'high-performance'});
   prMax=Math.min(devicePixelRatio,MOVIL?(LIGERO?.9:1.15):1.25);pr=prMax;R.setPixelRatio(pr);R.setSize(W(),H());R.outputEncoding=T.sRGBEncoding;
   R.toneMapping=T.ACESFilmicToneMapping;R.toneMappingExposure=1.25;R.shadowMap.enabled=true;R.shadowMap.autoUpdate=false;R.shadowMap.type=T.PCFShadowMap;R.physicallyCorrectLights=false;
@@ -604,7 +614,7 @@ function construir(cv){
         void main(){vec3 c=texture2D(tDiffuse,vUv).rgb;c=srgb(max(c,0.));float d=distance(vUv,vec2(.5));c*=smoothstep(.85,.32,d);c+=(h(vUv*800.)-.5)*.045;c*=1.-uF;gl_FragColor=vec4(c,1.);}`}));
     comp.passes[2].renderToScreen=true;R.outputEncoding=T.LinearEncoding}catch(e){console.warn(e);comp=null;R.outputEncoding=T.sRGBEncoding}}
   // modelos fotográficos de Poly Haven (CC0)
-  setTimeout(()=>{if(T.GLTFLoader&&!MOVIL){const gl=new T.GLTFLoader(LM);
+  {if(T.GLTFLoader&&!MOVIL){const gl=new T.GLTFLoader(LM);
     const MC={},mod=(n,f)=>{if(MC[n]){MC[n].push(f);return}MC[n]=[f];gl.load('pbr/m/'+n+'/'+n+'.gltf',g=>{const o=g.scene;o.traverse(m=>{if(m.isMesh){m.castShadow=m.receiveShadow=true;if(m.material)m.material.envMapIntensity=.35}});MC[n].forEach((cb,i)=>cb(i?o.clone():o))})};
     const P2=Math.PI/2;const pon=(o,x,y,z,ry=0,e=1)=>{o.position.set(x,y,z);o.rotation.y=ry;o.scale.setScalar(e);S.add(o);return o};
     mod('round_wooden_table_01',o=>pon(o,0,.3,-7.0,0,.75));
@@ -631,13 +641,12 @@ function construir(cv){
     mod('tree_stump_01',o=>pon(o,3.4,0,8.8,0,1));
     mod('rock_moss_set_01',o=>pon(o,-7.2,0,2.5,1,1));
     mod('fern_02',o=>{[[-1.4,4.5],[1.6,5.8],[-2.6,2.6],[2.7,2.9],[-.9,9],[6,4],[-6,6]].forEach(([x,z],i)=>{const c=o.clone();pon(c,x,0,z,i*1.3,rnd(.8,1.3))})});
-  }},900);
-  if(T.RGBELoader&&!MOVIL)setTimeout(()=>{new T.RGBELoader(LM).setDataType(T.UnsignedByteType).load('pbr/noche.hdr',h=>{const pm=new T.PMREMGenerator(R);S.environment=pm.fromEquirectangular(h).texture;
-    const cubo=new T.WebGLCubeRenderTarget(1024).fromEquirectangularTexture(R,h);S.background=cubo.texture;cieloM.visible=false;h.dispose();pm.dispose()})},1400);
+  }}
+  if(T.RGBELoader&&!MOVIL){new T.RGBELoader(LM).setDataType(T.UnsignedByteType).load('pbr/noche.hdr',h=>{const pm=new T.PMREMGenerator(R);S.environment=pm.fromEquirectangular(h).texture;
+    const cubo=new T.WebGLCubeRenderTarget(1024).fromEquirectangularTexture(R,h);S.background=cubo.texture;cieloM.visible=false;h.dispose();pm.dispose()})}
   reloj=new T.Clock();
   addEventListener('resize',()=>{aplicaPR();C.aspect=W()/H();C.fov=W()<H()?76:60;C.updateProjectionMatrix()});
   listo=true;
-  setTimeout(avisaListo,250);
 }
 
 /* ---------- precalentar la escena completa en un buffer oculto ---------- */
@@ -649,7 +658,7 @@ function calentar(){
   [[-1.3,1.6,11.2],[0,1.7,0]],[[.15,1.9,.8],[.3,1.3,0]],[[0,1.9,-.5],[0,1.6,-6]],
   [[-.8,1.9,-3.5],[-4,1.2,-4.6]],[[.2,1.9,-5.1],[4,1.6,-4]]];
   const p0=C.position.clone(),q0=C.quaternion.clone();focoMesa.intensity=.01;flashL.intensity=.01;
-  vistas.forEach(([a,b])=>{C.position.set(...a);C.lookAt(...b);C.updateMatrixWorld();R.setRenderTarget(rt);R.render(S,C)});
+  vistas.slice(0,1).forEach(([a,b])=>{C.position.set(...a);C.lookAt(...b);C.updateMatrixWorld();R.setRenderTarget(rt);R.render(S,C)});
   R.setRenderTarget(null);rt.dispose();C.position.copy(p0);C.quaternion.copy(q0);focoMesa.intensity=0;flashL.intensity=0}
 
 /* ---------- recorrido ---------- */
@@ -784,13 +793,13 @@ function pintaManoR(dt){
 }
 
 /* ---------- bucle ---------- */
-let apagV=1,parpT=0,parpF=1,parpN=1,impar=false,pr=1,prMax=1,dynT=0,dynN=0,dynBien=0,cuadros=0;
+let pendiente=0,apagV=1,parpT=0,parpF=1,parpN=1,impar=false,pr=1,prMax=1,dynT=0,dynN=0,dynBien=0,cuadros=0;
 function aplicaPR(){R.setPixelRatio(pr);R.setSize(W(),H());if(comp){if(comp.setPixelRatio)comp.setPixelRatio(pr);comp.setSize(W(),H())}}
 function cuadroLoop(){
   if(!listo)return;requestAnimationFrame(cuadroLoop);
-  const crudo=reloj.getDelta(),dt=Math.min(crudo,.05);cuadros++;
+  const crudo=reloj.getDelta()+pendiente,dt=Math.min(crudo,.05);pendiente=0;cuadros++;
   // resolución dinámica: mantiene margen para que la cámara y la interacción no se traben
-  if(R3&&R3.ab<0&&zoomK>=1&&document.visibilityState==='visible'&&(impar=!impar))return;
+  if(R3&&R3.ab<0&&zoomK>=1&&document.visibilityState==='visible'&&(impar=!impar)){pendiente=crudo;return}
   if(document.visibilityState==='visible'){dynT+=crudo;dynN++;if(dynT>1.2){const fps=dynN/dynT;dynT=0;dynN=0;
     if(fps<54&&pr>.5){pr=Math.max(.5,+(pr-.15).toFixed(2));dynBien=0;aplicaPR()}else if(fps<34&&pr<=.5&&comp&&comp.passes[1].enabled){comp.passes[1].enabled=false}else if(fps>58&&pr<prMax){if(++dynBien>2){pr=Math.min(prMax,+(pr+.1).toFixed(2));dynBien=0;aplicaPR()}}else dynBien=0}}
   if(corriendo)tAcum+=dt;const t=corriendo?tAcum:0;
@@ -985,7 +994,7 @@ window.Intro3D={
   preparar(cv,prog,listo){cv.addEventListener('webglcontextlost',e=>{e.preventDefault();dispatchEvent(new Event('intro3d-perdido'))},{once:true});cargaProg=prog;cargaListo=listo;construir(cv);camara(0,0);reloj.getDelta();cuadroLoop();if(!T.GLTFLoader)setTimeout(()=>{cargado=true;listo&&listo()},50)},
   get movil(){return MOVIL},get cargado(){return cargado},get ligero(){return LIGERO},ligero_(on){ponLigero(on)},get cuadros(){return cuadros},
   get tiene3D(){return R3api.tiene3D},ruedas:R3api.ruedas,rectRuedas:R3api.rectRuedas,fija:R3api.fija,rectCandado:R3api.rectCandado,abrirRegalo:R3api.abrirRegalo,rectCarta:R3api.rectCarta,ocultaCarta:R3api.ocultaCarta,voltea:R3api.voltea,rectEtiqueta:R3api.rectEtiqueta,
-  saltar(){if(!corriendo||apagonT>=0)return;const meta=44.4;sonar('sirena',0);sonar('descubre');ev.forEach(x=>{if(x.t<meta)x.hecho=true});tAcum=meta;focoT=0;manoEst='fuera';cintaObj=0;puertaObj=1.75;fadeObj=0;mirada=null;camara.salto=true;sonar('lluvia',.35);sonar('escena','regalo');sonar('rechina',1)},
+  saltar(){if(!corriendo||apagonT>=0)return false;const meta=44.4;sonar('sirena',0);sonar('descubre');ev.forEach(x=>{if(x.t<meta)x.hecho=true});tAcum=meta;focoT=0;manoEst='fuera';cintaObj=0;puertaObj=1.75;fadeObj=0;mirada=null;camara.salto=true;sonar('lluvia',.35);sonar('escena','regalo');sonar('rechina',1);return true},
   correr(api,fin){pisada=api.paso||pisada;sonar=api.sonar||sonar;linea();alTerminar=fin;t0=performance.now();tAcum=0;corriendo=true},
   parar(){listo=false;try{S.traverse(o=>{if(o.geometry)o.geometry.dispose();const ms=o.material?(Array.isArray(o.material)?o.material:[o.material]):[];ms.forEach(m=>{Object.keys(m).forEach(k=>{if(m[k]&&m[k].isTexture)m[k].dispose()});m.dispose()})});if(comp)comp.passes.forEach(p=>p.dispose&&p.dispose());R.dispose();R.forceContextLoss()}catch(e){}},
   get FIN(){return FIN}

@@ -27,7 +27,7 @@ Detalles de la entrada:
 
 | Archivo | Qué es |
 |---|---|
-| `index.html` | La página completa: estilos, la escena 2D de respaldo, el candado y las cuatro secciones. |
+| `index.html` | La página completa: estilos, el candado, la carta que sale del regalo y las cuatro secciones. |
 | `intro3d.js` | La entrada en 3D (Three.js r128): escenas, recorrido de la cámara, regalo y candado. |
 | `contenido.js` | **Lo único que hace falta editar:** la línea de tiempo, la carta, las cosas y las fotos de decoración. |
 | `fotos/` | Fotos de la línea de tiempo y de decoración; `fotos/cosas/` son las imágenes de "Cosas que me recuerdan a vos". |
@@ -54,14 +54,15 @@ Después abrí http://localhost:8765 en el navegador.
 
 La entrada está pensada para correr bien en compus modestas y en celular:
 
+- **Preparación en pasos.** Al terminar de descargar, los shaders se compilan zona por zona, con respiros, antes de mostrar "Tocá para entrar": nada se congela al entrar.
 - **Por zonas.** El escritorio, el exterior y el interior solo se dibujan y se iluminan cuando la cámara está ahí. Las combinaciones de luces se compilan antes de entrar.
 - **Ajuste automático.** La resolución baja sola si los fps caen. Si aun así no alcanza, se apaga el resplandor.
-- **En celular.** Las texturas son de 1024 px como máximo y no se carga el cielo HDR. Con 2 GB de RAM o menos, se usa el regalo dibujado en 2D.
+- **En celular.** Las texturas y fotos se achican a 768 px, no se cargan los muebles 3D ni el cielo HDR y no hay resplandor. Si el 3D falla, se pierde o se traba, la página salta directo a la carta.
 - **Al terminar la intro.** Se libera toda la memoria de video antes de mostrar la página.
 
 ## Créditos
 
-- **3D:** texturas, muebles, cielo HDR y linterna de [Poly Haven](https://polyhaven.com) (CC0).
+- **3D:** modelos, texturas y cielo HDR de [Poly Haven](https://polyhaven.com) (CC0).
 - **Imágenes de "Cosas":** de Wikimedia Commons, con autor y licencia al pie de esa sección.
 - **Sonidos de la entrada:** de Wikimedia Commons (dominio público y CC BY 4.0).
 - **Canciones:** vistas previas de 30 s del catálogo de Apple Music / iTunes; © de sus artistas y sellos.
