@@ -160,6 +160,15 @@ function crearMano(lado=1){
   g.userData.cierra=k=>{dedos.forEach((cad,i)=>cad.forEach((s,j)=>{s.rotation.x=-k*(j?1.25:.9)*(1-i*.04)}));pul[0].rotation.x=-k*.5;pul[1].rotation.x=-k*.7};
   g.userData.cierra(.25);sombra(g);g.traverse(m=>{if(m.isMesh)m.castShadow=false});return g}
 
+/* ---------- zonas: lo que no puede verse desde donde está la cámara no se dibuja ni proyecta sombras ----------
+   (Three ya descarta lo que queda fuera del encuadre; esto además apaga cuartos enteros detrás de las paredes) */
+let zonaActual='';
+function zonificar(){const b=new T.Box3(),c=V(0,0,0),t=V(0,0,0);
+  S.children.forEach(o=>{if(o===C||o.isLight||o.userData.zona)return;b.setFromObject(o);if(b.isEmpty()){o.userData.zona='todo';return}
+    b.getCenter(c);b.getSize(t);o.userData.zona=Math.max(t.x,t.z)>12?'todo':c.y<-5?'escritorio':c.z>.35?'afuera':c.z<-.35?'adentro':'todo'})}
+function zonas(){const p=C.position,z=p.y<-5?'escritorio':p.z>3.5?'afuera':p.z<-1.2?'adentro':'todas';if(z===zonaActual)return;zonaActual=z;
+  S.children.forEach(o=>{const k=o.userData.zona;if(!k||k==='propio'||k==='todo')return;o.visible=z==='todas'?k!=='escritorio':k===z})}
+
 /* ---------- abandono: telarañas, mugre, humedad, hojas secas, escombros, y los cuartos amueblados ---------- */
 function telarana(){const [c,g]=lienzo(256,256);g.strokeStyle='rgba(230,230,235,.55)';g.lineWidth=1;const n=9;
   for(let i=0;i<n;i++){const a=i/n*Math.PI/2;g.beginPath();g.moveTo(0,0);g.lineTo(Math.cos(a)*256,Math.sin(a)*256);g.stroke()}
@@ -227,10 +236,10 @@ function abandono(){const P2=Math.PI/2;
 
 /* ---------- la escena ---------- */
 function construir(cv){
-  LM=new T.LoadingManager(()=>{setTimeout(()=>{try{calentar()}catch(e){console.warn(e)}cargado=true;cargaListo&&cargaListo()},60)},(u,l,t)=>{cargaProg&&cargaProg(l/t)});
+  LM=new T.LoadingManager(()=>{setTimeout(()=>{try{calentar()}catch(e){console.warn(e)}try{zonificar()}catch(e){console.warn(e)}cargado=true;cargaListo&&cargaListo()},60)},(u,l,t)=>{cargaProg&&cargaProg(l/t)});
   R=new T.WebGLRenderer({canvas:cv,antialias:false,powerPreference:'high-performance'});
   prMax=Math.min(devicePixelRatio,innerWidth<800?1:1.25);pr=prMax;R.setPixelRatio(pr);R.setSize(W(),H());R.outputEncoding=T.sRGBEncoding;
-  R.toneMapping=T.ACESFilmicToneMapping;R.toneMappingExposure=1.25;R.shadowMap.enabled=true;R.shadowMap.type=T.PCFShadowMap;R.physicallyCorrectLights=false;
+  R.toneMapping=T.ACESFilmicToneMapping;R.toneMappingExposure=1.25;R.shadowMap.enabled=true;R.shadowMap.autoUpdate=false;R.shadowMap.type=T.PCFShadowMap;R.physicallyCorrectLights=false;
   S=new T.Scene();S.fog=new T.FogExp2('#0a0e13',.065);
   C=new T.PerspectiveCamera(W()<H()?76:60,W()/H(),.02,90);C.position.set(0,1.62,11);S.add(C);
   const cieloM=new T.Mesh(new T.SphereGeometry(70,24,16),new T.MeshBasicMaterial({map:cielo(),side:T.BackSide,fog:false}));S.add(cieloM);
@@ -249,7 +258,7 @@ function construir(cv){
   // pinos (instanciados) y algunos troncos secos
   const n=150,conoG=(()=>{const g=new T.ConeGeometry(1,1,16,3,true);const pa=g.attributes.position;for(let i=0;i<pa.count;i++){const x=pa.getX(i),z=pa.getZ(i),y=pa.getY(i);if(y<.45){const f=1+Math.sin(Math.atan2(z,x)*7)*.18+(Math.random()-.5)*.12;pa.setX(i,x*f);pa.setZ(i,z*f);pa.setY(i,y-Math.random()*.08)}}g.computeVertexNormals();return g})(),troncoG=new T.CylinderGeometry(.1,.18,1,7);
   const agujaM=M({color:'#0d1710',roughness:1,side:T.DoubleSide,envMapIntensity:.1}),cortezaM=pbr('pine_bark',[1,3]);
-  const conos=new T.InstancedMesh(conoG,agujaM,n*7),troncos=new T.InstancedMesh(troncoG,cortezaM,n);conos.castShadow=troncos.castShadow=true;conos.receiveShadow=true;
+  const conos=new T.InstancedMesh(conoG,agujaM,n*7),troncos=new T.InstancedMesh(troncoG,cortezaM,n);conos.castShadow=troncos.castShadow=true;conos.userData.zona=troncos.userData.zona='afuera';conos.receiveShadow=true;
   const o=new T.Object3D();let ci=0,ti=0;
   for(let i=0;i<n;i++){let x,z;do{x=rnd(-36,36);z=rnd(-34,30)}while((Math.abs(x)<7.5&&z>-10&&z<14)||(Math.abs(x)<2.5&&z>-12&&z<30)||(x>-7&&x<4&&z>9&&z<21));
     const h=rnd(5,11),w=h*rnd(.26,.34);
@@ -330,7 +339,7 @@ function construir(cv){
   // ----- lluvia -----
   {const n=2600,pos=new Float32Array(n*6);for(let i=0;i<n;i++){const x=rnd(-14,14),y=rnd(0,9),z=rnd(-6,22);pos.set([x,y,z,x+.02,y-.32,z],i*6)}
    const g=new T.BufferGeometry();g.setAttribute('position',new T.BufferAttribute(pos,3));
-   lluvia=new T.LineSegments(g,new T.LineBasicMaterial({color:'#9fb0c8',transparent:true,opacity:.32,depthWrite:false}));S.add(lluvia)}
+   lluvia=new T.LineSegments(g,new T.LineBasicMaterial({color:'#9fb0c8',transparent:true,opacity:.32,depthWrite:false}));lluvia.userData.zona='propio';S.add(lluvia)}
 
   // ----- la casa -----
   const mF=pbr('weathered_planks',[3,2.2],{color:'#6f675c'});
@@ -434,16 +443,38 @@ function construir(cv){
 
   caja(1.92,.2,.9,colchon,-3.8,.68,-4.6,0,cama);
   [-4.8,-4.4].forEach(z=>{const a=new T.Mesh(new T.SphereGeometry(1,18,12),colchon);a.scale.set(.15,.06,.19);a.position.set(-4.5,.84,z);cama.add(a)});
-  // la sábana sobre el cuerpo
-  const tor=new T.Mesh(new T.SphereGeometry(1,24,16),sab);tor.scale.set(.48,.12,.2);tor.position.set(-3.85,.85,-4.6);cama.add(tor);
-  const cab=new T.Mesh(new T.SphereGeometry(.13,18,14),sab);cab.position.set(-4.42,.92,-4.6);cab.scale.y=.75;cama.add(cab);
-  const pier=new T.Mesh(new T.SphereGeometry(1,18,12),sab);pier.scale.set(.48,.09,.17);pier.position.set(-3.1,.83,-4.6);cama.add(pier);
-  caja(1.96,.03,.96,sab,-3.78,.795,-4.6,0,cama);
-  [-1,1].forEach(sd=>{const d=caja(1.9,.3,.02,sab,-3.78,.65,-4.6+sd*.49,0,cama);d.rotation.x=sd*.06});
+  // la sábana sobre el cuerpo: una malla que se apoya en una silueta (cabeza en la almohada, pecho, cadera, piernas, pies)
+  {const parte=[[-4.40,.935,-4.6,.10,.085,.10],[-4.22,.84,-4.6,.05,.07,.05],[-3.95,.80,-4.6,.26,.19,.135],[-3.62,.79,-4.6,.17,.175,.105],
+     [-3.18,.78,-4.51,.36,.075,.075],[-3.18,.78,-4.69,.36,.075,.075],[-2.93,.80,-4.52,.04,.05,.10],[-2.93,.80,-4.69,.04,.05,.10],
+     [-3.80,.80,-4.37,.30,.05,.055],[-3.80,.80,-4.83,.30,.05,.055],[-4.5,.80,-4.6,.14,.36,.06]];
+   const alto=(x,z)=>{let h=.795;for(const [cx,cy,cz,rx,rz,ry] of parte){const q=1-((x-cx)/rx)**2-((z-cz)/rz)**2;if(q>0)h=Math.max(h,cy+ry*Math.sqrt(q))}return h};
+   const X0=-4.64,X1=-2.84,Z0=-5.05,Z1=-4.15,NX=110,NZ=64,cae=.22;
+   const gm=new T.PlaneGeometry(1,1,NX,NZ),pa=gm.attributes.position,uv=gm.attributes.uv;const H=[];
+   for(let iz=0;iz<=NZ;iz++)for(let ix=0;ix<=NX;ix++){const x=X0-.02+(X1-X0+cae+.02)*ix/NX,z=Z0-cae+(Z1-Z0+2*cae)*iz/NZ;H.push([x,z,alto(Math.min(X1,x),Math.min(Z1,Math.max(Z0,z)))])}
+   // la tela no se pega: se suaviza como si colgara de los puntos altos
+   for(let pas=0;pas<3;pas++){const H2=H.map(v=>v.slice());for(let iz=1;iz<NZ;iz++)for(let ix=1;ix<NX;ix++){const k=iz*(NX+1)+ix;let m=0;[[0,0,4],[1,0,1],[-1,0,1],[0,1,1],[0,-1,1]].forEach(([a,b,w])=>m+=H[k+a+b*(NX+1)][2]*w);H2[k][2]=Math.max(H[k][2]-.004,m/8)}for(let k=0;k<H.length;k++)H[k][2]=H2[k][2]}
+   for(let k=0;k<H.length;k++){let [x,z,y]=H[k];const ix=k%(NX+1),iz=Math.floor(k/(NX+1));
+     // pliegues finos
+     y+=Math.sin(x*38+z*9)*.003+Math.sin(z*55-x*7)*.002;
+     // lo que pasa del borde del colchón cae por los costados y los pies
+     const dz=Math.max(0,Z0-z,z-Z1),dx=Math.max(0,x-X1);const d=Math.max(dz,dx);
+     if(d>0){y=.795-d*1.35+Math.sin((dz?x:z)*24)*.012;if(dz)z=z<Z0?Z0-.012-d*.06:Z1+.012+d*.06;if(dx)x=X1+.012+d*.06}
+     pa.setXYZ(k,x,y+.004,z);uv.setXY(k,ix/NX,1-iz/NZ)}
+   gm.computeVertexNormals();
+   // la tela, con la sangre que la empapa a la altura del pecho
+   const [sc,sg]=lienzo(1024,640);sg.fillStyle='#c9c1b2';sg.fillRect(0,0,1024,640);grano(sg,1024,640,10);for(let k=0;k<40;k++){sg.fillStyle=`rgba(90,75,55,${rnd(.03,.08)})`;sg.beginPath();sg.arc(rnd(0,1024),rnd(0,640),rnd(20,90),0,7);sg.fill()}
+   const mancha=(x,y,r,a)=>{for(let k=0;k<26;k++){const rr=r*rnd(.3,1),xx=x+rnd(-r,r)*.7,yy=y+rnd(-r,r)*.5;const gr=sg.createRadialGradient(xx,yy,0,xx,yy,rr);gr.addColorStop(0,`rgba(62,3,6,${a})`);gr.addColorStop(.7,`rgba(84,8,10,${a*.55})`);gr.addColorStop(1,'rgba(90,20,15,0)');sg.fillStyle=gr;sg.beginPath();sg.arc(xx,yy,rr,0,7);sg.fill()}};
+   mancha(330,300,120,.55);mancha(400,350,70,.6);mancha(250,250,50,.35);mancha(330,560,60,.5);mancha(430,600,40,.55);
+   const st=new T.CanvasTexture(sc);st.encoding=T.sRGBEncoding;st.anisotropy=8;
+   const telaM=new T.MeshStandardMaterial({map:st,roughness:.97,side:T.DoubleSide,envMapIntensity:.25});
+   const tela=new T.Mesh(gm,telaM);tela.castShadow=tela.receiveShadow=true;cama.add(tela);
+   // una mano que asoma por el costado y cuelga de la cama
+   const mano=crearMano(1);mano.traverse(m=>{if(m.isMesh&&m.material&&m.material.color&&m.material.color.getHex()<0x303030)m.visible=false});
+   const pal=piel();pal.color.set('#9c8a80');mano.traverse(m=>{if(m.isMesh&&m.visible)m.material=pal});
+   const ante=new T.Mesh(new T.CylinderGeometry(.03,.034,.3,14),pal);ante.rotation.x=Math.PI/2;ante.position.z=.22;mano.add(ante);
+   mano.position.set(-3.82,.6,-4.06);mano.rotation.set(-Math.PI/2+.25,0,.2);mano.scale.setScalar(1.1);mano.userData.cierra(.45);cama.add(mano);
+   calco(sangre('charco'),.5,.4,-3.85,.305,-3.92,-Math.PI/2,0,.95)}
   S.add(sombra(cama));
-  calco(sangre('charco'),.9,.6,-3.85,1.0,-4.62,-Math.PI/2,0,.95);
-  calco(sangre('charco'),.5,.4,-3.55,.82,-4.35,-Math.PI/2,0,.85);
-  calco(sangre('salpicadura'),.45,.45,-3.5,.66,-4.1,0,0,.9);                     // chorrea por el costado de la sábana
   // mesita de noche con lámpara tenue
 
   const luzN=new T.PointLight('#ffb070',.5,3.2,2);luzN.position.set(-4.5,1.25,-5.95);S.add(luzN);parpadeo.push([luzN,.5]);
@@ -596,7 +627,10 @@ function construir(cv){
 }
 
 /* ---------- precalentar la escena completa en un buffer oculto ---------- */
-function calentar(){const rt=new T.WebGLRenderTarget(320,200);const vistas=[
+function calentar(){
+  // compila todos los materiales y sube todas las texturas a la GPU de una vez, para que nada se trabe al entrar a un cuarto
+  try{R.compile(S,C)}catch(e){}
+  if(R.initTexture){const vistas=new Set();S.traverse(o=>{const ms=o.material?(Array.isArray(o.material)?o.material:[o.material]):[];ms.forEach(m=>['map','normalMap','roughnessMap','metalnessMap','emissiveMap','alphaMap','bumpMap','aoMap'].forEach(k=>{const t=m[k];if(t&&!vistas.has(t)&&t.image){vistas.add(t);try{R.initTexture(t)}catch(e){}}}))})}const rt=new T.WebGLRenderTarget(320,200);const vistas=[
   [[-1.3,1.6,11.2],[0,1.7,0]],[[-1,1.6,9],[0,1,14.4]],[[.15,1.9,.8],[.3,1.3,0]],[[0,1.9,-.5],[0,1.6,-6]],[[-.8,1.9,-3.5],[-4,1.2,-4.6]],
   [[-.8,1.9,-3.5],[-2.6,1.9,-.2]],[[.2,1.9,-5.1],[4,1.6,-4]],[[.2,1.9,-5.1],[2.8,1.5,-7.7]],[[0,1.72,-6],[0,1.25,-7]]];
   const p0=C.position.clone(),q0=C.quaternion.clone();focoMesa.intensity=.01;flashL.intensity=.01;
@@ -619,18 +653,27 @@ const RUTA=[
   [17.2,V(.05,1.9,.55),    V(0,1.6,-6),     0],   // el pasillo
   [19.6,V(0,1.9,-2.7),     V(0,1.55,-6),    1],
   [20.8,V(-.75,1.9,-3.5),  V(-4.8,2.35,-4.6),1],  // se asoma al cuarto del caso: la carita
-  [22.4,V(-1.3,1.9,-3.6),   V(-3.8,.9,-4.6), 0],   // la cama
-  [24.0,V(-1.4,1.9,-3.6),   V(-2.6,1.95,-.2),0],   // el tablero
-  [25.2,V(-1.35,1.9,-3.6),   V(-2.9,1.75,-.2),0],
-  [25.9,V(-.5,1.9,-3.7),   V(-.2,1.6,-7.5), 0],   // vuelve la vista al pasillo
-  [26.9,V(.15,1.9,-5.1),   V(4.8,2.1,-5.1), 1],   // el cuarto de BTS
-  [28.4,V(.2,1.9,-5.1),    V(2.8,1.5,-7.7), 0],
-  [29.6,V(0,1.9,-5.0),     V(0,1.3,-7.0),   0],   // al fondo del pasillo: el regalo
-  [31.0,V(0,1.9,-5.0),     V(0,1.35,-7.0),  0],
-  [33.6,V(0,1.72,-6.0),    V(0,1.25,-7.0),  1],
-  [34.6,V(0,1.72,-6.0),    V(0,1.25,-7.0),  0],
+  [22.8,V(-1.45,1.9,-3.7), V(-4.8,2.4,-4.6), 1],   // entra despacio, sin dejar de mirarla
+  [24.4,V(-1.7,1.88,-3.75),V(-3.6,.95,-4.6), 0],   // baja la vista: la cama
+  [26.0,V(-1.8,1.7,-4.2),  V(-4.35,.95,-4.6),0],   // se inclina sobre la cinta: la cabeza bajo la sábana
+  [27.4,V(-1.78,1.72,-4.3),V(-3.85,.45,-4.1),0],   // la mano que cuelga y el charco
+  [28.8,V(-1.75,1.8,-4.3), V(-2.6,.32,-4.8), 0],   // los marcadores de evidencia
+  [30.2,V(-1.6,1.9,-3.1),  V(-2.4,1.95,-.2), 0],   // se da vuelta: el tablero
+  [31.6,V(-1.6,1.9,-3.1),  V(-3.6,1.85,-.2), 0],   // recorre las fotos y el hilo rojo
+  [32.8,V(-1.6,1.9,-3.2),  V(-4.8,1.9,-1.8), 0],   // la ventana tapiada
+  [34.0,V(-.5,1.9,-3.7),   V(-.2,1.6,-7.5),  1],   // vuelve al pasillo
+  [35.0,V(.15,1.9,-5.1),   V(4.8,2.1,-5.1),  1],   // el cuarto de BTS
+  [36.6,V(1.55,1.85,-5.0), V(4.8,2.0,-6.6),  1],   // entra: los pósters y el ropero
+  [38.0,V(1.6,1.8,-4.6),   V(4.1,.95,-2.6),  0],   // la cama con los peluches
+  [39.4,V(1.7,1.85,-3.6),  V(2.7,1.95,-.2),  0],   // el escritorio y las fotos de ella en el cordel
+  [40.8,V(1.6,1.85,-3.8),  V(2.8,1.5,-7.7),  0],   // el estante con los álbumes
+  [42.0,V(.2,1.9,-5.1),    V(0,1.4,-7.0),    1],   // sale al pasillo
+  [43.0,V(0,1.9,-5.0),     V(0,1.3,-7.0),    0],   // al fondo del pasillo: el regalo
+  [44.4,V(0,1.9,-5.0),     V(0,1.35,-7.0),   0],
+  [47.0,V(0,1.72,-6.0),    V(0,1.25,-7.0),   1],
+  [48.0,V(0,1.72,-6.0),    V(0,1.25,-7.0),   0],
 ];
-const FIN=38.0;
+const FIN=51.4;
 const suave=x=>x*x*(3-2*x);
 let fase=0;
 const cr=(p0,p1,p2,p3,u)=>{const u2=u*u,u3=u2*u;return V(
@@ -702,11 +745,11 @@ function linea(){
   e(16.0,()=>manoEst='baja');
   e(17.3,()=>{sonar('lluvia',.35);sonar('escena','pasillo')});
   e(20.9,()=>{sonar('susto',.5);sonar('escena','caso')});
-  e(22.6,()=>{flashT=0;sonar('flash')});
-  e(26.6,()=>sonar('escena','bts'));
-  e(29.7,()=>{focoT=0;sonar('descubre');sonar('escena','regalo')});
-  e(34.8,()=>{apagonT=0;sonar('apagon');sonar('escena','nada')});
-  e(37.6,()=>sonar('alivio'));
+  e(22.6,()=>{flashT=0;sonar('flash')});e(26.4,()=>{flashT=0;sonar('flash')});
+  e(34.4,()=>sonar('escena','bts'));
+  e(43.1,()=>{focoT=0;sonar('descubre');sonar('escena','regalo')});
+  e(48.2,()=>{apagonT=0;sonar('apagon');sonar('escena','nada')});
+  e(51.0,()=>sonar('alivio'));
 }
 function pintaManoR(dt){
   const obj=manoEst==='sube'||manoEst==='agarra'||manoEst==='levanta'?1:0;
@@ -734,7 +777,7 @@ function cuadroLoop(){
   // resolución dinámica: si la compu no llega a ~40 fps, baja la resolución; si sobra, la sube despacio
   if(R3&&R3.ab<0&&zoomK>=1&&document.visibilityState==='visible'&&(impar=!impar))return;
   if(document.visibilityState==='visible'){dynT+=crudo;dynN++;if(dynT>1.2){const fps=dynN/dynT;dynT=0;dynN=0;
-    if(fps<42&&pr>.5){pr=Math.max(.5,+(pr-.2).toFixed(2));dynBien=0;aplicaPR()}else if(fps>57&&pr<prMax){if(++dynBien>2){pr=Math.min(prMax,+(pr+.1).toFixed(2));dynBien=0;aplicaPR()}}else dynBien=0}}
+    if(fps<42&&pr>.5){pr=Math.max(.5,+(pr-.2).toFixed(2));dynBien=0;aplicaPR()}else if(fps<34&&pr<=.5&&comp&&comp.passes[1].enabled){comp.passes[1].enabled=false}else if(fps>57&&pr<prMax){if(++dynBien>2){pr=Math.min(prMax,+(pr+.1).toFixed(2));dynBien=0;aplicaPR()}}else dynBien=0}}
   if(corriendo)tAcum+=dt;const t=corriendo?tAcum:0;
   camara(Math.min(t,FIN),corriendo?dt:0);
   if(corriendo)ev.forEach(x=>{if(!x.hecho&&t>=x.t){x.hecho=true;x.f()}});
@@ -756,6 +799,7 @@ function cuadroLoop(){
    if(parpT>0){parpT-=dt;parpF+=(parpN-parpF)*Math.min(1,dt*30)}else{parpF+=(1-rnd(0,.06)-parpF)*Math.min(1,dt*20);if(Math.random()<dt*.45){parpT=rnd(.05,.3);parpN=rnd(.1,.55)}}
    const vv=v*apagV*parpF;focoMesa.intensity=vv*2.4;if(lampBulbo){lampBulbo.material.color.setScalar(.12+.88*vv);lampBulbo.userData.halo.material.opacity=vv;lampBulbo.userData.rebote.intensity=vv*.5}}
   polvo.rotation.y+=dt*.008;
+  if(cargado)zonas();R.shadowMap.needsUpdate=(cuadros%2===0)||!cargado;
   if(comp){fadeVal+=(fadeObj-fadeVal)*Math.min(1,dt*(fadeObj?9:6));comp.passes[2].uniforms.uT.value=performance.now()%1000;comp.passes[2].uniforms.uF.value=fadeVal;comp.render()}else R.render(S,C);
   if(corriendo&&t>=FIN&&alTerminar){const f=alTerminar;alTerminar=null;f()}
 }
@@ -938,7 +982,7 @@ window.Intro3D={
     regaloPlano.position.set(0,1.05+(350-190)/380*h,-7.0);regaloPlano.lookAt(V(0,1.42,-6.28));regaloPlano.renderOrder=5;S.add(regaloPlano);
     const [cs,gs]=lienzo(256,256);const gr=gs.createRadialGradient(128,128,10,128,128,128);gr.addColorStop(0,'rgba(0,0,0,.85)');gr.addColorStop(.45,'rgba(0,0,0,.55)');gr.addColorStop(1,'rgba(0,0,0,0)');gs.fillStyle=gr;gs.fillRect(0,0,256,256);
     const sh=new T.Mesh(new T.PlaneGeometry(.62,.62),new T.MeshBasicMaterial({map:new T.CanvasTexture(cs),transparent:true,depthWrite:false}));sh.rotation.x=-Math.PI/2;sh.scale.y=.5;sh.scale.x=1.05;sh.position.set(.04,1.054,-6.95);S.add(sh)},
-  saltar(){if(!corriendo||apagonT>=0)return;const meta=31.0;sonar('sirena',0);sonar('descubre');ev.forEach(x=>{if(x.t<meta)x.hecho=true});tAcum=meta;focoT=0;manoEst='fuera';cintaObj=0;puertaObj=1.75;fadeObj=0;mirada=null;camara.salto=true;sonar('lluvia',.35);sonar('escena','regalo');sonar('rechina',1)},
+  saltar(){if(!corriendo||apagonT>=0)return;const meta=44.4;sonar('sirena',0);sonar('descubre');ev.forEach(x=>{if(x.t<meta)x.hecho=true});tAcum=meta;focoT=0;manoEst='fuera';cintaObj=0;puertaObj=1.75;fadeObj=0;mirada=null;camara.salto=true;sonar('lluvia',.35);sonar('escena','regalo');sonar('rechina',1)},
   correr(api,fin){pisada=api.paso||pisada;sonar=api.sonar||sonar;linea();alTerminar=fin;t0=performance.now();tAcum=0;corriendo=true},
   parar(){listo=false;try{R.dispose()}catch(e){}},
   get FIN(){return FIN}
