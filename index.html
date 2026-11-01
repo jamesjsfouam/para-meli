@@ -1166,9 +1166,10 @@ const apiIntro={
     else if(n==='flash'){if(c){nota(c,bus(),2600,c.currentTime,.05,.08,'square',6000);ruido(.25,4200,1,.08,true,9000)}}
     else if(n==='alivio'){if(resp)resp.alivio();if(respLoop){respLoop.fade(1.6);respLoop=null}}
   }};
-function sin3D(){if($('ligero'))$('ligero').classList.add('fuera');try{Intro3D.parar()}catch(e){}if($('intro'))$('intro').remove();introEnCurso=false;$('saltar').classList.remove('ver');document.body.classList.remove('en-puerta');const es=$('escena');if(!es)return;es.classList.remove('sobre3d','r3d');es.classList.add('ver');
+let modo2D=false;
+function sin3D(){modo2D=true;if($('ligero'))$('ligero').classList.add('fuera');try{Intro3D.parar()}catch(e){}if($('intro'))$('intro').remove();introEnCurso=false;$('saltar').classList.remove('ver');document.body.classList.remove('en-puerta');const es=$('escena');if(!es)return;es.classList.remove('sobre3d','r3d');es.classList.add('ver');
   ['ruedasWin','zonas'].forEach(id=>{const e=$(id);if(e&&e.classList.contains('flotante')){e.classList.remove('flotante');e.removeAttribute('style');if(e._padre)e._padre.insertBefore(e,e._sig&&e._sig.parentNode===e._padre?e._sig:null)}});
-  setTimeout(()=>{try{alinearRegalo()}catch(e){}},50)}
+  const rg=$('regalo');if(rg){rg.style.scale='';rg.style.translate=''}}
 addEventListener('intro3d-perdido',()=>{if(!abierto)sin3D()});
 let cargaLenta=false;
 async function iniciaIntro(){
@@ -1220,7 +1221,7 @@ document.addEventListener('click',e=>{if(!window.Intro3D||!Intro3D.rectEtiqueta|
 function ubicaCandado(){let r=(Intro3D.rectRuedas||Intro3D.rectCandado)();if(!r)return;const w=Math.max(r.w,184),h=Math.max(r.h,120);r={x:r.x+r.w/2-w/2,y:r.y+r.h/2-h/2,w,h};['ruedasWin','zonas'].forEach(id=>{const e=$(id);if(e.parentNode!==document.body){e._padre=e.parentNode;e._sig=e.nextSibling;document.body.appendChild(e)}e.classList.add('flotante');
   Object.assign(e.style,{left:r.x+'px',top:r.y+'px',width:r.w+'px',height:r.h+'px'})})}
 addEventListener('resize',()=>{if(window.Intro3D&&Intro3D.tiene3D&&$('zonas').classList.contains('flotante')&&!abierto)requestAnimationFrame(()=>requestAnimationFrame(ubicaCandado))});
-function alinearRegalo(){const el=$('regalo'),svg=el.querySelector('.caja3d');if(!svg||!window.Intro3D)return;
+function alinearRegalo(){const el=$('regalo'),svg=el.querySelector('.caja3d');if(modo2D){el.style.scale='';el.style.translate='';return}if(!svg||!window.Intro3D)return;
   el.style.scale='';el.style.translate='';const r=Intro3D.rectRegalo(),b=svg.getBoundingClientRect();
   const base=parseFloat(getComputedStyle(el).scale)||1;
   const k=Math.min(r.w/b.width,r.h/b.height),ex=b.left+b.width/2,ey=b.top+b.height/2;
