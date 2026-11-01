@@ -163,16 +163,27 @@ function crearMano(lado=1){
 /* ---------- zonas: lo que no puede verse desde donde está la cámara no se dibuja ni proyecta sombras ----------
    (Three ya descarta lo que queda fuera del encuadre; esto además apaga cuartos enteros detrás de las paredes) */
 let zonaActual='',LIGERO=false;
+// en celulares la memoria de video es poca: ninguna textura pasa de 1024 px
+const MOVIL=matchMedia('(pointer:coarse)').matches||Math.min(screen.width,screen.height)<820;
+function achicaTexturas(max){const vistas=new Set();S.traverse(o=>{const ms=o.material?(Array.isArray(o.material)?o.material:[o.material]):[];ms.forEach(m=>Object.keys(m).forEach(k=>{const t=m[k];if(!t||!t.isTexture||vistas.has(t))return;vistas.add(t);const im=t.image;
+  if(!im||!im.width||Math.max(im.width,im.height)<=max||t.isDataTexture)return;const f=max/Math.max(im.width,im.height),c=document.createElement('canvas');c.width=Math.round(im.width*f);c.height=Math.round(im.height*f);
+  try{c.getContext('2d').drawImage(im,0,0,c.width,c.height);t.image=c;t.needsUpdate=true}catch(e){}}))})}
 // modo ligero: sin sombras, sin lluvia, sin resplandor y menos resolución
 function ponLigero(on){LIGERO=!!on;if(!R)return;
   R.shadowMap.enabled=!LIGERO;S.traverse(o=>{const ms=o.material?(Array.isArray(o.material)?o.material:[o.material]):[];ms.forEach(m=>m.needsUpdate=true)});
   if(comp&&comp.passes[1])comp.passes[1].enabled=!LIGERO;prMax=Math.min(devicePixelRatio,innerWidth<800?1:1.25)*(LIGERO?.7:1);pr=Math.min(pr,prMax);if(LIGERO)pr=prMax;aplicaPR();
-  try{R.compile(S,C)}catch(e){}}
-function zonificar(){const b=new T.Box3(),c=V(0,0,0),t=V(0,0,0);
+  try{if(LUCES.length)compilaZonas();else R.compile(S,C)}catch(e){}}
+const LUCES=[];
+function zonificar(){const b=new T.Box3(),c=V(0,0,0),t=V(0,0,0),w=V(0,0,0);
+  S.traverse(o=>{if(!o.isLight||o.isAmbientLight||o.isHemisphereLight)return;let p=o.parent,enCam=false;while(p){if(p===C)enCam=true;p=p.parent}if(enCam)return;
+    o.getWorldPosition(w);o.userData.zonaL=o.isDirectionalLight?'afuera':w.y<-5?'escritorio':w.z>.35?'afuera':'adentro';LUCES.push(o)});
   S.children.forEach(o=>{if(o===C||o.isLight||o.userData.zona)return;b.setFromObject(o);if(b.isEmpty()){o.userData.zona='todo';return}
     b.getCenter(c);b.getSize(t);o.userData.zona=Math.max(t.x,t.z)>12?'todo':c.y<-5?'escritorio':c.z>.35?'afuera':c.z<-.35?'adentro':'todo'})}
-function zonas(){const p=C.position,z=p.y<-5?'escritorio':p.z>3.5?'afuera':p.z<-1.2?'adentro':'todas';if(z===zonaActual)return;zonaActual=z;
+function aplicaZona(z){zonaActual=z;LUCES.forEach(l=>l.visible=z==='todas'?l.userData.zonaL!=='escritorio':l.userData.zonaL===z);
   S.children.forEach(o=>{const k=o.userData.zona;if(!k||k==='propio'||k==='todo')return;o.visible=z==='todas'?k!=='escritorio':k===z})}
+function zonas(){const p=C.position,z=p.y<-5?'escritorio':p.z>3.5?'afuera':p.z<-1.2?'adentro':'todas';if(z!==zonaActual)aplicaZona(z)}
+// cada combinación de luces es un programa distinto: se compilan todas antes de entrar, así cambiar de zona no traba
+function compilaZonas(){const ant=zonaActual;['escritorio','afuera','todas','adentro'].forEach(z=>{aplicaZona(z);try{R.compile(S,C)}catch(e){}});aplicaZona(ant||'escritorio')}
 
 /* ---------- abandono: telarañas, mugre, humedad, hojas secas, escombros, y los cuartos amueblados ---------- */
 function telarana(){const [c,g]=lienzo(256,256);g.strokeStyle='rgba(230,230,235,.55)';g.lineWidth=1;const n=9;
@@ -241,7 +252,7 @@ function abandono(){const P2=Math.PI/2;
 
 /* ---------- la escena ---------- */
 function construir(cv){
-  LM=new T.LoadingManager(()=>{setTimeout(()=>{try{calentar()}catch(e){console.warn(e)}try{zonificar()}catch(e){console.warn(e)}if(LIGERO)ponLigero(true);cargado=true;cargaListo&&cargaListo()},60)},(u,l,t)=>{cargaProg&&cargaProg(l/t)});
+  LM=new T.LoadingManager(()=>{setTimeout(()=>{if(MOVIL)try{achicaTexturas(1024)}catch(e){}try{calentar()}catch(e){console.warn(e)}try{zonificar();compilaZonas()}catch(e){console.warn(e)}if(LIGERO)ponLigero(true);cargado=true;cargaListo&&cargaListo()},60)},(u,l,t)=>{cargaProg&&cargaProg(l/t)});
   R=new T.WebGLRenderer({canvas:cv,antialias:false,powerPreference:'high-performance'});
   prMax=Math.min(devicePixelRatio,innerWidth<800?1:1.25);pr=prMax;R.setPixelRatio(pr);R.setSize(W(),H());R.outputEncoding=T.sRGBEncoding;
   R.toneMapping=T.ACESFilmicToneMapping;R.toneMappingExposure=1.25;R.shadowMap.enabled=true;R.shadowMap.autoUpdate=false;R.shadowMap.type=T.PCFShadowMap;R.physicallyCorrectLights=false;
@@ -975,7 +986,7 @@ const R3api={
 
 window.Intro3D={
   preparar(cv,prog,listo){cv.addEventListener('webglcontextlost',e=>{e.preventDefault();dispatchEvent(new Event('intro3d-perdido'))},{once:true});cargaProg=prog;cargaListo=listo;construir(cv);camara(0,0);reloj.getDelta();cuadroLoop();if(!T.GLTFLoader)setTimeout(()=>{cargado=true;listo&&listo()},50)},
-  get cargado(){return cargado},get ligero(){return LIGERO},ligero_(on){ponLigero(on)},get cuadros(){return cuadros},
+  get movil(){return MOVIL},get cargado(){return cargado},get ligero(){return LIGERO},ligero_(on){ponLigero(on)},get cuadros(){return cuadros},
   get tiene3D(){return R3api.tiene3D},ruedas:R3api.ruedas,rectRuedas:R3api.rectRuedas,fija:R3api.fija,rectCandado:R3api.rectCandado,abrirRegalo:R3api.abrirRegalo,rectCarta:R3api.rectCarta,ocultaCarta:R3api.ocultaCarta,voltea:R3api.voltea,rectEtiqueta:R3api.rectEtiqueta,
   rectRegalo(){if(!regaloPlano)return{x:0,y:0,w:0,h:0};let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;const w=regaloPlano.userData.w/2,h=regaloPlano.userData.h/2;
     [[-w,-h],[w,-h],[-w,h],[w,h]].forEach(([x,y])=>{const p=regaloPlano.localToWorld(V(x,y,0)).project(C);const sx=(p.x*.5+.5)*W(),sy=(-p.y*.5+.5)*H();x0=Math.min(x0,sx);x1=Math.max(x1,sx);y0=Math.min(y0,sy);y1=Math.max(y1,sy)});return{x:x0,y:y0,w:x1-x0,h:y1-y0}},
