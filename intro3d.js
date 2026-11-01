@@ -603,7 +603,7 @@ function construir(cv){
         void main(){vec3 c=texture2D(tDiffuse,vUv).rgb;c=srgb(max(c,0.));float d=distance(vUv,vec2(.5));c*=smoothstep(.85,.32,d);c+=(h(vUv*800.)-.5)*.045;c*=1.-uF;gl_FragColor=vec4(c,1.);}`}));
     comp.passes[2].renderToScreen=true;R.outputEncoding=T.LinearEncoding}catch(e){console.warn(e);comp=null;R.outputEncoding=T.sRGBEncoding}}
   // modelos fotográficos de Poly Haven (CC0)
-  if(T.GLTFLoader){const gl=new T.GLTFLoader(LM);
+  setTimeout(()=>{if(T.GLTFLoader){const gl=new T.GLTFLoader(LM);
     const MC={},mod=(n,f)=>{if(MC[n]){MC[n].push(f);return}MC[n]=[f];gl.load('pbr/m/'+n+'/'+n+'.gltf',g=>{const o=g.scene;o.traverse(m=>{if(m.isMesh){m.castShadow=m.receiveShadow=true;if(m.material)m.material.envMapIntensity=.35}});MC[n].forEach((cb,i)=>cb(i?o.clone():o))})};
     const P2=Math.PI/2;const pon=(o,x,y,z,ry=0,e=1)=>{o.position.set(x,y,z);o.rotation.y=ry;o.scale.setScalar(e);S.add(o);return o};
     mod('round_wooden_table_01',o=>pon(o,0,.3,-7.0,0,.75));
@@ -630,9 +630,9 @@ function construir(cv){
     mod('tree_stump_01',o=>pon(o,3.4,0,8.8,0,1));
     mod('rock_moss_set_01',o=>pon(o,-7.2,0,2.5,1,1));
     mod('fern_02',o=>{[[-1.4,4.5],[1.6,5.8],[-2.6,2.6],[2.7,2.9],[-.9,9],[6,4],[-6,6]].forEach(([x,z],i)=>{const c=o.clone();pon(c,x,0,z,i*1.3,rnd(.8,1.3))})});
-  }
-  if(T.RGBELoader&&!MOVIL){new T.RGBELoader(LM).setDataType(T.UnsignedByteType).load('pbr/noche.hdr',h=>{const pm=new T.PMREMGenerator(R);S.environment=pm.fromEquirectangular(h).texture;
-    const cubo=new T.WebGLCubeRenderTarget(1024).fromEquirectangularTexture(R,h);S.background=cubo.texture;cieloM.visible=false;h.dispose();pm.dispose()})}
+  }},900);
+  if(T.RGBELoader&&!MOVIL)setTimeout(()=>{new T.RGBELoader(LM).setDataType(T.UnsignedByteType).load('pbr/noche.hdr',h=>{const pm=new T.PMREMGenerator(R);S.environment=pm.fromEquirectangular(h).texture;
+    const cubo=new T.WebGLCubeRenderTarget(1024).fromEquirectangularTexture(R,h);S.background=cubo.texture;cieloM.visible=false;h.dispose();pm.dispose()})},1400);
   reloj=new T.Clock();
   addEventListener('resize',()=>{aplicaPR();C.aspect=W()/H();C.fov=W()<H()?76:60;C.updateProjectionMatrix()});
   listo=true;
