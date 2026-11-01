@@ -72,7 +72,7 @@ function expediente(){const [c,g]=lienzo(256,340);g.fillStyle='#c9b48a';g.fillRe
 /* ---------- materiales PBR (texturas fotográficas de Poly Haven, CC0) ---------- */
 const TXC={};
 function pbr(n,rep=[1,1],o={}){const tl0=new T.TextureLoader(LM||undefined),tl={load:u=>{const c=u+'|'+rep;return TXC[c]||(TXC[c]=tl0.load(u))}},k=t=>{t.wrapS=t.wrapT=T.RepeatWrapping;t.repeat.set(rep[0],rep[1]);t.anisotropy=8;return t};
-  const map=k(tl.load('pbr/'+n+'_col.jpg'));map.encoding=T.sRGBEncoding;
+  const map=k(tl.load('pbr/'+n+(MOVIL?'_col_1k.jpg':'_col.jpg')));map.encoding=T.sRGBEncoding;
   return new T.MeshStandardMaterial(Object.assign({map,normalMap:k(tl.load('pbr/'+n+'_nor.jpg')),roughnessMap:k(tl.load('pbr/'+n+'_rough.jpg')),roughness:1,envMapIntensity:.35},o))}
 
 /* la libreta: cuatro nombres, tres tachados en rojo */
@@ -629,7 +629,7 @@ function construir(cv){
     mod('rock_moss_set_01',o=>pon(o,-7.2,0,2.5,1,1));
     mod('fern_02',o=>{[[-1.4,4.5],[1.6,5.8],[-2.6,2.6],[2.7,2.9],[-.9,9],[6,4],[-6,6]].forEach(([x,z],i)=>{const c=o.clone();pon(c,x,0,z,i*1.3,rnd(.8,1.3))})});
   }
-  if(T.RGBELoader){new T.RGBELoader(LM).setDataType(T.UnsignedByteType).load('pbr/noche.hdr',h=>{const pm=new T.PMREMGenerator(R);S.environment=pm.fromEquirectangular(h).texture;
+  if(T.RGBELoader&&!MOVIL){new T.RGBELoader(LM).setDataType(T.UnsignedByteType).load('pbr/noche.hdr',h=>{const pm=new T.PMREMGenerator(R);S.environment=pm.fromEquirectangular(h).texture;
     const cubo=new T.WebGLCubeRenderTarget(1024).fromEquirectangularTexture(R,h);S.background=cubo.texture;cieloM.visible=false;h.dispose();pm.dispose()})}
   reloj=new T.Clock();
   addEventListener('resize',()=>{aplicaPR();C.aspect=W()/H();C.fov=W()<H()?76:60;C.updateProjectionMatrix()});
