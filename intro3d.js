@@ -5,14 +5,14 @@
 (function(){
 const T=THREE;
 let R,S,C,reloj,linterna,focoMesa,lampCono,puerta,parpadeo=[],polvo,listo=false,corriendo=false,t0=0,alTerminar=null;
-let tAcum=0,flashT=-1,flashL=null,linMesa=null,lampEsc=null,bajaAuto=0,fadeObj=0,fadeVal=0,lampBulbo=null,lampVol=null,zoomK=-1,zIni=null,zMir=null,libreta=null,LM=null,cargaProg=null,cargaListo=null,cargado=false,macetas=[],comp=null,regaloPlano=null,regaloMat=null,manoL,manoR,linternaObj,regaloMats=[],regaloG,cintaP,autoPuerta,sirena=[],lluvia,fundeT=-1,fundeDur=1;
+let tAcum=0,flashT=-1,flashL=null,linMesa=null,lampEsc=null,fadeObj=0,fadeVal=0,lampBulbo=null,zoomK=-1,zIni=null,zMir=null,LM=null,cargaProg=null,cargaListo=null,cargado=false,macetas=[],comp=null,regaloPlano=null,regaloMat=null,manoL,manoR,linternaObj,cintaP,autoPuerta,sirena=[],lluvia,fundeT=-1,fundeDur=1;
 const ev=[];
 const W=()=>innerWidth,H=()=>innerHeight;
 function rnd(a,b){return a+Math.random()*(b-a)}
 
 /* ---------- texturas en canvas ---------- */
 function lienzo(w,h){const c=document.createElement('canvas');c.width=w;c.height=h;return [c,c.getContext('2d')]}
-function tex(c,rep){const t=new T.CanvasTexture(c);t.wrapS=t.wrapT=T.RepeatWrapping;t.anisotropy=8;if(rep)t.repeat.set(rep[0],rep[1]);return t}
+function tex(c,rep){const t=new T.CanvasTexture(c);t.wrapS=t.wrapT=T.RepeatWrapping;t.anisotropy=MOVIL?2:8;if(rep)t.repeat.set(rep[0],rep[1]);return t}
 function grano(g,w,h,k=14){const d=g.getImageData(0,0,w,h);for(let i=0;i<d.data.length;i+=4){const v=rnd(-k,k);d.data[i]+=v;d.data[i+1]+=v;d.data[i+2]+=v}g.putImageData(d,0,0)}
 function manchas(g,w,h,n,col){for(let j=0;j<n;j++){const x=rnd(0,w),y=rnd(0,h),r=rnd(10,90);const gr=g.createRadialGradient(x,y,0,x,y,r);gr.addColorStop(0,col(rnd(.06,.22)));gr.addColorStop(1,'rgba(0,0,0,0)');g.fillStyle=gr;g.fillRect(x-r,y-r,2*r,2*r)}}
 function tablas({w=512,h=512,n=8,vertical=true,base=[60,45,34],var_=14,sucio=.5}){
@@ -71,7 +71,7 @@ function expediente(){const [c,g]=lienzo(256,340);g.fillStyle='#c9b48a';g.fillRe
   g.fillStyle='#3a2a14';g.font='500 12px JetBrains Mono, monospace';g.fillText('CASO N° 0111',20,150);g.fillText('ESCENA: CASA DEL BOSQUE',20,168);grano(g,256,340,10);return new T.CanvasTexture(c)}
 /* ---------- materiales PBR (texturas fotográficas de Poly Haven, CC0) ---------- */
 const TXC={};
-function pbr(n,rep=[1,1],o={}){const tl0=new T.TextureLoader(LM||undefined),tl={load:u=>{const c=u+'|'+rep;return TXC[c]||(TXC[c]=tl0.load(u))}},k=t=>{t.wrapS=t.wrapT=T.RepeatWrapping;t.repeat.set(rep[0],rep[1]);t.anisotropy=8;return t};
+function pbr(n,rep=[1,1],o={}){const tl0=new T.TextureLoader(LM||undefined),tl={load:u=>{const c=u+'|'+rep;return TXC[c]||(TXC[c]=tl0.load(u))}},k=t=>{t.wrapS=t.wrapT=T.RepeatWrapping;t.repeat.set(rep[0],rep[1]);t.anisotropy=MOVIL?2:8;return t};
   const map=k(tl.load('pbr/'+n+(MOVIL?'_col_1k.jpg':'_col.jpg')));map.encoding=T.sRGBEncoding;
   return new T.MeshStandardMaterial(Object.assign({map,normalMap:k(tl.load('pbr/'+n+'_nor.jpg')),roughnessMap:k(tl.load('pbr/'+n+'_rough.jpg')),roughness:1,envMapIntensity:.35},o))}
 
@@ -108,7 +108,7 @@ function libretaTex(){const [c,g]=lienzo(2048,1400);
       // una gota roja, todavía fresca, junto a su nombre
       g.fillStyle='rgba(175,8,18,.95)';g.beginPath();g.ellipse(x+w+200,y-70,16,20,.3,0,7);g.fill();g.fillStyle='rgba(255,255,255,.35)';g.beginPath();g.ellipse(x+w+194,y-78,4,5,0,0,7);g.fill();
       for(let k=0;k<7;k++){g.fillStyle='rgba(165,8,18,.85)';g.beginPath();g.arc(x+w+200+rnd(-60,60),y-70+rnd(-50,50),rnd(2,6),0,7);g.fill()}}});
-  grano(g,2048,1400,10);const t=new T.CanvasTexture(c);t.encoding=T.sRGBEncoding;t.anisotropy=8;t.userData.noResize=true;return t}
+  grano(g,2048,1400,10);const t=new T.CanvasTexture(c);t.encoding=T.sRGBEncoding;t.anisotropy=8;t.noResize=true;return t}
 
 function postit(lineas,col='#f2e27a',rot=0){const [c,g]=lienzo(320,320);g.fillStyle=col;g.fillRect(0,0,320,320);
   const sh=g.createLinearGradient(0,0,0,320);sh.addColorStop(0,'rgba(0,0,0,.08)');sh.addColorStop(.15,'rgba(0,0,0,0)');sh.addColorStop(1,'rgba(0,0,0,.12)');g.fillStyle=sh;g.fillRect(0,0,320,320);
@@ -166,7 +166,7 @@ let zonaActual='',LIGERO=false;
 // en celulares la memoria de video es poca: ninguna textura pasa de 1024 px
 const MOVIL=matchMedia('(pointer:coarse)').matches||Math.min(screen.width,screen.height)<820;
 function achicaTexturas(max){const vistas=new Set();S.traverse(o=>{const ms=o.material?(Array.isArray(o.material)?o.material:[o.material]):[];ms.forEach(m=>Object.keys(m).forEach(k=>{const t=m[k];if(!t||!t.isTexture||vistas.has(t))return;vistas.add(t);const im=t.image;
-  if(!im||!im.width||Math.max(im.width,im.height)<=max||t.isDataTexture||t.userData.noResize)return;const f=max/Math.max(im.width,im.height),c=document.createElement('canvas');c.width=Math.round(im.width*f);c.height=Math.round(im.height*f);
+  if(!im||!im.width||Math.max(im.width,im.height)<=max||t.isDataTexture||t.noResize)return;const f=max/Math.max(im.width,im.height),c=document.createElement('canvas');c.width=Math.round(im.width*f);c.height=Math.round(im.height*f);
   try{c.getContext('2d').drawImage(im,0,0,c.width,c.height);t.image=c;t.needsUpdate=true}catch(e){}}))})}
 // modo ligero: sin sombras, sin lluvia, sin resplandor y menos resolución
 function ponLigero(on){LIGERO=!!on;if(!R)return;
@@ -307,7 +307,7 @@ function construir(cv){
    const tapa=new T.Mesh(new T.BoxGeometry(.355,.245,.008),pbr('fabric_leather_02',[1,1],{color:'#2a1810'}));tapa.position.z=-.006;lib.add(tapa);
    const banda=new T.Mesh(new T.BoxGeometry(.006,.25,.004),M({color:'#5a0a0e',roughness:.6}));banda.position.set(.16,0,.004);lib.add(banda);
    const cinta=new T.Mesh(new T.PlaneGeometry(.008,.07),M({color:'#2a0306',roughness:.8,side:T.DoubleSide}));cinta.position.set(-.004,-.145,.003);cinta.rotation.z=.1;lib.add(cinta);
-   lib.rotation.set(-Math.PI/2,0,.06);lib.position.set(0,.045,0);E.add(lib);libreta=lib;
+   lib.rotation.set(-Math.PI/2,0,.06);lib.position.set(0,.045,0);E.add(lib);
    // marcador rojo destapado, la tapa a un lado, y una foto boca abajo
    const marc=new T.Group();const cu=new T.Mesh(new T.CylinderGeometry(.009,.009,.13,16),M({color:'#2e0205',roughness:.6}));cu.rotation.z=Math.PI/2;marc.add(cu);
    const pu=new T.Mesh(new T.ConeGeometry(.009,.02,12),M({color:'#5a0508',roughness:.5}));pu.rotation.z=-Math.PI/2;pu.position.x=.075;marc.add(pu);marc.position.set(.24,.04,.05);marc.rotation.y=.6;E.add(sombra(marc));
