@@ -888,7 +888,7 @@ function suena(n,vol=1,loop=false,desde=0,dura){const m=MEDIA[n],c=ctx();if(!m||
 let resp=null,respLoop=null,lluviaG=null,lluviaSrc=null,rechinaB=null,sirena=null;
 /* música por escena: capas sintetizadas que entran y salen con fundido */
 const MUS={capas:{},cur:null};
-function capa(nombre,crear){const c=ctx();if(!c)return;const g=c.createGain();g.gain.value=0;g.connect(bus());const st=crear(c,g)||{};MUS.capas[nombre]={g,st};g.gain.setTargetAtTime(1,c.currentTime,1.2);return MUS.capas[nombre]}
+function capa(nombre,crear){const c=ctx();if(!c)return;const g=c.createGain();g.gain.value=0;g.connect(bus());const st=crear(c,g)||{};MUS.capas[nombre]={g,st};g.gain.setTargetAtTime(2.6,c.currentTime,1.2);return MUS.capas[nombre]}
 function quita(nombre,t=1.5){const c=ctx(),k=MUS.capas[nombre];if(!c||!k)return;k.g.gain.setTargetAtTime(0,c.currentTime,t/3);setTimeout(()=>{try{(k.st.parar||(()=>{}))();k.g.disconnect()}catch(e){}},t*1000+400);delete MUS.capas[nombre]}
 function pad(c,dest,frecs,vol,corte=500,tipo='sawtooth'){const f=c.createBiquadFilter();f.type='lowpass';f.frequency.value=corte;f.Q.value=.6;const g=c.createGain();g.gain.value=vol;f.connect(g).connect(dest);
   const os=frecs.flatMap(fr=>[-4,4].map(d=>{const o=c.createOscillator();o.type=tipo;o.frequency.value=fr;o.detune.value=d;o.connect(f);o.start();return o}));
@@ -897,7 +897,7 @@ function pad(c,dest,frecs,vol,corte=500,tipo='sawtooth'){const f=c.createBiquadF
 function nota(c,dest,f,t,dur,vol,tipo='triangle',corte=2400){const o=c.createOscillator(),g=c.createGain(),lp=c.createBiquadFilter();lp.type='lowpass';lp.frequency.value=corte;o.type=tipo;o.frequency.value=f;
   g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(vol,t+.01);g.gain.exponentialRampToValueAtTime(.0005,t+dur);o.connect(lp).connect(g).connect(dest);o.start(t);o.stop(t+dur+.05)}
 const ESCENAS={
-  escritorio(){capa('drone',(c,g)=>pad(c,g,[55,82.4],.05,320));
+  escritorio(){capa('drone',(c,g)=>pad(c,g,[55,82.4,110,164.8],.045,520));
     capa('reloj',(c,g)=>{const id=setInterval(()=>{const t=c.currentTime;nota(c,g,3200,t,.03,.05,'square',5000);nota(c,g,2400,t+.5,.03,.035,'square',5000)},1000);return{parar(){clearInterval(id)}}})},
   afuera(){quita('reloj',.6);capa('trueno',(c,g)=>{const id=setInterval(()=>{if(Math.random()<.5){const n=c.createBufferSource(),b=c.createBuffer(1,c.sampleRate*4,c.sampleRate),d=b.getChannelData(0);let u=0;for(let i=0;i<d.length;i++){u=.985*u+.015*(Math.random()*2-1);d[i]=u*6}
       n.buffer=b;const lp=c.createBiquadFilter();lp.type='lowpass';lp.frequency.value=180;const gg=c.createGain(),t=c.currentTime;gg.gain.setValueAtTime(0,t);gg.gain.linearRampToValueAtTime(.5,t+.4);gg.gain.exponentialRampToValueAtTime(.001,t+3.8);n.connect(lp).connect(gg).connect(g);n.start()}},5200);return{parar(){clearInterval(id)}}})},
@@ -916,7 +916,7 @@ const ESCENAS={
 function lluviaVol(v){const c=ctx();if(!c)return;if(!lluviaG){const b=c.createBuffer(1,c.sampleRate*2,c.sampleRate),d=b.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;
   const src=c.createBufferSource();src.buffer=b;src.loop=true;const hp=c.createBiquadFilter();hp.type='highpass';hp.frequency.value=700;const lp=c.createBiquadFilter();lp.type='lowpass';lp.frequency.value=5200;
   lluviaSrc=src;lluviaG=c.createGain();lluviaG.gain.value=0;src.connect(hp).connect(lp).connect(lluviaG).connect(bus());src.start()}
-  lluviaG.gain.setTargetAtTime(.16*v,c.currentTime,.8);if(v<1)lluviaG.gain.setTargetAtTime(0,c.currentTime+6,2.5)}
+  lluviaG.gain.setTargetAtTime(.055*v,c.currentTime,.8);if(v<1)lluviaG.gain.setTargetAtTime(0,c.currentTime+6,2.5)}
 const apiIntro={
   paso(){const m=MEDIA.paso;if(!m||!m.buf){paso();return}suena('paso',.75,false,Math.random()*(m.buf.duration-1),.42)},
   sonar(n,x){const c=ctx();
@@ -974,7 +974,7 @@ addEventListener('resize',()=>{if(window.Intro3D&&Intro3D.tiene3D&&$('zonas')&&$
 $('intro').addEventListener('click',entrar);
 $('intro').addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();entrar()}});
 function desbloquea(){ambiente();const c0=ctx();if(c0&&c0.state!=='running')c0.resume().catch(()=>{});Object.keys(MEDIA).forEach(n=>esperaMedia(n));if(desbloqueado)return;desbloqueado=true;try{if(navigator.audioSession)navigator.audioSession.type='playback'}catch(e){}
-  enlazaCancion();audio.src=CANCIONES[0][2];audio.muted=false;if(songG&&ac){songG.gain.cancelScheduledValues(ac.currentTime);songG.gain.setValueAtTime(0,ac.currentTime);songG.gain.linearRampToValueAtTime(.17,ac.currentTime+3)}else audio.volume=.18;audio.play().catch(()=>{})}
+  enlazaCancion();audio.preload='auto';audio.src=CANCIONES[0][2];try{audio.load()}catch(e){}}
 ['pointerup','touchend','click','keydown'].forEach(ev=>$('escena').addEventListener(ev,desbloquea,{passive:true}));
 
 /* ---------- abrir: el candado cae, se va la tapa con el moño y la carta sale entera de la caja ---------- */
@@ -989,7 +989,7 @@ async function abrir(){
   if(abierto)return;abierto=true;if(amb)amb.parar();
   const escn=$('escena');
   try{
-  let r;subeCancion();
+  let r;subeCancion(!modo2D&&window.Intro3D&&Intro3D.tiene3D?3600:0);
   if(!modo2D&&window.Intro3D&&Intro3D.tiene3D){
     escn.classList.add('abriendo');['ruedasWin','zonas'].forEach(id=>{const e=$(id);if(e)e.style.display='none'});clicFuerte();tono(1850,ctx()?ctx().currentTime:0,.003,.03,.25,'triangle');
     const c=ctx(),gg=(v,f)=>golpeGrave(c?c.currentTime:0,f,v);setTimeout(()=>{gg(.45,140);ruido(.3,2600,6,.25)},780);setTimeout(()=>gg(.18,180),980);setTimeout(()=>ruido(.6,1500,1,.2,true),520);
@@ -1184,7 +1184,11 @@ function tema(i,desde){const t=TEMAS[i],v=$('v-musica');if(!t||!v)return;
 const audio=new Audio();audio.loop=true;audio.volume=.55;let actual=0;
 $('lista').innerHTML=CANCIONES.map(c=>`<li><button><img src="${c[3]}" alt=""><span><span class="t">${c[0]}</span><span class="s">${c[4]||'Soda Stereo'} · ${c[1]}</span></span><span class="estado">Escuchar</span></button></li>`).join('');
 const filas=[...document.querySelectorAll('#lista li')];
-function subeCancion(){if(!audio.paused&&audio.src===CANCIONES[0][2]){actual=0;if(temaAct!==0)tema(0);if(songG&&ac){songG.gain.cancelScheduledValues(ac.currentTime);songG.gain.setValueAtTime(songG.gain.value,ac.currentTime);songG.gain.linearRampToValueAtTime(.5,ac.currentTime+2.5)}audio.volume=.55;$('etqImg').src=CANCIONES[0][3];$('musicaTxt').textContent=CANCIONES[0][0];$('musica').classList.add('ver');marca()}else pon(0,true,12)}
+function subeCancion(ms){if(!songG||!ac){setTimeout(()=>pon(0,true,12),ms);return}
+  actual=0;if(temaAct!==0)tema(0);if(audio.src!==CANCIONES[0][2])audio.src=CANCIONES[0][2];audio.muted=false;audio.volume=.55;
+  const t=ac.currentTime;songG.gain.cancelScheduledValues(t);songG.gain.setValueAtTime(0,t);try{audio.currentTime=Math.max(0,12-ms/1000)}catch(e){}
+  audio.play().catch(()=>{$('musica').classList.add('pausa')});songG.gain.setValueAtTime(0,t+ms/1000);songG.gain.linearRampToValueAtTime(.5,t+ms/1000+2.5);
+  setTimeout(()=>{$('etqImg').src=CANCIONES[0][3];$('musicaTxt').textContent=CANCIONES[0][0];$('musica').classList.add('ver');marca()},ms)}
 function pon(i,fade,desde){if(temaAct!==i)tema(i);actual=i;if(songG&&ac){const t=ac.currentTime;songG.gain.cancelScheduledValues(t);songG.gain.setValueAtTime(fade?0:.5,t);if(fade)songG.gain.linearRampToValueAtTime(.5,t+2.5)}if(audio.src!==CANCIONES[i][2])audio.src=CANCIONES[i][2];audio.volume=.55;audio.muted=false;audio.currentTime=desde||0;$('etqImg').src=CANCIONES[i][3];audio.play().catch(()=>{$('musica').classList.add('pausa');$('musica').setAttribute('aria-label','Reproducir música')});$('musicaTxt').textContent=CANCIONES[i][0];$('musica').classList.add('ver');marca()}
 function marca(){filas.forEach((f,k)=>{const on=k===actual&&!audio.paused;f.classList.toggle('sonando',on);f.querySelector('.estado').textContent=on?'Sonando':'Escuchar'});document.body.classList.toggle('pausa-global',audio.paused)}
 filas.forEach((f,i)=>f.querySelector('button').onclick=e=>{if(i===actual)audio.paused?audio.play():audio.pause();else{tema(i,e.currentTarget);pon(i)}});
