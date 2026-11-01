@@ -106,15 +106,10 @@ em{font-style:inherit;color:var(--pasion)}
 @keyframes volteaTag{50%{transform:scaleX(.04)}}
 
 /* candado */
-#candadoSvg,#ruedasWin{transition:transform .5s cubic-bezier(.5,0,.75,0),opacity .35s}
+#ruedasWin{transition:transform .5s cubic-bezier(.5,0,.75,0),opacity .35s}
 .golpe{animation:golpeCand .3s cubic-bezier(.3,1.6,.5,1)}
 @keyframes golpeCand{35%{transform:translateY(3px)}}
-#candadoSvg{transform-box:view-box}
-.g-arco{transform-box:view-box;transform-origin:192px 254px;transition:transform .45s cubic-bezier(.3,1.6,.5,1)}
-.abriendo .g-arco{transform:translateY(-12px) rotate(-26deg)}
-.led{fill:#3b210c;transition:fill .3s}
-.led.on{fill:#ff2a3d;filter:url(#brilloLed)}
-.cae-candado #candadoSvg,.cae-candado #ruedasWin{transform:translateY(90px) rotate(8deg);opacity:0}
+.cae-candado #ruedasWin{transform:translateY(90px) rotate(8deg);opacity:0}
 #ruedasWin{position:absolute;left:116px;top:266px;width:88px;height:48px;transform-origin:50% 0}
 .ventana{position:relative;display:flex;gap:4px;width:100%;height:100%}
 .ventana::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:4;border-radius:2px;background:linear-gradient(172deg,#ffffff30 0%,#ffffff08 40%,transparent 42%)}
@@ -138,9 +133,6 @@ em{font-style:inherit;color:var(--pasion)}
 #luzInterior,#hazInterior{opacity:0;transition:opacity .9s}
 .luz-interior #luzInterior{opacity:1}
 .luz-interior #hazInterior{opacity:.55}
-#papelGrupo{transform-box:view-box;transition:transform 1s cubic-bezier(.2,.8,.2,1)}
-.sube-carta #papelGrupo{transform:translateY(-158px)}
-
 /* la carta en papel que se despliega (ya fuera de la caja) */
 #cartaFinal{position:fixed;z-index:60;display:none;perspective:1400px;transform-origin:center;transition:transform .7s var(--fold)}
 #cartaFinal.ver{display:block}
@@ -181,10 +173,8 @@ em{font-style:inherit;color:var(--pasion)}
 .sin-tapa #etiqueta{animation:inercia 1s cubic-bezier(.3,0,.4,1) forwards}
 @keyframes inercia{0%{transform:rotate(0)}25%{transform:rotate(-14deg)}100%{transform:rotate(30deg)}}
 #ruedasWin{top:260px}
-.g-arco{transform-origin:192px 248px}
-#candadoSvg{transform-origin:160px 240px}
 #ruedasWin{transform-origin:44px -20px}
-.cae-candado #candadoSvg,.cae-candado #ruedasWin,.cae-candado #zonas{opacity:1;transition:none;animation:caeCand .6s cubic-bezier(.5,0,.75,0) forwards}
+.cae-candado #ruedasWin,.cae-candado #zonas{opacity:1;transition:none;animation:caeCand .6s cubic-bezier(.5,0,.75,0) forwards}
 @keyframes caeCand{0%{transform:none}60%{transform:translateY(44px) rotate(7deg)}78%{transform:translateY(36px) rotate(5deg)}100%{transform:translateY(44px) rotate(6deg)}}
 .rib-v{transform-box:view-box;transform-origin:180px 178px;transition:transform .5s cubic-bezier(.5,0,.75,0)}
 .sin-liston .rib-caja,.sin-liston .rib-v{opacity:1;transform:scaleY(0)}
@@ -743,9 +733,9 @@ let abierto=false;
 const fijas=[false,false,false,false];
 function mueve(i,d){if(abierto||fijas[i])return;ruedas[i]=(ruedas[i]+d+26)%26;pinta(i,d);clic();revisa(i)}
 function revisa(i){if(!fijas[i]&&ABC[ruedas[i]]===CLAVE[i])fijar(i)}
-function golpecito(){['candadoSvg','ruedasWin'].forEach(id=>{const e=$(id);if(!e)return;e.classList.remove('golpe');void e.getBoundingClientRect();e.classList.add('golpe')})}
+function golpecito(){const e=$('ruedasWin');if(!e)return;e.classList.remove('golpe');void e.getBoundingClientRect();e.classList.add('golpe')}
 function fijar(i){fijas[i]=true;if(window.Intro3D&&Intro3D.fija)Intro3D.fija(i);const el=els[i];el.classList.add('fija');el.setAttribute('aria-disabled','true');
-  const led=document.querySelectorAll('#leds .led')[i];if(led)led.classList.add('on');golpecito();
+  golpecito();
   sonidoBloqueo(fijas.filter(Boolean).length);
   setTimeout(()=>{const a=els.indexOf(document.activeElement);if(a<0||fijas[a]){const n=fijas.indexOf(false);if(n>=0)els[n].focus({preventScroll:true})}},120);
   if(fijas.every(Boolean)){if(amb)amb.parar();desbloquea();$('escena').classList.remove('suspenso');setTimeout(abrir,900)}}
@@ -957,7 +947,7 @@ async function abrir(){
   // la carta todavía sube: pasa a primer plano sin frenar
   const cf=$('cartaFinal');
   Object.assign(cf.style,{left:r.left+'px',top:(r.top-r.height)+'px',width:r.width+'px',height:(r.height*3)+'px',fontSize:r.width+'px'});
-  cf.classList.add('ver');const papelGrupo=$('papelGrupo');if(papelGrupo)papelGrupo.style.opacity=0;escn.classList.add('atenua');
+  cf.classList.add('ver');escn.classList.add('atenua');
   const dx=innerWidth/2-(r.left+r.width/2),dy=innerHeight/2-(r.top+r.height/2);
   const sc=Math.min(innerWidth*.86/r.width,innerHeight*.28/r.height);
   const mov=cf.animate([{transform:'none'},{transform:`translate(${dx*.4}px,${dy-30}px) scale(${sc*.55}) rotate(-2deg)`,offset:.45},{transform:`translate(${dx}px,${dy}px) scale(${sc})`}],{duration:reducido?1:850,easing:'cubic-bezier(.25,.7,.3,1)',fill:'forwards'});
