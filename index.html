@@ -13,9 +13,9 @@
 <meta property="og:url" content="https://jamesjsfouam.github.io/para-meli/">
 <meta property="og:image" content="https://jamesjsfouam.github.io/para-meli/og.png">
 <meta name="twitter:card" content="summary_large_image">
-<link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="icon" href="favicon.svg" type="image/svg+xml">
-<link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png?v=3">
+<link rel="icon" href="favicon.svg?v=3" type="image/svg+xml">
+<link rel="icon" href="favicon-32.png?v=3" sizes="32x32" type="image/png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;800;900&family=Inter+Tight:wght@400;500;600;800;900&family=JetBrains+Mono:wght@500;600;700;800&family=Reenie+Beanie&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&display=swap" rel="stylesheet">
@@ -946,7 +946,7 @@ let entrando=false,cargaLenta=false,modo2D=false;
 /* modo ligero: se recuerda en esta compu */
 (()=>{const b=$('ligero');if(!b)return;let on=false;try{on=localStorage.getItem('meliLigero')==='1'}catch(e){}
   const etiqueta=b.querySelector('.mono'),pinta=()=>{b.setAttribute('aria-pressed',!on);b.title=on?'Activar calidad alta':'Bajar calidad para ahorrar batería';if(etiqueta)etiqueta.textContent=on?'Mejorar calidad':'Bajar calidad';if(window.Intro3D&&Intro3D.ligero_)Intro3D.ligero_(on)};pinta();
-  b.addEventListener('click',e=>{e.stopPropagation();on=!on;try{localStorage.setItem('meliLigero',on?'1':'0')}catch(e){}pinta()});
+  b.addEventListener('click',e=>{e.stopPropagation();on=!on;try{localStorage.setItem('meliLigero',on?'1':'0')}catch(e){}pinta();if(window.Intro3D&&Intro3D.movil&&!entrando)setTimeout(()=>location.reload(),150)});
   b.addEventListener('keydown',e=>e.stopPropagation())})();
 function entrar(){if(!entrando&&cargaLenta&&!Intro3D.cargado){entrando=true;desbloquea();sin3D();return}if(entrando||!Intro3D.cargado)return;entrando=true;introEnCurso=true;$('saltar').classList.add('ver');desbloquea();$('intro').classList.add('andando');if($('ligero'))$('ligero').classList.add('fuera');{const c0=Intro3D.cuadros||0;setTimeout(()=>{if(introEnCurso&&(Intro3D.cuadros||0)-c0<8)sin3D()},8000)}if(reducido)setTimeout(()=>{try{Intro3D.saltar()}catch(e){}},350);
   Intro3D.correr(apiIntro,()=>{introEnCurso=false;$('saltar').classList.remove('ver');ambiente();setTimeout(()=>{if(!abierto&&window.Intro3D&&Intro3D.voltea)Intro3D.voltea()},12000);const es=$('escena');es.classList.add('r3d');ubicaCandado();es.classList.add('ver');$('intro').style.cursor='default';
@@ -986,8 +986,9 @@ async function abrir(){
     escn.classList.add('abriendo');['ruedasWin','zonas'].forEach(id=>{const e=$(id);if(e)e.style.display='none'});clicFuerte();tono(1850,ctx()?ctx().currentTime:0,.003,.03,.25,'triangle');
     const c=ctx(),gg=(v,f)=>golpeGrave(c?c.currentTime:0,f,v);setTimeout(()=>{gg(.45,140);ruido(.3,2600,6,.25)},780);setTimeout(()=>gg(.18,180),980);setTimeout(()=>ruido(.6,1500,1,.2,true),520);
     setTimeout(()=>ruido(.25,700,2,.15),1100);setTimeout(()=>whoosh(),1600);setTimeout(()=>{gg(.3,95)},2380);setTimeout(()=>acordeRevelacion(),1550);setTimeout(()=>ruido(.7,3200,.9,.2,true),2050);
-    setTimeout(()=>{clicFuerte();ruido(.15,1500,3,.4)},4850);setTimeout(()=>ruido(.55,3600,.8,.2,true),5050);setTimeout(()=>ruido(.55,3300,.8,.2,true),5450);
-    setTimeout(()=>{const c2=ctx();if(c2){tono(1318.51,c2.currentTime,.01,.035,2);tono(1975.5,c2.currentTime+.14,.01,.025,1.8)}},6100);
+    setTimeout(()=>{clicFuerte();ruido(.15,1500,3,.4)},3100);setTimeout(()=>ruido(.5,3600,.8,.18,true),3250);setTimeout(()=>ruido(.9,3000,.6,.16,true),3650);
+    setTimeout(()=>{const c2=ctx();if(c2)[1318.51,1567.98,1975.53,2349.32,2637.02,3135.96].forEach((f,k)=>tono(f,c2.currentTime+k*.16,.01,.028,1.6))},4600);
+    setTimeout(()=>{const c2=ctx();if(c2){tono(1318.51,c2.currentTime,.01,.035,2.2);tono(1975.5,c2.currentTime+.14,.01,.025,2)}},6700);
     $('saltar').classList.remove('ver');
     await Intro3D.abrirRegalo();
     {const v=$('veloCarta');if(v){v.innerHTML='';v.classList.add('final');requestAnimationFrame(()=>v.classList.add('on'))}}
@@ -1195,7 +1196,7 @@ els[0].focus({preventScroll:true});
 <script src="vendor/RenderPass.js"></script>
 <script src="vendor/ShaderPass.js"></script>
 <script src="vendor/UnrealBloomPass.js"></script>
-<script src="intro3d.js?v=191"></script>
+<script src="intro3d.js?v=202"></script>
 <script>iniciaIntro()</script>
 </body>
 </html>
