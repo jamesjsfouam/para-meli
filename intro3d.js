@@ -108,7 +108,7 @@ function libretaTex(){const [c,g]=lienzo(2048,1400);
       // una gota roja, todavía fresca, junto a su nombre
       g.fillStyle='rgba(175,8,18,.95)';g.beginPath();g.ellipse(x+w+200,y-70,16,20,.3,0,7);g.fill();g.fillStyle='rgba(255,255,255,.35)';g.beginPath();g.ellipse(x+w+194,y-78,4,5,0,0,7);g.fill();
       for(let k=0;k<7;k++){g.fillStyle='rgba(165,8,18,.85)';g.beginPath();g.arc(x+w+200+rnd(-60,60),y-70+rnd(-50,50),rnd(2,6),0,7);g.fill()}}});
-  grano(g,2048,1400,10);const t=new T.CanvasTexture(c);t.encoding=T.sRGBEncoding;t.anisotropy=8;return t}
+  grano(g,2048,1400,10);const t=new T.CanvasTexture(c);t.encoding=T.sRGBEncoding;t.anisotropy=8;t.userData.noResize=true;return t}
 
 function postit(lineas,col='#f2e27a',rot=0){const [c,g]=lienzo(320,320);g.fillStyle=col;g.fillRect(0,0,320,320);
   const sh=g.createLinearGradient(0,0,0,320);sh.addColorStop(0,'rgba(0,0,0,.08)');sh.addColorStop(.15,'rgba(0,0,0,0)');sh.addColorStop(1,'rgba(0,0,0,.12)');g.fillStyle=sh;g.fillRect(0,0,320,320);
@@ -166,7 +166,7 @@ let zonaActual='',LIGERO=false;
 // en celulares la memoria de video es poca: ninguna textura pasa de 1024 px
 const MOVIL=matchMedia('(pointer:coarse)').matches||Math.min(screen.width,screen.height)<820;
 function achicaTexturas(max){const vistas=new Set();S.traverse(o=>{const ms=o.material?(Array.isArray(o.material)?o.material:[o.material]):[];ms.forEach(m=>Object.keys(m).forEach(k=>{const t=m[k];if(!t||!t.isTexture||vistas.has(t))return;vistas.add(t);const im=t.image;
-  if(!im||!im.width||Math.max(im.width,im.height)<=max||t.isDataTexture)return;const f=max/Math.max(im.width,im.height),c=document.createElement('canvas');c.width=Math.round(im.width*f);c.height=Math.round(im.height*f);
+  if(!im||!im.width||Math.max(im.width,im.height)<=max||t.isDataTexture||t.userData.noResize)return;const f=max/Math.max(im.width,im.height),c=document.createElement('canvas');c.width=Math.round(im.width*f);c.height=Math.round(im.height*f);
   try{c.getContext('2d').drawImage(im,0,0,c.width,c.height);t.image=c;t.needsUpdate=true}catch(e){}}))})}
 // modo ligero: sin sombras, sin lluvia, sin resplandor y menos resolución
 function ponLigero(on){LIGERO=!!on;if(!R)return;
@@ -252,9 +252,9 @@ function abandono(){const P2=Math.PI/2;
 
 /* ---------- la escena ---------- */
 function construir(cv){
-  LM=new T.LoadingManager(()=>{setTimeout(()=>{if(MOVIL)try{achicaTexturas(1024)}catch(e){}try{calentar()}catch(e){console.warn(e)}try{zonificar();compilaZonas()}catch(e){console.warn(e)}if(LIGERO)ponLigero(true);cargado=true;cargaListo&&cargaListo()},60)},(u,l,t)=>{cargaProg&&cargaProg(l/t)});
+  LM=new T.LoadingManager(()=>{setTimeout(()=>{if(MOVIL)try{achicaTexturas(768)}catch(e){}try{calentar()}catch(e){console.warn(e)}try{zonificar();compilaZonas()}catch(e){console.warn(e)}if(LIGERO)ponLigero(true);cargado=true;cargaListo&&cargaListo()},60)},(u,l,t)=>{cargaProg&&cargaProg(l/t)});
   R=new T.WebGLRenderer({canvas:cv,antialias:false,powerPreference:'high-performance'});
-  prMax=Math.min(devicePixelRatio,1);pr=prMax;R.setPixelRatio(pr);R.setSize(W(),H());R.outputEncoding=T.sRGBEncoding;
+  prMax=Math.min(devicePixelRatio,MOVIL?.8:.8);pr=prMax;R.setPixelRatio(pr);R.setSize(W(),H());R.outputEncoding=T.sRGBEncoding;
   R.toneMapping=T.ACESFilmicToneMapping;R.toneMappingExposure=1.25;R.shadowMap.enabled=true;R.shadowMap.autoUpdate=false;R.shadowMap.type=T.PCFShadowMap;R.physicallyCorrectLights=false;
   S=new T.Scene();S.fog=new T.FogExp2('#0a0e13',.065);
   C=new T.PerspectiveCamera(W()<H()?76:60,W()/H(),.02,90);C.position.set(0,1.62,11);S.add(C);
@@ -292,7 +292,7 @@ function construir(cv){
   const auto=new T.Group();autoPuerta=new T.Group();auto.add(autoPuerta);
   const brS=c=>{const sp=new T.Sprite(new T.SpriteMaterial({map:brillo('rgba(255,255,255,1)'),color:c,depthWrite:false,blending:T.AdditiveBlending,transparent:true}));sp.scale.set(.9,.6,1);return sp};const bR=brS('#ff1a1a'),bA=brS('#2a5bff');bR.position.set(-.22,1.45,.05);bA.position.set(.22,1.45,.05);auto.add(bR,bA);
   const lR=new T.PointLight('#ff2020',0,14,1.6);lR.position.set(0,1.75,0);auto.add(lR);const lA={intensity:0,color:new T.Color()};sirena=[lR,lA,bR,bA];
-  [-.68,.68].forEach((x,i)=>{const f=i===0?new T.SpotLight('#e8eeff',5.5,32,.42,.45,1.1):new T.Object3D();if(i===0){f.castShadow=true;f.shadow.mapSize.set(512,512)}f.position.set(x,.68,-2.3);auto.add(f);const tg=new T.Object3D();tg.position.set(x*.6,.3,-16);auto.add(tg);f.target=tg;
+  [-.68,.68].forEach((x,i)=>{  const f=i===0?new T.SpotLight('#e8eeff',5.5,32,.42,.45,1.1):new T.Object3D();if(i===0){f.castShadow=!MOVIL;f.shadow.mapSize.set(256,256)}f.position.set(x,.68,-2.3);auto.add(f);const tg=new T.Object3D();tg.position.set(x*.6,.3,-16);auto.add(tg);f.target=tg;
     const gl=new T.Sprite(new T.SpriteMaterial({map:brillo('rgba(235,240,255,1)'),depthWrite:false,fog:false}));gl.position.set(x,.68,-2.36);gl.scale.set(.7,.45,1);auto.add(gl);
     const cono=new T.Mesh(new T.ConeGeometry(2.6,13,24,1,true),new T.MeshBasicMaterial({color:'#cfd8ff',transparent:true,opacity:.03,depthWrite:false,blending:T.AdditiveBlending,side:T.DoubleSide}));cono.rotation.x=Math.PI/2;cono.position.set(x*.8,.5,-8.8);auto.add(cono)});
   // (el modelo del auto se quitó para aliviar la carga: quedan sus luces en la oscuridad)
@@ -347,7 +347,7 @@ function construir(cv){
    }
 
   // ----- lluvia -----
-  {const n=2600,pos=new Float32Array(n*6);for(let i=0;i<n;i++){const x=rnd(-14,14),y=rnd(0,9),z=rnd(-6,22);pos.set([x,y,z,x+.02,y-.32,z],i*6)}
+  {const n=MOVIL?650:1400,pos=new Float32Array(n*6);for(let i=0;i<n;i++){const x=rnd(-14,14),y=rnd(0,9),z=rnd(-6,22);pos.set([x,y,z,x+.02,y-.32,z],i*6)}
    const g=new T.BufferGeometry();g.setAttribute('position',new T.BufferAttribute(pos,3));
    lluvia=new T.LineSegments(g,new T.LineBasicMaterial({color:'#9fb0c8',transparent:true,opacity:.32,depthWrite:false}));lluvia.userData.zona='propio';S.add(lluvia)}
 
@@ -589,9 +589,9 @@ function construir(cv){
   linternaObj.position.set(-.12,-.135,-.33);linternaObj.rotation.set(.08,.1,0);C.add(linternaObj);
   manoR=crearMano(1);manoR.scale.setScalar(1.3);S.add(manoR);manoR.visible=false;
 
-  linterna=new T.SpotLight('#fff0d8',3.2,16,.38,.5,1.4);linterna.castShadow=true;linterna.shadow.mapSize.set(512,512);linterna.shadow.bias=-.0005;linterna.shadow.camera.near=.1;
+  linterna=new T.SpotLight('#fff0d8',3.2,16,.38,.5,1.4);linterna.castShadow=true;linterna.shadow.mapSize.set(256,256);linterna.shadow.bias=-.0005;linterna.shadow.camera.near=.1;
   S.add(linterna);S.add(linterna.target);
-  if(T.EffectComposer&&T.UnrealBloomPass&&T.ShaderPass){try{
+  if(!MOVIL&&T.EffectComposer&&T.UnrealBloomPass&&T.ShaderPass){try{
     comp=new T.EffectComposer(R);comp.addPass(new T.RenderPass(S,C));comp.addPass(new T.UnrealBloomPass(new T.Vector2(W()/2,H()/2),.55,.45,.9));if(comp.setPixelRatio)comp.setPixelRatio(pr);
     comp.addPass(new T.ShaderPass({uniforms:{tDiffuse:{value:null},uT:{value:0},uF:{value:0}},
       vertexShader:'varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',
@@ -640,9 +640,10 @@ function construir(cv){
 function calentar(){
   // compila todos los materiales y sube todas las texturas a la GPU de una vez, para que nada se trabe al entrar a un cuarto
   try{R.compile(S,C)}catch(e){}
-  if(R.initTexture){const vistas=new Set();S.traverse(o=>{const ms=o.material?(Array.isArray(o.material)?o.material:[o.material]):[];ms.forEach(m=>['map','normalMap','roughnessMap','metalnessMap','emissiveMap','alphaMap','bumpMap','aoMap'].forEach(k=>{const t=m[k];if(t&&!vistas.has(t)&&t.image){vistas.add(t);try{R.initTexture(t)}catch(e){}}}))})}const rt=new T.WebGLRenderTarget(320,200);const vistas=[
-  [[-1.3,1.6,11.2],[0,1.7,0]],[[-1,1.6,9],[0,1,14.4]],[[.15,1.9,.8],[.3,1.3,0]],[[0,1.9,-.5],[0,1.6,-6]],[[-.8,1.9,-3.5],[-4,1.2,-4.6]],
-  [[-.8,1.9,-3.5],[-2.6,1.9,-.2]],[[.2,1.9,-5.1],[4,1.6,-4]],[[.2,1.9,-5.1],[2.8,1.5,-7.7]],[[0,1.72,-6],[0,1.25,-7]]];
+  if(R.initTexture){const vistas=new Set();S.traverse(o=>{const ms=o.material?(Array.isArray(o.material)?o.material:[o.material]):[];ms.forEach(m=>['map','normalMap','roughnessMap','metalnessMap','emissiveMap','alphaMap','bumpMap','aoMap'].forEach(k=>{const t=m[k];if(t&&!vistas.has(t)&&t.image){vistas.add(t);try{R.initTexture(t)}catch(e){}}}))})}const rt=new T.WebGLRenderTarget(256,160);const vistas=MOVIL?[
+  [[-1.3,1.6,11.2],[0,1.7,0]],[[.15,1.9,.8],[.3,1.3,0]],[[0,1.9,-.5],[0,1.6,-6]]]:[
+  [[-1.3,1.6,11.2],[0,1.7,0]],[[.15,1.9,.8],[.3,1.3,0]],[[0,1.9,-.5],[0,1.6,-6]],
+  [[-.8,1.9,-3.5],[-4,1.2,-4.6]],[[.2,1.9,-5.1],[4,1.6,-4]]];
   const p0=C.position.clone(),q0=C.quaternion.clone();focoMesa.intensity=.01;flashL.intensity=.01;
   vistas.forEach(([a,b])=>{C.position.set(...a);C.lookAt(...b);C.updateMatrixWorld();R.setRenderTarget(rt);R.render(S,C)});
   R.setRenderTarget(null);rt.dispose();C.position.copy(p0);C.quaternion.copy(q0);focoMesa.intensity=0;flashL.intensity=0}
@@ -784,10 +785,10 @@ function aplicaPR(){R.setPixelRatio(pr);R.setSize(W(),H());if(comp){if(comp.setP
 function cuadroLoop(){
   if(!listo)return;requestAnimationFrame(cuadroLoop);
   const crudo=reloj.getDelta(),dt=Math.min(crudo,.05);cuadros++;
-  // resolución dinámica: si la compu no llega a ~40 fps, baja la resolución; si sobra, la sube despacio
+  // resolución dinámica: mantiene margen para que la cámara y la interacción no se traben
   if(R3&&R3.ab<0&&zoomK>=1&&document.visibilityState==='visible'&&(impar=!impar))return;
   if(document.visibilityState==='visible'){dynT+=crudo;dynN++;if(dynT>1.2){const fps=dynN/dynT;dynT=0;dynN=0;
-    if(fps<42&&pr>.5){pr=Math.max(.5,+(pr-.2).toFixed(2));dynBien=0;aplicaPR()}else if(fps<34&&pr<=.5&&comp&&comp.passes[1].enabled){comp.passes[1].enabled=false}else if(fps>57&&pr<prMax){if(++dynBien>2){pr=Math.min(prMax,+(pr+.1).toFixed(2));dynBien=0;aplicaPR()}}else dynBien=0}}
+    if(fps<54&&pr>.5){pr=Math.max(.5,+(pr-.15).toFixed(2));dynBien=0;aplicaPR()}else if(fps<34&&pr<=.5&&comp&&comp.passes[1].enabled){comp.passes[1].enabled=false}else if(fps>58&&pr<prMax){if(++dynBien>2){pr=Math.min(prMax,+(pr+.1).toFixed(2));dynBien=0;aplicaPR()}}else dynBien=0}}
   if(corriendo)tAcum+=dt;const t=corriendo?tAcum:0;
   camara(Math.min(t,FIN),corriendo?dt:0);
   if(corriendo)ev.forEach(x=>{if(!x.hecho&&t>=x.t){x.hecho=true;x.f()}});
