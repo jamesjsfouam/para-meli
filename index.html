@@ -312,6 +312,11 @@ body.en-puerta{background:#000}
 #puerta.mano-sube .puerta-txt{opacity:0}
 
 
+/* ===== saltar la intro: hay que mantenerlo 5 s ===== */
+#saltar{position:fixed;right:max(18px,env(safe-area-inset-right));bottom:max(18px,env(safe-area-inset-bottom));z-index:70;display:none;align-items:center;gap:10px;padding:8px 14px 8px 8px;border:1px solid #ffffff22;border-radius:999px;background:#0008;color:#cfc6b8;cursor:pointer;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);touch-action:none;user-select:none;-webkit-user-select:none}
+#saltar.ver{display:flex}
+#saltar .anillo{--p:0;width:26px;height:26px;border-radius:50%;background:conic-gradient(#e2323f calc(var(--p)*1turn),#ffffff1f 0);-webkit-mask:radial-gradient(closest-side,transparent 70%,#000 72%);mask:radial-gradient(closest-side,transparent 70%,#000 72%)}
+#saltar .txt{font-size:10px;letter-spacing:.14em}
 /* ===== intro 3D ===== */
 #intro{position:fixed;inset:0;z-index:40;background:#000;cursor:pointer;transition:opacity 1.1s ease}
 #intro canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
@@ -804,6 +809,7 @@ body.en-puerta{background:#000}
   <p class="instruccion mono"><b class="raton">Girá las ruedas o escribí</b><b class="tactil">Deslizá las ruedas</b> · cuatro letras</p>
 </div>
 
+<button id="saltar" type="button" aria-label="Mantené presionado 5 segundos para saltar la intro"><span class="anillo"></span><span class="txt mono">Mantené para saltar</span></button>
 <div id="intro" role="button" tabindex="0" aria-label="Entrar a la casa">
   <canvas id="c3d"></canvas>
   <div class="intro-velo"></div>
@@ -1090,9 +1096,10 @@ const apiIntro={
   }};
 async function iniciaIntro(){
   cargaMedia('respira','media/respiracion_breathing-man.ogg');cargaMedia('paso','media/pasos_madera.wav');cargaMedia('rechina','media/puerta_crujido_squeaky-door.ogg');
-  if(!window.THREE||!window.Intro3D){$('intro').remove();document.body.classList.remove('en-puerta');return}
+  const sin3D=()=>{$('intro').remove();document.body.classList.remove('en-puerta');const es=$('escena');es.classList.remove('sobre3d');es.classList.add('ver')};
+  if(!window.THREE||!window.Intro3D){sin3D();return}
   try{await Promise.all([document.fonts.load('80px "Reenie Beanie"'),document.fonts.load('500 30px "JetBrains Mono"')]).catch(()=>{});const txt=$('intro').querySelector('.intro-txt b');txt.textContent='Cargando la escena… 0%';
-    Intro3D.preparar($('c3d'),k=>{txt.textContent='Cargando la escena… '+Math.round(k*100)+'%'},()=>{txt.textContent='Tocá para entrar'});try{Intro3D.ruedas(ruedas)}catch(e){}capturaRegalo().then(c=>Intro3D.ponRegalo(c)).catch(e=>console.warn(e))}catch(e){console.error(e);$('intro').remove();document.body.classList.remove('en-puerta')}
+    Intro3D.preparar($('c3d'),k=>{txt.textContent='Cargando la escena… '+Math.round(k*100)+'%'},()=>{txt.textContent='Tocá para entrar'});try{Intro3D.ruedas(ruedas)}catch(e){}capturaRegalo().then(c=>Intro3D.ponRegalo(c)).catch(e=>console.warn(e))}catch(e){console.error(e);sin3D()}
 }
 async function capturaRegalo(){
   const org=document.querySelector('.caja3d'),cl=org.cloneNode(true);
@@ -1113,13 +1120,22 @@ async function capturaRegalo(){
     const L=el.getAttribute('aria-valuetext')||'A',n=ABC.indexOf(L);[[-1,.12],[0,.5],[1,.88]].forEach(([d,f])=>{g.globalAlpha=d?.45:1;g.fillText(ABC[(n+d+26)%26],cx,y0+h*f)});g.globalAlpha=1});
   g.restore();URL.revokeObjectURL(url);return c}
 let entrando=false;
-function entrar(){if(entrando||!Intro3D.cargado)return;entrando=true;introEnCurso=true;desbloquea();$('intro').classList.add('andando');
-  Intro3D.correr(apiIntro,()=>{introEnCurso=false;ambiente();const es=$('escena');if(Intro3D.tiene3D){es.classList.add('r3d');ubicaCandado()}else alinearRegalo();es.classList.add('ver');Intro3D.fundeRegalo(700);$('intro').style.cursor='default';
+function entrar(){if(entrando||!Intro3D.cargado)return;entrando=true;introEnCurso=true;$('saltar').classList.add('ver');desbloquea();$('intro').classList.add('andando');
+  Intro3D.correr(apiIntro,()=>{introEnCurso=false;$('saltar').classList.remove('ver');ambiente();setTimeout(()=>{if(!abierto&&window.Intro3D&&Intro3D.voltea)Intro3D.voltea()},12000);const es=$('escena');if(Intro3D.tiene3D){es.classList.add('r3d');ubicaCandado()}else alinearRegalo();es.classList.add('ver');Intro3D.fundeRegalo(700);$('intro').style.cursor='default';
     setTimeout(()=>{document.body.classList.remove('en-puerta');const n=fijas.indexOf(false);if(n>=0)els[n].focus({preventScroll:true})},1400)})}
 /* pone el regalo dibujado exactamente donde está el regalo 3D */
+/* mantener 5 segundos para saltar */
+(()=>{const b=document.getElementById('saltar');if(!b)return;const an=b.querySelector('.anillo');let t0=0,raf=0;
+  const fin=()=>{cancelAnimationFrame(raf);t0=0;an.style.setProperty('--p',0)};
+  const paso=()=>{const k=Math.min(1,(performance.now()-t0)/5000);an.style.setProperty('--p',k);if(k>=1){fin();b.classList.remove('ver');if(window.Intro3D&&Intro3D.saltar)Intro3D.saltar();return}raf=requestAnimationFrame(paso)};
+  b.addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();t0=performance.now();raf=requestAnimationFrame(paso)});
+  ['pointerup','pointercancel','pointerleave'].forEach(n=>b.addEventListener(n,fin));
+  b.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&!t0){e.preventDefault();t0=performance.now();raf=requestAnimationFrame(paso)}});b.addEventListener('keyup',fin)})();
+/* tocar la etiqueta 3D la voltea (frente: para quién; reverso: la pista) */
+document.addEventListener('click',e=>{if(!window.Intro3D||!Intro3D.rectEtiqueta||abierto||!$('escena')||!$('escena').classList.contains('ver'))return;const r=Intro3D.rectEtiqueta();if(r&&e.clientX>=r.x-12&&e.clientX<=r.x+r.w+12&&e.clientY>=r.y-12&&e.clientY<=r.y+r.h+12){Intro3D.voltea();clic()}});
 function ubicaCandado(){const r=Intro3D.rectCandado();if(!r)return;['ruedasWin','zonas'].forEach(id=>{const e=$(id);if(e.parentNode!==document.body)document.body.appendChild(e);e.classList.add('flotante');
   Object.assign(e.style,{left:r.x+'px',top:r.y+'px',width:r.w+'px',height:r.h+'px'})})}
-addEventListener('resize',()=>{if(window.Intro3D&&Intro3D.tiene3D&&$('zonas').classList.contains('flotante')&&!abierto)ubicaCandado()});
+addEventListener('resize',()=>{if(window.Intro3D&&Intro3D.tiene3D&&$('zonas').classList.contains('flotante')&&!abierto)requestAnimationFrame(()=>requestAnimationFrame(ubicaCandado))});
 function alinearRegalo(){const el=$('regalo'),svg=el.querySelector('.caja3d');if(!svg||!window.Intro3D)return;
   el.style.scale='';el.style.translate='';const r=Intro3D.rectRegalo(),b=svg.getBoundingClientRect();
   const base=parseFloat(getComputedStyle(el).scale)||1;
@@ -1147,8 +1163,8 @@ async function abrir(){
   let r;
   if(window.Intro3D&&Intro3D.tiene3D){
     esc.classList.add('abriendo');['ruedasWin','zonas'].forEach(id=>{const e=$(id);if(e)e.style.display='none'});clicFuerte();tono(1850,ctx()?ctx().currentTime:0,.003,.03,.25,'triangle');
-    const c=ctx();setTimeout(()=>{golpeGrave(c?c.currentTime:0,140,.45);ruido(.3,2600,6,.25)},800);setTimeout(()=>ruido(.5,1800,1.2,.25,true),560);
-    setTimeout(()=>whoosh(),950);setTimeout(()=>acordeRevelacion(),1300);setTimeout(()=>ruido(.6,3200,.9,.22,true),1750);
+    const c=ctx(),gg=(v,f)=>golpeGrave(c?c.currentTime:0,f,v);setTimeout(()=>{gg(.45,140);ruido(.3,2600,6,.25)},780);setTimeout(()=>gg(.18,180),980);setTimeout(()=>ruido(.6,1500,1,.2,true),520);
+    setTimeout(()=>ruido(.25,700,2,.15),1100);setTimeout(()=>whoosh(),1600);setTimeout(()=>{gg(.3,95)},2380);setTimeout(()=>acordeRevelacion(),1550);setTimeout(()=>ruido(.7,3200,.9,.2,true),2050);
     await Intro3D.abrirRegalo();r=Intro3D.rectCarta();setTimeout(()=>Intro3D.ocultaCarta(),60);
   }else{
   esc.classList.add('abriendo');clicFuerte();tono(1850,ctx()?ctx().currentTime:0,.003,.03,.25,'triangle');
@@ -1292,7 +1308,7 @@ els[0].focus({preventScroll:true});
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/RenderPass.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/ShaderPass.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
-<script src="intro3d.js?v=113"></script>
+<script src="intro3d.js?v=124"></script>
 <script>iniciaIntro()</script>
 </body>
 </html>
