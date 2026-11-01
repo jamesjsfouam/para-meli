@@ -162,7 +162,12 @@ function crearMano(lado=1){
 
 /* ---------- zonas: lo que no puede verse desde donde está la cámara no se dibuja ni proyecta sombras ----------
    (Three ya descarta lo que queda fuera del encuadre; esto además apaga cuartos enteros detrás de las paredes) */
-let zonaActual='';
+let zonaActual='',LIGERO=false;
+// modo ligero: sin sombras, sin lluvia, sin resplandor y menos resolución
+function ponLigero(on){LIGERO=!!on;if(!R)return;
+  R.shadowMap.enabled=!LIGERO;S.traverse(o=>{const ms=o.material?(Array.isArray(o.material)?o.material:[o.material]):[];ms.forEach(m=>m.needsUpdate=true)});
+  if(comp&&comp.passes[1])comp.passes[1].enabled=!LIGERO;prMax=Math.min(devicePixelRatio,innerWidth<800?1:1.25)*(LIGERO?.7:1);pr=Math.min(pr,prMax);if(LIGERO)pr=prMax;aplicaPR();
+  try{R.compile(S,C)}catch(e){}}
 function zonificar(){const b=new T.Box3(),c=V(0,0,0),t=V(0,0,0);
   S.children.forEach(o=>{if(o===C||o.isLight||o.userData.zona)return;b.setFromObject(o);if(b.isEmpty()){o.userData.zona='todo';return}
     b.getCenter(c);b.getSize(t);o.userData.zona=Math.max(t.x,t.z)>12?'todo':c.y<-5?'escritorio':c.z>.35?'afuera':c.z<-.35?'adentro':'todo'})}
@@ -236,7 +241,7 @@ function abandono(){const P2=Math.PI/2;
 
 /* ---------- la escena ---------- */
 function construir(cv){
-  LM=new T.LoadingManager(()=>{setTimeout(()=>{try{calentar()}catch(e){console.warn(e)}try{zonificar()}catch(e){console.warn(e)}cargado=true;cargaListo&&cargaListo()},60)},(u,l,t)=>{cargaProg&&cargaProg(l/t)});
+  LM=new T.LoadingManager(()=>{setTimeout(()=>{try{calentar()}catch(e){console.warn(e)}try{zonificar()}catch(e){console.warn(e)}if(LIGERO)ponLigero(true);cargado=true;cargaListo&&cargaListo()},60)},(u,l,t)=>{cargaProg&&cargaProg(l/t)});
   R=new T.WebGLRenderer({canvas:cv,antialias:false,powerPreference:'high-performance'});
   prMax=Math.min(devicePixelRatio,innerWidth<800?1:1.25);pr=prMax;R.setPixelRatio(pr);R.setSize(W(),H());R.outputEncoding=T.sRGBEncoding;
   R.toneMapping=T.ACESFilmicToneMapping;R.toneMappingExposure=1.25;R.shadowMap.enabled=true;R.shadowMap.autoUpdate=false;R.shadowMap.type=T.PCFShadowMap;R.physicallyCorrectLights=false;
@@ -786,7 +791,7 @@ function cuadroLoop(){
   autoPuerta.rotation.y+=(autoObj-autoPuerta.rotation.y)*Math.min(1,dt*(autoObj?1.8:5));
   {const ph=Math.floor(performance.now()/280)%4,on=C.position.y<-5?0:C.position.z>.3?1.4:.35;sirena[0].intensity=2.4*on;sirena[0].color.set(ph%2?'#2a5bff':'#ff2020');sirena[1].intensity=(ph===1||ph===3?2.6:0)*on;sirena[2].material.color.set(ph%2?'#300':'#ff1a1a');sirena[3].material.color.set(ph%2?'#2a5bff':'#012')}
   cintaP.position.y+=((cintaObj?1.62:1.18)-cintaP.position.y)*Math.min(1,dt*4);cintaP.rotation.x+=((cintaObj?-.5:0)-cintaP.rotation.x)*Math.min(1,dt*4);
-  {lluvia.visible=C.position.z>-.2;if(lluvia.visible){const a=lluvia.geometry.attributes.position,arr=a.array,cz=C.position.z;for(let i=0;i<arr.length;i+=6){arr[i+1]-=dt*9;arr[i+4]-=dt*9;if(arr[i+4]<0){const y=rnd(7,9);arr[i+1]=y;arr[i+4]=y-.32;const z=cz+rnd(-8,14);arr[i+2]=z;arr[i+5]=z}}a.needsUpdate=true}}
+  {lluvia.visible=!LIGERO&&C.position.z>-.2;if(lluvia.visible){const a=lluvia.geometry.attributes.position,arr=a.array,cz=C.position.z;for(let i=0;i<arr.length;i+=6){arr[i+1]-=dt*9;arr[i+4]-=dt*9;if(arr[i+4]<0){const y=rnd(7,9);arr[i+1]=y;arr[i+4]=y-.32;const z=cz+rnd(-8,14);arr[i+2]=z;arr[i+5]=z}}a.needsUpdate=true}}
   if(apagonT>=0){apagonT+=dt;const seq=[[0,1],[.12,.15],[.22,1],[.42,.05],[.52,.7],[.68,0],[2.3,.5],[2.38,0],[2.52,1]];let v=1;for(const [tt,vv] of seq)if(apagonT>=tt)v=vv;
     apagV=v;linterna.intensity=apagonT<.68?3.2*v:0;if(apagonT>.8){if(zoomK<0){zoomK=0;manoL.visible=linternaObj.visible=false}zoomK=Math.min(1,(apagonT-.8)/1.3);if(zoomK>.3&&!camara.p1){camara.p1=1;pisada()}if(zoomK>.75&&!camara.p2){camara.p2=1;pisada()}}}
   if(flashT>=0){flashT+=dt;flashL.intensity=flashT<.08?9:flashT<.16?0:flashT<.24?6:0;if(flashT>.3){flashT=-1;flashL.intensity=0}}
@@ -970,7 +975,7 @@ const R3api={
 
 window.Intro3D={
   preparar(cv,prog,listo){cv.addEventListener('webglcontextlost',e=>{e.preventDefault();dispatchEvent(new Event('intro3d-perdido'))},{once:true});cargaProg=prog;cargaListo=listo;construir(cv);camara(0,0);reloj.getDelta();cuadroLoop();if(!T.GLTFLoader)setTimeout(()=>{cargado=true;listo&&listo()},50)},
-  get cargado(){return cargado},get cuadros(){return cuadros},
+  get cargado(){return cargado},get ligero(){return LIGERO},ligero_(on){ponLigero(on)},get cuadros(){return cuadros},
   get tiene3D(){return R3api.tiene3D},ruedas:R3api.ruedas,rectRuedas:R3api.rectRuedas,fija:R3api.fija,rectCandado:R3api.rectCandado,abrirRegalo:R3api.abrirRegalo,rectCarta:R3api.rectCarta,ocultaCarta:R3api.ocultaCarta,voltea:R3api.voltea,rectEtiqueta:R3api.rectEtiqueta,
   rectRegalo(){if(!regaloPlano)return{x:0,y:0,w:0,h:0};let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;const w=regaloPlano.userData.w/2,h=regaloPlano.userData.h/2;
     [[-w,-h],[w,-h],[-w,h],[w,h]].forEach(([x,y])=>{const p=regaloPlano.localToWorld(V(x,y,0)).project(C);const sx=(p.x*.5+.5)*W(),sy=(-p.y*.5+.5)*H();x0=Math.min(x0,sx);x1=Math.max(x1,sx);y0=Math.min(y0,sy);y1=Math.max(y1,sy)});return{x:x0,y:y0,w:x1-x0,h:y1-y0}},

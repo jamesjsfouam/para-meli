@@ -267,6 +267,10 @@ body.en-puerta{background:#000}
 
 
 /* ===== saltar la intro: hay que mantenerlo 5 s ===== */
+#ligero{position:fixed;left:max(18px,env(safe-area-inset-left));bottom:max(18px,env(safe-area-inset-bottom));z-index:70;display:flex;align-items:center;gap:9px;padding:9px 14px 9px 10px;border:1px solid #ffffff22;border-radius:999px;background:#0008;color:#a39a8d;font-size:10px;letter-spacing:.14em;cursor:pointer;transition:color .2s,border-color .2s,opacity .5s}
+#ligero .pt{width:9px;height:9px;border-radius:50%;border:1.5px solid currentColor}
+#ligero[aria-pressed=true]{color:#f2e6d6;border-color:#c1121f}#ligero[aria-pressed=true] .pt{background:#c1121f;border-color:#c1121f}
+#ligero.fuera{opacity:0;pointer-events:none}
 #saltar{position:fixed;right:max(18px,env(safe-area-inset-right));bottom:max(18px,env(safe-area-inset-bottom));z-index:70;display:none;align-items:center;gap:10px;padding:8px 14px 8px 8px;border:1px solid #ffffff22;border-radius:999px;background:#0008;color:#cfc6b8;cursor:pointer;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);touch-action:none;user-select:none;-webkit-user-select:none}
 #saltar.ver{display:flex}
 #saltar .anillo{--p:0;width:26px;height:26px;border-radius:50%;background:conic-gradient(#e2323f calc(var(--p)*1turn),#ffffff1f 0);-webkit-mask:radial-gradient(closest-side,transparent 70%,#000 72%);mask:radial-gradient(closest-side,transparent 70%,#000 72%)}
@@ -772,6 +776,7 @@ body:has(.vista.abierta) #web::after{display:none}
   <p class="instruccion mono"><b class="raton">Girá las ruedas o escribí</b><b class="tactil">Deslizá las ruedas</b> · cuatro letras</p>
 </div>
 
+<button id="ligero" type="button" aria-pressed="false" title="Sin sombras, sin lluvia y menos resolución: para compus más lentas"><span class="pt"></span><span class="mono">Modo ligero</span></button>
 <button id="saltar" type="button" aria-label="Mantené presionado 5 segundos para saltar la intro"><span class="anillo"></span><span class="txt mono">Mantené para saltar</span></button>
 <div id="intro" role="button" tabindex="0" aria-label="Entrar a la casa">
   <canvas id="c3d"></canvas>
@@ -1068,7 +1073,7 @@ const apiIntro={
     else if(n==='flash'){if(c){nota(c,bus(),2600,c.currentTime,.05,.08,'square',6000);ruido(.25,4200,1,.08,true,9000)}}
     else if(n==='alivio'){if(resp)resp.alivio();if(respLoop){respLoop.fade(1.6);respLoop=null}}
   }};
-function sin3D(){try{Intro3D.parar()}catch(e){}if($('intro'))$('intro').remove();introEnCurso=false;$('saltar').classList.remove('ver');document.body.classList.remove('en-puerta');const es=$('escena');if(!es)return;es.classList.remove('sobre3d','r3d');es.classList.add('ver');
+function sin3D(){if($('ligero'))$('ligero').classList.add('fuera');try{Intro3D.parar()}catch(e){}if($('intro'))$('intro').remove();introEnCurso=false;$('saltar').classList.remove('ver');document.body.classList.remove('en-puerta');const es=$('escena');if(!es)return;es.classList.remove('sobre3d','r3d');es.classList.add('ver');
   ['ruedasWin','zonas'].forEach(id=>{const e=$(id);if(e&&e.classList.contains('flotante')){e.classList.remove('flotante');e.removeAttribute('style');if(e._padre)e._padre.insertBefore(e,e._sig&&e._sig.parentNode===e._padre?e._sig:null)}});
   setTimeout(()=>{try{alinearRegalo()}catch(e){}},50)}
 addEventListener('intro3d-perdido',()=>{if(!abierto)sin3D()});
@@ -1077,6 +1082,7 @@ async function iniciaIntro(){
   cargaMedia('paso','media/pasos_madera.wav');cargaMedia('rechina','media/puerta_crujido_squeaky-door.ogg');
   if(!window.THREE||!window.Intro3D){sin3D();return}
   try{await Promise.all([document.fonts.load('80px "Reenie Beanie"'),document.fonts.load('500 30px "JetBrains Mono"'),document.fonts.load('800 54px "JetBrains Mono"'),document.fonts.load('600 30px "JetBrains Mono"'),document.fonts.load('900 30px Unbounded'),document.fonts.load('900 40px "Inter Tight"')]).catch(()=>{});const txt=$('intro').querySelector('.intro-txt b');txt.textContent='Cargando la escena… 0%';
+    try{if(localStorage.getItem('meliLigero')==='1')Intro3D.ligero_(true)}catch(e){}
     Intro3D.preparar($('c3d'),k=>{const v=Math.round(k*100);txt.textContent='Cargando la escena… '+v+'%';$('cvBarra').style.width=v+'%';$('cvTxt').textContent='Cargando… '+v+'%'},()=>{txt.textContent='Tocá para entrar';$('cvBarra').style.width='100%';$('cargaVelo').classList.add('fuera')});setTimeout(()=>{if(!Intro3D.cargado){cargaLenta=true;txt.textContent='Tocá para entrar';$('cargaVelo').classList.add('fuera')}},45000);try{Intro3D.ruedas(ruedas)}catch(e){}capturaRegalo().then(c=>Intro3D.ponRegalo(c)).catch(e=>console.warn(e))}catch(e){console.error(e);sin3D()}
 }
 async function capturaRegalo(){
@@ -1098,7 +1104,12 @@ async function capturaRegalo(){
     const L=el.getAttribute('aria-valuetext')||'A',n=ABC.indexOf(L);[[-1,.12],[0,.5],[1,.88]].forEach(([d,f])=>{g.globalAlpha=d?.45:1;g.fillText(ABC[(n+d+26)%26],cx,y0+h*f)});g.globalAlpha=1});
   g.restore();URL.revokeObjectURL(url);return c}
 let entrando=false;
-function entrar(){if(!entrando&&cargaLenta&&!Intro3D.cargado){entrando=true;desbloquea();sin3D();return}if(entrando||!Intro3D.cargado)return;entrando=true;introEnCurso=true;$('saltar').classList.add('ver');desbloquea();$('intro').classList.add('andando');{const c0=Intro3D.cuadros||0;setTimeout(()=>{if(introEnCurso&&(Intro3D.cuadros||0)-c0<8)sin3D()},7000)}if(reducido)setTimeout(()=>{try{Intro3D.saltar()}catch(e){}},350);
+/* modo ligero: se recuerda en esta compu */
+(()=>{const b=$('ligero');if(!b)return;let on=false;try{on=localStorage.getItem('meliLigero')==='1'}catch(e){}
+  const pinta=()=>{b.setAttribute('aria-pressed',on);if(window.Intro3D&&Intro3D.ligero_)Intro3D.ligero_(on)};pinta();
+  b.addEventListener('click',e=>{e.stopPropagation();on=!on;try{localStorage.setItem('meliLigero',on?'1':'0')}catch(e){}pinta()});
+  b.addEventListener('keydown',e=>e.stopPropagation())})();
+function entrar(){if(!entrando&&cargaLenta&&!Intro3D.cargado){entrando=true;desbloquea();sin3D();return}if(entrando||!Intro3D.cargado)return;entrando=true;introEnCurso=true;$('saltar').classList.add('ver');desbloquea();$('intro').classList.add('andando');$('ligero').classList.add('fuera');{const c0=Intro3D.cuadros||0;setTimeout(()=>{if(introEnCurso&&(Intro3D.cuadros||0)-c0<8)sin3D()},7000)}if(reducido)setTimeout(()=>{try{Intro3D.saltar()}catch(e){}},350);
   Intro3D.correr(apiIntro,()=>{introEnCurso=false;$('saltar').classList.remove('ver');ambiente();setTimeout(()=>{if(!abierto&&window.Intro3D&&Intro3D.voltea)Intro3D.voltea()},12000);const es=$('escena');if(Intro3D.tiene3D){es.classList.add('r3d');ubicaCandado()}else alinearRegalo();es.classList.add('ver');Intro3D.fundeRegalo(700);$('intro').style.cursor='default';
     setTimeout(()=>{document.body.classList.remove('en-puerta');const n=fijas.indexOf(false);if(n>=0)els[n].focus({preventScroll:true})},1400)})}
 /* pone el regalo dibujado exactamente donde está el regalo 3D */
@@ -1289,7 +1300,7 @@ els[0].focus({preventScroll:true});
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/RenderPass.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/ShaderPass.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
-<script src="intro3d.js?v=149"></script>
+<script src="intro3d.js?v=150"></script>
 <script>iniciaIntro()</script>
 </body>
 </html>
