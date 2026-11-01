@@ -759,7 +759,7 @@ els.forEach((el,i)=>{pinta(i);
   let y0=null,acum=0,movio=false;const z=zonas[i];
   z.addEventListener('pointerdown',e=>{if(e.button>0)return;y0=e.clientY;acum=0;movio=false;z.setPointerCapture(e.pointerId);el.focus({preventScroll:true})});
   z.addEventListener('pointermove',e=>{if(y0===null)return;const pasos=Math.trunc((e.clientY-y0-acum)/PASO);if(pasos){movio=true;acum+=pasos*PASO;mueve(i,-pasos)}});
-  z.addEventListener('pointerup',e=>{if(y0!==null&&!movio){const r=el.getBoundingClientRect();mueve(i,e.clientY<r.top+r.height/2?-1:1)}y0=null});
+  z.addEventListener('pointerup',e=>{if(y0!==null&&!movio){const r=z.getBoundingClientRect();mueve(i,e.clientY<r.top+r.height/2?-1:1)}y0=null});
   z.addEventListener('pointercancel',()=>{y0=null});
   el.addEventListener('keydown',e=>{
     if(e.key==='ArrowUp'){e.preventDefault();mueve(i,-1)}
