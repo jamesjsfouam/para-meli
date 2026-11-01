@@ -325,7 +325,7 @@ body.en-puerta{background:#000}
 
 
 /* ===== el regalo dibujado encima del cuarto 3D ===== */
-#escena.sobre3d{background:transparent;z-index:41;opacity:0;pointer-events:none;transition:opacity 2.4s ease}
+#escena.sobre3d{background:transparent;z-index:41;opacity:0;pointer-events:none;transition:opacity .7s ease}
 #escena.sobre3d.ver{opacity:1;pointer-events:auto}
 #escena.sobre3d .sala,#escena.sobre3d .foco,#escena.sobre3d .haz,#escena.sobre3d .niebla,#escena.sobre3d .polvo,#escena.sobre3d .mesita,#escena.sobre3d .marco{display:none}
 #escena.sobre3d::after{opacity:.05}
@@ -1051,6 +1051,7 @@ const apiIntro={
     else if(n==='radio'){if(c){const t=c.currentTime;ruido(.5,1800,6,.12);tono(1200,t+.05,.005,.025,.12,'square');ruido(.35,900,3,.08)}}
     else if(n==='auto'){clicFuerte();if(c){golpeGrave(c.currentTime+.05,90,.25)}ruido(.6,2400,1,.1,true)}
     else if(n==='portazo'){if(c){golpeGrave(c.currentTime,70,.55);ruido(.12,600,1,.3)}}
+    else if(n==='apagon'){if(c){golpeGrave(c.currentTime,48,.4);ruido(.3,140,2,.18)}if(resp)resp.jadeo()}
     else if(n==='alivio'){if(resp)resp.alivio();if(respLoop){const r=respLoop;let v=r.volume;const k=setInterval(()=>{v-=.05;if(v<=0){r.pause();clearInterval(k)}else r.volume=v},80)}}
   }};
 function iniciaIntro(){
@@ -1079,7 +1080,7 @@ async function capturaRegalo(){
   g.restore();URL.revokeObjectURL(url);return c}
 let entrando=false;
 function entrar(){if(entrando||!Intro3D.cargado)return;entrando=true;desbloquea();$('intro').classList.add('andando');
-  Intro3D.correr(apiIntro,()=>{const es=$('escena');alinearRegalo();es.classList.add('ver');Intro3D.fundeRegalo(2400);$('intro').style.cursor='default';
+  Intro3D.correr(apiIntro,()=>{const es=$('escena');alinearRegalo();es.classList.add('ver');Intro3D.fundeRegalo(700);$('intro').style.cursor='default';
     setTimeout(()=>{document.body.classList.remove('en-puerta');const n=fijas.indexOf(false);if(n>=0)els[n].focus({preventScroll:true})},1400)})}
 /* pone el regalo dibujado exactamente donde está el regalo 3D */
 function alinearRegalo(){const el=$('regalo'),svg=el.querySelector('.caja3d');if(!svg||!window.Intro3D)return;
@@ -1245,7 +1246,7 @@ els[0].focus({preventScroll:true});
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/RenderPass.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/ShaderPass.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
-<script src="intro3d.js?v=33"></script>
+<script src="intro3d.js?v=42"></script>
 <script>iniciaIntro()</script>
 </body>
 </html>

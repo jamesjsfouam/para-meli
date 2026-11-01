@@ -166,21 +166,45 @@ function construir(cv){
   const pintura=new T.MeshPhysicalMaterial({color:'#07080a',roughness:.25,metalness:.6,clearcoat:1,clearcoatRoughness:.15});
   const plastico=M({color:'#0a0a0b',roughness:.85}),tapiz=pbr('fabric_leather_02',[2,2],{color:'#3a3a3e'}),cromo=M({color:'#c8ccd2',roughness:.15,metalness:1});
   const negroV=new T.MeshStandardMaterial({color:'#020304',roughness:.08,metalness:.8,transparent:true,opacity:.78,side:T.DoubleSide,depthWrite:false});
-  // carrocería por perfil extruido con bisel
-  const perfil=new T.Shape();[[-2.45,.42],[-2.52,.62],[-2.48,.9],[-2.3,1.0],[-1.35,1.08],[-.62,1.8],[1.95,1.87],[2.4,1.78],[2.5,1.2],[2.5,.45],[2.3,.38],[-2.3,.38]].forEach(([u,v],i)=>i?perfil.lineTo(u,v):perfil.moveTo(u,v));
-  const cuerpoG=new T.ExtrudeGeometry(perfil,{depth:1.84,bevelEnabled:true,bevelThickness:.07,bevelSize:.07,bevelSegments:4,curveSegments:8});cuerpoG.rotateY(-Math.PI/2);cuerpoG.translate(.92,0,0);
-  const carro=new T.Mesh(cuerpoG,pintura);carro.castShadow=true;auto.add(carro);
-  // ventanas oscuras, parabrisas con lluvia
-  [-1,1].forEach(sd=>{const v=new T.Mesh(new T.PlaneGeometry(2.4,.58),negroV);v.position.set(sd*1.0,1.47,.68);v.rotation.y=sd*Math.PI/2;auto.add(v)});
-  const para=new T.Mesh(new T.PlaneGeometry(1.86,1.02),new T.MeshStandardMaterial({map:gotas(),color:'#c0ccd8',transparent:true,opacity:.5,roughness:.02,metalness:.3,depthWrite:false,side:T.DoubleSide}));para.position.set(0,1.45,-.99);para.rotation.x=-.78;auto.add(para);
-  // ruedas
-  [[-.86,-1.55],[.86,-1.55],[-.86,1.62],[.86,1.62]].forEach(([x,z])=>{const g=new T.Group();const llanta=new T.Mesh(new T.CylinderGeometry(.42,.42,.3,28),M({color:'#0d0d0d',roughness:.95}));llanta.rotation.z=Math.PI/2;g.add(llanta);
-    const rin=new T.Mesh(new T.CylinderGeometry(.25,.25,.31,20),cromo);rin.rotation.z=Math.PI/2;g.add(rin);for(let i=0;i<6;i++){const ra=caja(.32,.04,.04,M({color:'#2a2c30',roughness:.4,metalness:.8}),0,0,0,0,g);ra.rotation.x=i*Math.PI/3;ra.scale.x=.98}
+  // carrocería: perfil lateral con los huecos de las ruedas, capó, cintura y defensas
+  const perfil=new T.Shape();perfil.moveTo(-2.3,.32);
+  [[-2.44,.4],[-2.52,.56],[-2.53,.8],[-2.46,.97],[-2.1,1.03],[-1.25,1.1],[2.3,1.15],[2.47,1.1],[2.53,.8],[2.5,.42],[2.32,.32]].forEach(([u,v])=>perfil.lineTo(u,v));
+  perfil.lineTo(2.16,.32);perfil.absarc(1.62,.42,.54,-.186,Math.PI+.186,false);perfil.lineTo(-1.01,.32);perfil.absarc(-1.55,.42,.54,-.186,Math.PI+.186,false);perfil.lineTo(-2.3,.32);
+  const cuerpoG=new T.ExtrudeGeometry(perfil,{depth:1.8,bevelEnabled:true,bevelThickness:.08,bevelSize:.06,bevelSegments:5,curveSegments:24});cuerpoG.rotateY(-Math.PI/2);cuerpoG.translate(.9,0,0);
+  const carro=new T.Mesh(cuerpoG,pintura);auto.add(carro);
+  // cabina: vidrio polarizado negro, más angosta que la carrocería (como una SUV real)
+  const cabS=new T.Shape();[[-1.2,1.1],[-.5,1.84],[2.05,1.88],[2.38,1.62],[2.42,1.12]].forEach(([u,v],i)=>i?cabS.lineTo(u,v):cabS.moveTo(u,v));
+  const cabG=new T.ExtrudeGeometry(cabS,{depth:1.6,bevelEnabled:true,bevelThickness:.07,bevelSize:.05,bevelSegments:4});cabG.rotateY(-Math.PI/2);cabG.translate(.8,0,0);
+  const vidrioN=new T.MeshPhysicalMaterial({color:'#030405',roughness:.06,metalness:.2,clearcoat:1,clearcoatRoughness:.03});
+  auto.add(new T.Mesh(cabG,vidrioN));
+  caja(1.72,.06,2.55,pintura,0,1.92,.78,0,auto);                                                        // techo color carrocería
+  [-1,1].forEach(sd=>{caja(.04,.74,.12,M({color:'#060606',roughness:.5}),sd*.88,1.5,.42,0,auto);       // parante B
+    caja(.04,.025,3.45,cromo,sd*.93,1.16,.55,0,auto);                                                   // moldura cromada de la ventana
+    [-1.05,.38,1.42].forEach(z=>caja(.012,.66,.012,M({color:'#000'}),sd*1.0,.8,z,0,auto));             // juntas de las puertas
+    [.2,1.25].forEach(z=>caja(.025,.03,.17,cromo,sd*1.0,1.0,z,0,auto));                                 // manijas
+    const e=new T.Group();caja(.07,.07,.1,pintura,0,0,0,0,e);caja(.2,.14,.06,pintura,sd*.1,.03,.02,0,e);const ve=new T.Mesh(new T.PlaneGeometry(.17,.11),M({color:'#9fb3c8',roughness:.02,metalness:1}));ve.position.set(sd*.1,.03,.053);e.add(ve);e.position.set(sd*1.0,1.2,-1.0);auto.add(e);
+    caja(.07,.08,3.0,M({color:'#111',roughness:.6}),sd*1.02,.36,.03,0,auto)});                          // estribos
+  // vidrio del parabrisas con lluvia (por dentro)
+  const para=new T.Mesh(new T.PlaneGeometry(1.7,1.0),new T.MeshStandardMaterial({map:gotas(),color:'#c0ccd8',transparent:true,opacity:.5,roughness:.02,metalness:.3,depthWrite:false,side:T.DoubleSide}));para.position.set(0,1.47,-.86);para.rotation.x=-.81;auto.add(para);
+  [-1,1].forEach(sd=>{const v=new T.Mesh(new T.PlaneGeometry(2.4,.58),negroV);v.position.set(sd*.86,1.47,.68);v.rotation.y=sd*Math.PI/2;auto.add(v)});
+  // ruedas: llanta redondeada, rin de rayos y disco de freno
+  const llantaG=new T.LatheGeometry([[.25,-.14],[.36,-.15],[.41,-.12],[.42,-.06],[.42,.06],[.41,.12],[.36,.15],[.25,.14]].map(([r,y])=>new T.Vector2(r,y)),32);
+  const gomaM=M({color:'#0c0c0c',roughness:.92}),rinM=M({color:'#3a3d42',roughness:.25,metalness:.9}),discoM=M({color:'#5a5a5a',roughness:.4,metalness:.8});
+  [[-.86,-1.55],[.86,-1.55],[-.86,1.62],[.86,1.62]].forEach(([x,z])=>{const g=new T.Group();const ll=new T.Mesh(llantaG,gomaM);ll.rotation.z=Math.PI/2;g.add(ll);
+    const disco=new T.Mesh(new T.CylinderGeometry(.17,.17,.02,24),discoM);disco.rotation.z=Math.PI/2;disco.position.x=-Math.sign(x)*.04;g.add(disco);
+    const aro=new T.Mesh(new T.TorusGeometry(.25,.018,8,32),rinM);aro.rotation.y=Math.PI/2;aro.position.x=Math.sign(x)*.1;g.add(aro);
+    const cubo=new T.Mesh(new T.CylinderGeometry(.06,.07,.06,16),rinM);cubo.rotation.z=Math.PI/2;cubo.position.x=Math.sign(x)*.1;g.add(cubo);
+    for(let i=0;i<6;i++){const ra=caja(.03,.22,.04,rinM,Math.sign(x)*.1,0,0,0,g);ra.rotation.x=i*Math.PI/3;ra.translateY(.13)}
     g.position.set(x,.42,z);auto.add(g)});
-  // parrilla, faros y calaveras
-  caja(1.5,.32,.04,M({color:'#0b0b0c',roughness:.4,metalness:.6}),0,.72,-2.56,0,auto);for(let i=0;i<4;i++)caja(1.46,.02,.05,cromo,0,.6+i*.08,-2.57,0,auto);
-  [-.7,.7].forEach(x=>{caja(.36,.16,.05,new T.MeshBasicMaterial({color:'#f2f6ff'}),x,.84,-2.53,0,auto);caja(.2,.32,.05,new T.MeshBasicMaterial({color:'#b00010'}),x*1.25,1.15,2.55,0,auto)});
-  caja(2.0,.16,.18,M({color:'#111',roughness:.6}),0,.45,-2.55,0,auto);caja(2.0,.16,.18,M({color:'#111',roughness:.6}),0,.45,2.55,0,auto);
+  // frente: parrilla con marco cromado, faros con LED, antiniebla, defensa
+  caja(1.0,.36,.05,M({color:'#060606',roughness:.35,metalness:.5}),0,.78,-2.56,0,auto);
+  caja(1.04,.03,.06,cromo,0,.97,-2.56,0,auto);caja(1.04,.03,.06,cromo,0,.6,-2.56,0,auto);for(let i=0;i<3;i++)caja(.96,.012,.055,cromo,0,.68+i*.09,-2.565,0,auto);
+  [-1,1].forEach(sd=>{caja(.42,.15,.07,M({color:'#0a0a0b',roughness:.15,metalness:.8}),sd*.74,.86,-2.52,0,auto);
+    caja(.34,.025,.075,new T.MeshBasicMaterial({color:'#f6f9ff'}),sd*.74,.91,-2.53,0,auto);
+    const pr=new T.Mesh(new T.CircleGeometry(.045,20),new T.MeshBasicMaterial({color:'#eef3ff'}));pr.position.set(sd*.68,.84,-2.565);pr.rotation.y=Math.PI;auto.add(pr);
+    const an=new T.Mesh(new T.CircleGeometry(.04,16),new T.MeshBasicMaterial({color:'#fff1d0'}));an.position.set(sd*.72,.52,-2.56);an.rotation.y=Math.PI;auto.add(an);
+    caja(.12,.42,.06,new T.MeshBasicMaterial({color:'#9a000c'}),sd*.86,.98,2.53,0,auto)});                // calaveras
+  caja(2.0,.14,.2,M({color:'#0d0d0e',roughness:.55}),0,.43,-2.55,0,auto);caja(2.0,.14,.2,M({color:'#0d0d0e',roughness:.55}),0,.43,2.55,0,auto);
   // ----- adentro del auto -----
   const tab=new T.Shape();[[-1.32,.95],[-1.32,1.1],[-1.05,1.2],[-.78,1.16],[-.72,1.02],[-.72,.95]].forEach(([u,v],i)=>i?tab.lineTo(u,v):tab.moveTo(u,v));
   const tabG=new T.ExtrudeGeometry(tab,{depth:1.82,bevelEnabled:true,bevelThickness:.02,bevelSize:.02,bevelSegments:2});tabG.rotateY(-Math.PI/2);tabG.translate(.91,0,0);
@@ -197,8 +221,8 @@ function construir(cv){
   const forro=M({color:'#4a4844',roughness:1});const techoA=new T.Mesh(new T.BoxGeometry(1.86,.04,2.7),forro);techoA.position.set(0,1.79,.66);auto.add(techoA);
   caja(1.86,.1,.12,forro,0,1.75,-.66,0,auto);                                   // franja sobre el parabrisas
   const domo=caja(.22,.03,.12,new T.MeshBasicMaterial({color:'#ffe2b0'}),0,1.765,.3,0,auto);const luzDomo=new T.PointLight('#ffd9a0',.35,2.2,2);luzDomo.position.set(0,1.7,.3);auto.add(luzDomo);
-  [-1,1].forEach(sd=>{caja(.04,.04,.22,plastico,sd*.86,1.72,.3,0,auto);caja(.04,.5,2.6,forro,sd*.92,1.55,.66,0,auto)});
-  [-1,1].forEach(sd=>{const pa=caja(.08,1.0,.08,plastico,sd*.9,1.45,-.98,0,auto);pa.rotation.x=-.78;caja(.1,.7,.12,plastico,sd*.93,1.45,.62,0,auto)});
+  [-1,1].forEach(sd=>{caja(.04,.04,.22,plastico,sd*.76,1.72,.3,0,auto);caja(.03,.3,2.6,forro,sd*.79,1.68,.66,0,auto)});
+  [-1,1].forEach(sd=>{const pa=caja(.06,1.0,.06,plastico,sd*.76,1.45,-.86,0,auto);pa.rotation.x=-.81;caja(.06,.6,.1,plastico,sd*.77,1.45,.42,0,auto)});
   // asientos
   [-.45,.45].forEach(x=>{caja(.55,.16,.55,tapiz,x,.92,.35,0,auto);const r=caja(.52,.68,.13,tapiz,x,1.32,.66,0,auto);r.rotation.x=.12;caja(.28,.18,.1,tapiz,x,1.76,.72,0,auto)});
   caja(.22,.2,.6,plastico,0,.95,.0,0,auto);
@@ -228,11 +252,8 @@ function construir(cv){
   caja(.5,.005,.18,cromo,.45,.98,-.87,0,auto).rotation.x=-.35;                                   // guantera
   [-1,1].forEach(sd=>{const c=caja(.05,.9,.005,M({color:'#202022',roughness:.8}),sd*.72,1.3,.58,0,auto);c.rotation.z=sd*.55});   // cinturones
   // --- detalle exterior ---
-  [-1,1].forEach(sd=>{const e=new T.Group();caja(.06,.06,.12,pintura,0,0,0,0,e);caja(.18,.13,.05,pintura,sd*.09,.02,.03,0,e);const vid=new T.Mesh(new T.PlaneGeometry(.16,.1),M({color:'#8fa3b8',roughness:.05,metalness:1}));vid.position.set(sd*.09,.02,.058);e.add(vid);e.position.set(sd*1.03,1.18,-.62);auto.add(e)});
-  [[-1,.25],[-1,1.35],[1,.25],[1,1.35]].forEach(([sd,z])=>caja(.03,.03,.16,cromo,sd*1.0,1.05,z,0,auto));
-  [-.75,.75].forEach(x=>caja(.04,.05,2.4,M({color:'#111',roughness:.5,metalness:.5}),x,1.93,.65,0,auto));
-  [[-1,-1.55],[1,-1.55],[-1,1.62],[1,1.62]].forEach(([sd,z])=>{const ar=new T.Mesh(new T.TorusGeometry(.47,.06,8,20,Math.PI),M({color:'#0b0b0c',roughness:.7}));ar.rotation.y=Math.PI/2;ar.position.set(sd*.97,.42,z);auto.add(ar)});
-  caja(1.94,.02,.05,cromo,0,1.12,.68,0,auto);caja(.06,.1,4.0,M({color:'#111',roughness:.6}),-1.0,.42,.05,0,auto);caja(.06,.1,4.0,M({color:'#111',roughness:.6}),1.0,.42,.05,0,auto);
+  if(0)[-1,1].forEach(sd=>{const e=new T.Group();caja(.06,.06,.12,pintura,0,0,0,0,e);caja(.18,.13,.05,pintura,sd*.09,.02,.03,0,e);const vid=new T.Mesh(new T.PlaneGeometry(.16,.1),M({color:'#8fa3b8',roughness:.05,metalness:1}));vid.position.set(sd*.09,.02,.058);e.add(vid);e.position.set(sd*1.03,1.18,-.62);auto.add(e)});
+  [-.72,.72].forEach(x=>caja(.04,.05,2.3,M({color:'#111',roughness:.5,metalness:.5}),x,1.97,.75,0,auto));
   {const [c,g]=lienzo(256,64);g.fillStyle='#f0f0ea';g.fillRect(0,0,256,64);g.fillStyle='#1a2a6a';g.font='900 40px Inter Tight, sans-serif';g.textAlign='center';g.fillText('CBI 0111',128,46);
    const pl=new T.Mesh(new T.PlaneGeometry(.42,.11),M({map:new T.CanvasTexture(c),roughness:.4}));pl.position.set(0,.5,-2.66);pl.rotation.y=Math.PI;auto.add(pl)}
   const antena=new T.Mesh(new T.CylinderGeometry(.004,.006,.5,6),M({color:'#111'}));antena.position.set(.5,2.15,1.6);auto.add(antena);
@@ -434,28 +455,31 @@ const RUTA=[
   [2.8, V(-.4,1.38,14.75), V(0,1.45,0),     0],
   [3.8, V(-.5,1.32,14.6), V(-6,1.3,13.6), 0],   // mira a su puerta
   [5.4, V(-1.6,1.62,13.4),V(-4,1.6,9),    1],   // se baja
-  [6.6, V(-1.4,1.62,12.9),V(0,1.8,0),     0],   // mira la casa
-  [12.4,V(0,1.62,3.05),   V(.1,1.25,2.1), 1],   // camina hasta la cinta
-  [13.2,V(0,1.62,3.05),   V(.1,1.3,2.1),  0],
-  [14.5,V(.05,1.15,1.7),  V(.2,1.25,0),   1],   // se agacha y pasa por debajo
-  [15.6,V(.15,1.9,.8),    V(.3,1.3,0),    1],   // se levanta frente a la puerta
-  [19.6,V(.15,1.9,.8),    V(.3,1.3,0),    0],
-  [20.4,V(.05,1.9,.7),    V(-1.6,.7,-3),  0],
-  [23.0,V(-.1,1.9,-1.2),  V(-2.6,.9,-4.6),1],
-  [24.6,V(-.3,1.9,-1.6),  V(-4.8,2.3,-4.6),0],  // la carita
-  [26.2,V(-.3,1.9,-1.6),  V(-3.8,.9,-4.6),0],   // la cama
-  [27.9,V(-.1,1.9,-1.8),  V(4.8,2.0,-3.6),0],   // el tablero
-  [29.4,V(-.1,1.9,-1.8),  V(4.8,1.9,-4.6),0],
-  [30.6,V(0,1.9,-1.8),    V(2.8,1.0,-7.8),0],
-  [31.8,V(0,1.88,-1.8),   V(0,1.3,-4.6),  0],
-  [33.2,V(0,1.88,-1.8),   V(0,1.35,-4.6), 0],
-  [36.2,V(0,1.62,-3.6),   V(0,1.2,-4.6),  1],
-  [37.2,V(0,1.62,-3.6),   V(0,1.2,-4.6),  0],
+  [7.0, V(-3.6,1.62,10.4),V(0,.95,14.3),  1],   // se da vuelta y mira el auto
+  [9.0, V(-3.8,1.62,10.3),V(0,1.0,14.4),  0],
+  [10.0,V(-3.3,1.62,10.0),V(0,1.8,0),     0],   // mira la casa
+  [15.4,V(0,1.62,3.05),   V(.1,1.25,2.1), 1],   // camina hasta la cinta
+  [16.2,V(0,1.62,3.05),   V(.1,1.3,2.1),  0],
+  [17.5,V(.05,1.15,1.7),  V(.2,1.25,0),   1],   // se agacha y pasa por debajo
+  [18.6,V(.15,1.9,.8),    V(.3,1.3,0),    1],   // se levanta frente a la puerta
+  [22.6,V(.15,1.9,.8),    V(.3,1.3,0),    0],
+  [23.4,V(.05,1.9,.7),    V(-1.6,.7,-3),  0],
+  [26.0,V(-.1,1.9,-1.2),  V(-2.6,.9,-4.6),1],
+  [27.6,V(-.3,1.9,-1.6),  V(-4.8,2.3,-4.6),0],  // la carita
+  [29.2,V(-.3,1.9,-1.6),  V(-3.8,.9,-4.6),0],   // la cama
+  [30.9,V(-.1,1.9,-1.8),  V(4.8,2.0,-3.6),0],   // el tablero
+  [32.4,V(-.1,1.9,-1.8),  V(4.8,1.9,-4.6),0],
+  [33.6,V(0,1.9,-1.8),    V(2.8,1.0,-7.8),0],
+  [34.8,V(0,1.88,-1.8),   V(0,1.3,-4.6),  0],
+  [36.2,V(0,1.88,-1.8),   V(0,1.35,-4.6), 0],
+  [39.2,V(0,1.62,-3.6),   V(0,1.2,-4.6),  1],
+  [40.2,V(0,1.62,-3.6),   V(0,1.2,-4.6),  0],
 ];
-const FIN=37.2;
+const FIN=42.4;
 const suave=x=>x*x*(3-2*x);
 let fase=0;
 function camara(t,dt){
+  if(zoomCam){C.position.set(0,1.42,-3.88);C.lookAt(0,1.27,-4.6);return}
   let i=0;while(i<RUTA.length-2&&t>RUTA[i+1][0])i++;
   const [ta,pa,la]=RUTA[i],[tb,pb,lb,camina]=RUTA[i+1];
   const k=suave(Math.min(1,Math.max(0,(t-ta)/(tb-ta))));
@@ -479,25 +503,26 @@ function camara(t,dt){
 let pisada=()=>{},sonar=()=>{};
 
 /* ---------- línea de tiempo ---------- */
-let puertaObj=0,puertaVel=1,manoEst='fuera',manoK=0,giro=0,focoT=-1,manoA='pomo',autoObj=0,cintaObj=0;
+let apagonT=-1,zoomCam=false,puertaObj=0,puertaVel=1,manoEst='fuera',manoK=0,giro=0,focoT=-1,manoA='pomo',autoObj=0,cintaObj=0;
 function linea(){
   ev.length=0;const e=(t,f)=>ev.push({t,f,hecho:false});
   e(.05,()=>{sonar('lluvia',1);sonar('respira')});
   e(.9,()=>sonar('radio'));e(2.2,()=>sonar('radio'));
   e(3.0,()=>{autoObj=-1.15;sonar('auto')});
-  e(6.2,()=>{autoObj=0;sonar('portazo')});
-  e(12.6,()=>{manoA='cinta';manoEst='sube'});
-  e(13.1,()=>{manoEst='agarra';cintaObj=1});
-  e(14.6,()=>{cintaObj=0;manoEst='baja'});
-  e(15.9,()=>{manoA='pomo';manoEst='sube'});
-  e(17.1,()=>{manoEst='agarra';sonar('pestillo')});
-  e(17.6,()=>{puertaObj=.4;puertaVel=1.2;sonar('rechina',.5)});
-  e(19.0,()=>{puertaObj=1.75;puertaVel=1;sonar('rechina',1)});
-  e(19.2,()=>manoEst='baja');
-  e(20.5,()=>sonar('lluvia',.35));
-  e(24.7,()=>sonar('susto',.5));
-  e(31.9,()=>{focoT=0;sonar('descubre')});
-  e(36.6,()=>sonar('alivio'));
+  e(7.6,()=>{autoObj=0;sonar('portazo')});
+  e(15.6,()=>{manoA='cinta';manoEst='sube'});
+  e(16.1,()=>{manoEst='agarra';cintaObj=1});
+  e(17.6,()=>{cintaObj=0;manoEst='baja'});
+  e(18.9,()=>{manoA='pomo';manoEst='sube'});
+  e(20.1,()=>{manoEst='agarra';sonar('pestillo')});
+  e(20.6,()=>{puertaObj=.4;puertaVel=1.2;sonar('rechina',.5)});
+  e(22.0,()=>{puertaObj=1.75;puertaVel=1;sonar('rechina',1)});
+  e(22.2,()=>manoEst='baja');
+  e(23.5,()=>sonar('lluvia',.35));
+  e(27.7,()=>sonar('susto',.5));
+  e(34.9,()=>{focoT=0;sonar('descubre')});
+  e(40.4,()=>{apagonT=0;sonar('apagon')});
+  e(41.9,()=>sonar('alivio'));
 }
 function pintaManoR(dt){
   const obj=manoEst==='sube'||manoEst==='agarra'?1:0;
@@ -527,6 +552,8 @@ function cuadroLoop(){
   {const ph=Math.floor(performance.now()/140)%4,on=C.position.z>13.3?0:C.position.z>.3?1.4:.35;sirena[0].intensity=(ph===0||ph===2?2.6:0)*on;sirena[1].intensity=(ph===1||ph===3?2.6:0)*on;sirena[2].material.color.set(ph%2?'#300':'#ff1a1a');sirena[3].material.color.set(ph%2?'#2a5bff':'#012')}
   cintaP.position.y+=((cintaObj?1.62:1.18)-cintaP.position.y)*Math.min(1,dt*4);cintaP.rotation.x+=((cintaObj?-.5:0)-cintaP.rotation.x)*Math.min(1,dt*4);
   {lluvia.visible=C.position.z>-.2;const a=lluvia.geometry.attributes.position,arr=a.array,cz=C.position.z;for(let i=0;i<arr.length;i+=6){arr[i+1]-=dt*9;arr[i+4]-=dt*9;if(arr[i+4]<0){const y=rnd(7,9);arr[i+1]=y;arr[i+4]=y-.32;const z=cz+rnd(-8,14);arr[i+2]=z;arr[i+5]=z}}a.needsUpdate=true}
+  if(apagonT>=0){apagonT+=dt;const seq=[[0,1],[.12,.15],[.22,1],[.42,.05],[.52,.7],[.68,0],[1.55,.55],[1.62,0],[1.75,1]];let v=1;for(const [tt,vv] of seq)if(apagonT>=tt)v=vv;
+    focoMesa.intensity=v*3;lampCono.material.opacity=v*.05;linterna.intensity=apagonT<.68?3.2*v:0;if(apagonT>.8&&!zoomCam){zoomCam=true;manoL.visible=linternaObj.visible=false}}
   if(regaloMat){const luz=focoT<0?.04:Math.max(.04,focoMesa.intensity/3)*1.05;regaloMat.color.setScalar(luz)}
   if(fundeT>=0&&regaloMat){fundeT+=dt;regaloMat.opacity=Math.max(0,1-fundeT/fundeDur);if(regaloMat.opacity<=0){regaloPlano.visible=false;fundeT=-1}}
   parpadeo.forEach(([v,b],i)=>{const f=.78+Math.sin(performance.now()*.011+i*2)*.12+rnd(-.12,.12);if(v.isLight)v.intensity=b*f;else if(v.material)v.material.opacity=b*f});
@@ -546,7 +573,7 @@ window.Intro3D={
   ponRegalo(canvas){const t=new T.CanvasTexture(canvas);t.encoding=T.sRGBEncoding;t.anisotropy=8;
     regaloMat=new T.MeshBasicMaterial({map:t,transparent:true,toneMapped:false,fog:false,depthWrite:false});const w=.5,h=w*380/340;
     regaloPlano=new T.Mesh(new T.PlaneGeometry(w,h),regaloMat);regaloPlano.userData={w,h};
-    regaloPlano.position.set(0,1.05+(350-190)/380*h,-4.6);regaloPlano.lookAt(V(0,1.62,-3.6));regaloPlano.renderOrder=5;S.add(regaloPlano);
+    regaloPlano.position.set(0,1.05+(350-190)/380*h,-4.6);regaloPlano.lookAt(V(0,1.42,-3.88));regaloPlano.renderOrder=5;S.add(regaloPlano);
     const sh=new T.Mesh(new T.CircleGeometry(.3,32),new T.MeshBasicMaterial({color:'#000',transparent:true,opacity:.55,depthWrite:false}));sh.rotation.x=-Math.PI/2;sh.scale.y=.45;sh.scale.x=.78;sh.position.set(.02,1.053,-4.58);S.add(sh)},
   correr(api,fin){pisada=api.paso||pisada;sonar=api.sonar||sonar;linea();alTerminar=fin;t0=performance.now();corriendo=true},
   parar(){listo=false;try{R.dispose()}catch(e){}},
