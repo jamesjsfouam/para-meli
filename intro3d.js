@@ -994,7 +994,7 @@ window.Intro3D={
     const sh=new T.Mesh(new T.PlaneGeometry(.62,.62),new T.MeshBasicMaterial({map:new T.CanvasTexture(cs),transparent:true,depthWrite:false}));sh.rotation.x=-Math.PI/2;sh.scale.y=.5;sh.scale.x=1.05;sh.position.set(.04,1.054,-6.95);S.add(sh)},
   saltar(){if(!corriendo||apagonT>=0)return;const meta=44.4;sonar('sirena',0);sonar('descubre');ev.forEach(x=>{if(x.t<meta)x.hecho=true});tAcum=meta;focoT=0;manoEst='fuera';cintaObj=0;puertaObj=1.75;fadeObj=0;mirada=null;camara.salto=true;sonar('lluvia',.35);sonar('escena','regalo');sonar('rechina',1)},
   correr(api,fin){pisada=api.paso||pisada;sonar=api.sonar||sonar;linea();alTerminar=fin;t0=performance.now();tAcum=0;corriendo=true},
-  parar(){listo=false;try{R.dispose()}catch(e){}},
+  parar(){listo=false;try{S.traverse(o=>{if(o.geometry)o.geometry.dispose();const ms=o.material?(Array.isArray(o.material)?o.material:[o.material]):[];ms.forEach(m=>{Object.keys(m).forEach(k=>{if(m[k]&&m[k].isTexture)m[k].dispose()});m.dispose()})});if(comp)comp.passes.forEach(p=>p.dispose&&p.dispose());R.dispose();R.forceContextLoss()}catch(e){}},
   get FIN(){return FIN}
 };
 })();

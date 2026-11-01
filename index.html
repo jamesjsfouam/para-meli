@@ -394,31 +394,43 @@ body:has(.vista.abierta) #web::after{display:none}
 .fondo-deco{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
 .grid{position:absolute;inset:-30%;background:repeating-conic-gradient(#0000000f 0 25%,transparent 0 50%) 0 0/64px 64px;animation:pan 9s linear infinite}
 @keyframes pan{to{transform:translate(128px,64px)}}
+#escena.sobre3d .haz,#escena.sobre3d .niebla,#escena.sobre3d .polvo,#escena.sobre3d .foco{display:none}
 .aparece{opacity:0;transform:translateY(40px);filter:blur(6px);transition:opacity .7s var(--ease),transform .7s cubic-bezier(.2,.9,.25,1.2),filter .7s}
 .aparece.ya{opacity:1;transform:none;filter:none}
 
-/* línea de tiempo */
-#v-linea{--vbg:var(--yellow);--ox:20%;--oy:80%}
-.linea{list-style:none;position:relative;padding-left:26px}
-.linea::before{content:"";position:absolute;left:7px;top:10px;bottom:10px;border-left:3px dashed var(--ink)}
-.hito{position:relative;margin-bottom:34px}
-.hito::before{content:"";position:absolute;left:-26px;top:22px;width:17px;height:17px;border-radius:50%;background:var(--papel);border:3px solid var(--ink)}
-.hito.clave::before{background:var(--pasion)}
-.hito .tarjeta{background:#fff;border:3px solid var(--ink);box-shadow:var(--sombra);padding:18px 18px 20px}
+/* línea de tiempo: un álbum cosido con hilo rojo */
+#v-linea{--vbg:#f6eddc;--ox:20%;--oy:80%}
+#v-linea::before{content:"";position:fixed;inset:0;pointer-events:none;background-image:var(--grano);opacity:.35;mix-blend-mode:multiply}
+.linea{list-style:none;position:relative;padding-left:30px;--prog:0}
+.linea::before,.linea::after{content:"";position:absolute;left:8px;top:10px;width:3px;border-radius:3px}
+.linea::before{bottom:10px;background:repeating-linear-gradient(#c1121f55 0 10px,transparent 10px 16px)}
+.linea::after{height:calc((100% - 20px) * var(--prog));background:var(--pasion);box-shadow:0 0 8px #c1121f66}
+.hito{position:relative;margin-bottom:46px}
+.hito::before{content:"♥";position:absolute;left:-31px;top:16px;width:26px;height:26px;display:grid;place-items:center;font-size:22px;line-height:1;color:#c1121f88;z-index:1;transition:color .6s,transform .6s}
+.hito.ya::before{color:var(--pasion);transform:scale(1.15)}
+.hito .tarjeta{position:relative;background:#fffaf0;border:2.5px solid var(--ink);box-shadow:5px 5px 0 #0e0e0e;padding:22px 20px 22px}
+.hito .tarjeta::before{content:"";position:absolute;left:24px;top:-12px;width:70px;height:22px;background:#ffd6e0cc;transform:rotate(-4deg)}
+.hito:nth-child(even) .tarjeta::before{left:auto;right:24px;transform:rotate(5deg);background:#fff1b8cc}
 .hito:nth-child(odd) .tarjeta{transform:rotate(-.7deg)}.hito:nth-child(even) .tarjeta{transform:rotate(.6deg)}
-.hito time{display:inline-block;background:var(--ink);color:var(--yellow);border-radius:999px;padding:5px 11px;font:500 11px/1.2 var(--mono);letter-spacing:.1em;margin-bottom:12px}
-.hito.clave time{background:var(--pasion);color:var(--papel)}
+.hito .despues{display:block;font:400 22px/1 "Reenie Beanie",cursive;color:#8a6a50;margin-bottom:6px}
+.hito time{display:inline-block;font:400 30px/1 "Reenie Beanie",cursive;color:var(--pasion);margin-bottom:8px}
 .hito h3{font:900 clamp(22px,5.6vw,30px)/1 var(--display);text-transform:uppercase;letter-spacing:-.03em;margin-bottom:12px}
-.hito p{font-size:17px;max-width:32em}
-.burbuja{display:table;max-width:88%;margin:8px 0 0;background:var(--papel);border:2px solid var(--ink);border-radius:16px 16px 16px 4px;padding:8px 13px;font-size:16px}
-.burbuja+.burbuja{background:#e7e7ea}
-.burbuja+p,.burbujas+p{margin-top:14px}
-.hito .fotos-hito{display:grid;gap:12px;margin-top:16px;align-items:start}
+.hito p{font:500 clamp(18px,2.3vw,20px)/1.55 "Cormorant Garamond",Georgia,serif;max-width:32em;color:#2b211a}
+.hito .fotos-hito{display:grid;gap:14px;margin-top:18px;align-items:start}
 .hito .fotos-hito.dos{grid-template-columns:1fr 1fr}
-.hito .fotos-hito img{width:100%;height:auto;border:3px solid var(--ink);box-shadow:4px 4px 0 var(--ink)}
+.hito .fotos-hito figure{position:relative;background:#fff;padding:8px 8px 26px;box-shadow:0 8px 18px -6px #0006}
+.hito .fotos-hito figure::after{content:"";position:absolute;left:50%;top:-9px;width:54px;height:18px;margin-left:-27px;background:#ffffffb8;transform:rotate(-3deg)}
+.hito .fotos-hito img{display:block;width:100%;height:auto}
 .hito .fotos-hito figure:nth-child(1){transform:rotate(-2deg)}.hito .fotos-hito figure:nth-child(2){transform:rotate(2.5deg)}
-.hito p.pie{margin-top:12px;color:#5d5852;font-size:12px}
-@media (min-width:760px){.linea{padding-left:0}.linea::before{left:50%;margin-left:-1px}.hito{width:calc(50% - 34px)}.hito:nth-child(even){margin-left:auto}.hito::before{left:auto;right:-43px}.hito:nth-child(even)::before{right:auto;left:-43px}.hito{margin-bottom:-40px}.hito:last-child{margin-bottom:0}}
+.hito.nace .tarjeta{background:radial-gradient(circle at 80% 10%,#fff3d6,#fffaf0 60%)}
+.hito.nace .fotos-hito{max-width:300px}
+.hito.nace .brillos{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.hito.nace .brillos i{position:absolute;color:#d4a83a;font-style:normal;animation:brilla 2.6s ease-in-out infinite}
+.hito.hoy .tarjeta{animation:latido 2.4s ease-in-out infinite}
+@keyframes latido{50%{box-shadow:5px 5px 0 #0e0e0e,0 0 0 6px #c1121f33,0 0 40px #c1121f44}}
+.hito.hoy .sigue{display:block;margin-top:14px;font:400 28px/1 "Reenie Beanie",cursive;color:var(--pasion)}
+@keyframes brilla{50%{opacity:.25;transform:scale(.7)}}
+@media (min-width:760px){.linea{padding-left:0}.linea::before,.linea::after{left:50%;margin-left:-1.5px}.hito{width:calc(50% - 40px)}.hito:nth-child(even){margin-left:auto}.hito::before{left:auto;right:-53px}.hito:nth-child(even)::before{right:auto;left:-53px}.hito{margin-bottom:-40px}.hito:last-child{margin-bottom:0}}
 
 /* carta */
 #v-carta{--vbg:#120e18;--ox:50%;--oy:85%;color:#f2ece1}
@@ -471,6 +483,21 @@ body:has(.vista.abierta) #web::after{display:none}
 .carta .corazon path{stroke-dasharray:180;stroke-dashoffset:180;transition:stroke-dashoffset 2.2s ease .3s}
 .carta .cierre.ve .corazon path{stroke-dashoffset:0}
 .carta .posdata{margin-top:34px;color:var(--emo)}
+.pastel{margin:46px auto 0;text-align:center;border-top:1px dashed #c8b49a;padding-top:34px}
+.pastel h4{font:italic 600 28px/1 "Cormorant Garamond",serif;color:#2b211a}
+.pastel svg{display:block;width:min(300px,80%);margin:18px auto 0;overflow:visible}
+.pastel .llama{transform-box:fill-box;transform-origin:50% 100%;animation:llama .5s ease-in-out infinite alternate}
+@keyframes llama{to{transform:scaleY(1.18) skewX(4deg)}}
+.pastel .vela.apagada .llama{animation:none;opacity:0;transition:opacity .25s}
+.pastel .humo{opacity:0}
+.pastel .vela.apagada .humo{animation:humo 1.6s ease-out forwards}
+@keyframes humo{0%{opacity:.7;transform:translateY(0)}100%{opacity:0;transform:translateY(-26px) scaleX(1.8)}}
+.pastel button.soplar{margin-top:18px;background:var(--pasion);color:#fff;border-radius:999px;padding:12px 22px;font:800 14px/1 var(--sans);box-shadow:0 8px 20px -6px #c1121f88}
+.pastel .deseo{display:none;margin-top:16px;font:400 40px/1 "Reenie Beanie",cursive;color:var(--pasion)}
+.pastel.listo .deseo{display:block;animation:subeC .9s both}
+.pastel.listo button.soplar{display:none}
+.confeti{position:fixed;top:-20px;z-index:80;pointer-events:none;font-size:18px;animation:cae var(--t,3s) linear forwards}
+@keyframes cae{to{transform:translate(var(--dx,0),110vh) rotate(var(--rg,360deg))}}
 .carta .otra{display:block;margin:34px auto 0;font:italic 500 18px/1 "Cormorant Garamond",serif;color:#7a6550;text-decoration:underline;text-underline-offset:4px}
 @media (prefers-reduced-motion:reduce){.carta p{opacity:1;transform:none}.cielo i,.cielo b,.sobre .sello{animation:none}}
 
@@ -481,14 +508,22 @@ body:has(.vista.abierta) #web::after{display:none}
 #v-cosas .fondo-deco .liquid i:nth-child(1){--lc:#ff8fc4}#v-cosas .fondo-deco .liquid i:nth-child(2){--lc:var(--yellow)}#v-cosas .fondo-deco .liquid i:nth-child(3){--lc:#ff2e63}
 .cosas{display:grid;grid-template-columns:1fr 1fr;gap:26px 16px;align-items:start}
 @media (min-width:760px){.cosas{grid-template-columns:repeat(3,1fr);gap:40px 28px}}
-.cosa{position:relative;background:#fff;border:3px solid var(--ink);box-shadow:var(--sombra);padding:8px 8px 14px;transform:rotate(var(--r))}
+.cosa{position:relative;transform:rotate(var(--r));perspective:1200px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.cosa .gira{position:relative;transform-style:preserve-3d;transition:transform .8s cubic-bezier(.3,1.3,.5,1)}
+.cosa.vuelta .gira{transform:rotateY(180deg)}
+.cosa .cara,.cosa .dorso{background:#fff;border:3px solid var(--ink);box-shadow:var(--sombra);padding:8px 8px 14px;backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.cosa .dorso{position:absolute;inset:0;transform:rotateY(180deg);background:#fffaf0;display:flex;flex-direction:column;justify-content:center;padding:18px 16px;overflow:auto}
+.cosa .dorso small{font:400 22px/1 "Reenie Beanie",cursive;color:var(--pasion)}
+.cosa .dorso p{font:500 clamp(15px,2vw,19px)/1.45 "Cormorant Garamond",Georgia,serif;color:#2b211a;margin-top:8px}
+.cosa .dorso .cor{margin-top:10px;color:var(--pasion);font-size:18px}
+.cosa .gira-hint{display:block;margin-top:8px;font:400 18px/1 "Reenie Beanie",cursive;color:#8a6a50}
 .cosa:nth-child(3n+2){margin-top:28px}
 .cosa::before{content:"";position:absolute;left:50%;top:-14px;width:74px;height:24px;margin-left:-37px;background:#ffffffb0;border:1px solid #0001;transform:rotate(calc(var(--r) * -2));z-index:2}
 .cosa .img{aspect-ratio:4/5;border:2px solid var(--ink);overflow:hidden;background:var(--fondo,#eee);display:grid;place-items:center}
 .cosa .img img{width:100%;height:100%;object-fit:cover}
 .cosa.logo .img img{width:72%;height:auto;object-fit:contain}
 .cosa h3{font:900 clamp(15px,4.2vw,22px)/1 var(--display);text-transform:uppercase;letter-spacing:-.03em;margin-top:12px}
-.cosa p{font-size:14.5px;line-height:1.35;margin-top:6px}
+.cosa .cara p{display:none}
 .cosa .n{position:absolute;right:-6px;top:-12px;width:34px;height:34px;border-radius:50%;background:var(--ink);color:var(--yellow);display:grid;place-items:center;font:900 13px/1 var(--display);z-index:3}
 .creditos{margin-top:56px;font:500 11px/1.6 var(--mono);letter-spacing:.04em;color:#000000c4;max-width:60em}
 .creditos a{color:inherit}
@@ -1275,14 +1310,24 @@ $('cintaTxt').textContent=Array(2).fill('Feliz cumple Meli ★ Rojo pasión ★ 
 
 /* ---------- contenido (viene de contenido.js) ---------- */
 const figura=(f,a='')=>`<figure><img src="fotos/${esc(f)}" alt="${esc(a.replace(/\*/g,''))}" loading="lazy" onerror="this.parentElement.remove()"></figure>`;
-$('linea').innerHTML=LINEA.map(h=>`<li class="hito aparece${h.clave?' clave':''}"><div class="tarjeta">
+// días entre un momento y el siguiente (la fecha se lee como dd · mm · aaaa)
+const diaDe=f=>{const m=String(f).match(/(\d{1,2})\D+(\d{1,2})\D+(\d{4})/);return m?new Date(+m[3],+m[2]-1,+m[1]):null};
+const entre=(a,b)=>{const d1=diaDe(a),d2=diaDe(b);if(!d1||!d2)return '';const d=Math.round((d2-d1)/864e5);if(d<=0)return '';
+  if(d>=365*2)return `${Math.floor(d/365)} años después…`;if(d>=365)return `${d} días después (más de un año)…`;return d===1?'al día siguiente…':`${d} días después…`};
+$('linea').innerHTML=LINEA.map((h,i)=>{const ult=i===LINEA.length-1,nace=i===0&&h.fotos&&h.fotos.length;
+  return `<li class="hito aparece${h.clave?' clave':''}${nace?' nace':''}${ult?' hoy':''}"><div class="tarjeta">
+  ${nace?`<span class="brillos" aria-hidden="true">${[[8,12],[88,8],[92,60],[6,70],[70,30]].map(([x,y],k)=>`<i style="left:${x}%;top:${y}%;animation-delay:-${k*.5}s">✦</i>`).join('')}</span>`:''}
+  ${i?`<span class="despues">${entre(LINEA[i-1].fecha,h.fecha)}</span>`:''}
   <time>${esc(h.fecha)}</time>
   <h3>${rico(h.titulo)}</h3>
   ${(h.citas||[]).map(c=>`<span class="burbuja">${esc(c)}</span>`).join('')}
   ${h.mensaje?`<p${h.citas?' style="margin-top:14px"':''}>${rico(h.mensaje)}</p>`:''}
   ${h.fotos&&h.fotos.length?`<div class="fotos-hito${h.fotos.length>1?' dos':''}">${h.fotos.map(f=>figura(f,h.titulo||'')).join('')}</div>`:''}
   ${h.pie?`<p class="pie mono">${esc(h.pie)}</p>`:''}
-</div></li>`).join('');
+  ${ult?'<span class="sigue">y todo lo que falta…</span>':''}
+</div></li>`}).join('');
+// el hilo rojo se va cosiendo a medida que bajás
+{const v=$('v-linea'),l=$('linea');v.addEventListener('scroll',()=>{const r=l.getBoundingClientRect(),k=Math.min(1,Math.max(0,(innerHeight*.6-r.top)/r.height));l.style.setProperty('--prog',k.toFixed(3))},{passive:true})}
 $('nMomentos').textContent=LINEA.length;
 const salRep=CARTA.saludo&&CARTA.parrafos[0]&&CARTA.parrafos[0].toLowerCase().startsWith(CARTA.saludo.replace(/[:,.\s]+$/,'').toLowerCase());
 // detalles en el papel: las estrellas brillan y el solecito se subraya con resaltador (el texto no cambia)
@@ -1293,10 +1338,23 @@ $('carta').innerHTML=`<figure class="foto"><img src="fotos/meli-sonrisa.jpg" alt
   ${CARTA.despedida?`<p class="despedida">${rico(CARTA.despedida)}</p>`:''}
   <div class="cierre"><span class="firma">— ${esc(CARTA.firma)}</span><svg class="corazon" viewBox="0 0 50 46" aria-hidden="true"><path d="M25 42C10 31 3 23 3 14 3 7 8 3 14 3c5 0 9 3 11 8 2-5 6-8 11-8 6 0 11 4 11 11 0 9-7 17-22 28z" fill="none" stroke="#c1121f" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
   ${CARTA.posdata?`<p class="posdata mono">${esc(CARTA.posdata)}</p>`:''}
+  <section class="pastel" id="pastel"><h4>Antes de irte…</h4>
+    <svg viewBox="0 0 300 210" aria-hidden="true"><ellipse cx="150" cy="196" rx="132" ry="12" fill="#0002"/>
+      <rect x="40" y="120" width="220" height="74" rx="12" fill="#f4d3dc"/><rect x="40" y="120" width="220" height="22" rx="10" fill="#fff6f0"/>
+      <path d="M40 140q14 14 28 0t28 0 28 0 28 0 28 0 28 0 28 0 28 0" fill="none" stroke="#fff6f0" stroke-width="8" stroke-linecap="round"/>
+      <rect x="54" y="78" width="192" height="48" rx="10" fill="#c1121f"/><rect x="54" y="78" width="192" height="14" rx="8" fill="#e2323f"/>
+      <text x="150" y="172" text-anchor="middle" font-family="Unbounded,sans-serif" font-weight="900" font-size="26" fill="#c1121f">19</text>
+      ${Array.from({length:19},(_,k)=>{const x=62+k*9.6,y=k%2?60:52;return `<g class="vela"><rect x="${x-2}" y="${y}" width="4" height="${84-y}" rx="1.5" fill="${['#ffe03d','#ff4fa3','#33f0d0','#fff'][k%4]}"/><path class="llama" d="M${x} ${y-14}c4 5 4 9 0 11c-4-2-4-6 0-11z" fill="#ffb02e"/><circle class="humo" cx="${x}" cy="${y-8}" r="3" fill="#bbb"/></g>`}).join('')}
+    </svg>
+    <button class="soplar" type="button">Soplá las velas</button>
+    <p class="deseo">Pedí un deseo, Meli ✦</p></section>
   <button class="otra" type="button">Leerla otra vez desde el principio</button>`;
 {const ob=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('ve');ob.unobserve(e.target)}}),{threshold:.25});
  $('carta').querySelectorAll('p:not(.ve),.cierre').forEach(p=>ob.observe(p));
- $('carta').querySelector('.otra').onclick=()=>{$('v-carta').scrollTo({top:0,behavior:'smooth'})}}
+ $('carta').querySelector('.otra').onclick=()=>{$('v-carta').scrollTo({top:0,behavior:'smooth'})};
+ $('pastel').querySelector('.soplar').onclick=()=>{const vs=[...document.querySelectorAll('#pastel .vela')];vs.forEach((v,k)=>setTimeout(()=>{v.classList.add('apagada');if(k%3===0)try{ruido(.25,600,1,.08,true)}catch(e){}},k*70+Math.random()*60));
+   setTimeout(()=>{$('pastel').classList.add('listo');try{acordeRevelacion()}catch(e){}
+     for(let k=0;k<70;k++){const c=document.createElement('i');c.className='confeti';c.textContent=['♥','✦','★','♥'][k%4];c.style.cssText=`left:${Math.random()*100}vw;color:${['#c1121f','#ff4fa3','#ffe03d','#d4a83a'][k%4]};--t:${2.5+Math.random()*2.5}s;--dx:${(Math.random()-.5)*200}px;--rg:${(Math.random()-.5)*720}deg;animation-delay:${Math.random()*1.2}s`;document.body.appendChild(c);setTimeout(()=>c.remove(),6500)}},19*70+400)}}
 // el cielo detrás de la carta
 {const c=$('cielo');let h='';for(let i=0;i<110;i++){const g=Math.random()<.12;h+=`<i class="${g?'g':''}" style="left:${(Math.random()*100).toFixed(1)}%;top:${(Math.random()*100).toFixed(1)}%;--d:${(2+Math.random()*4).toFixed(1)}s;--r:${(-Math.random()*5).toFixed(1)}s;--o:${(.5+Math.random()*.5).toFixed(2)}"></i>`}
  h+='<b style="left:80%;top:12%;--r:3s"></b><b style="left:60%;top:30%;--r:11s"></b>';c.innerHTML=h}
@@ -1312,10 +1370,12 @@ const CREDITOS={
   'cerati.jpg':['Camilo Rueda López','CC BY-SA 3.0','https://commons.wikimedia.org/wiki/File:Gustavo_Cerati,_Madrid,_2006.10.10_retouched.jpg'],
   'mentalista.jpg':['Georges Biard','CC BY-SA 3.0','https://commons.wikimedia.org/wiki/File:Simon_Baker_2013_1.jpg']};
 const GIROS=[-3,2.5,-1.5,3,-2.5,1.5,-2];
-$('cosas').innerHTML=COSAS.map((c,i)=>`<figure class="cosa aparece${c.logo?' logo':''}" style="--r:${GIROS[i%GIROS.length]}deg">
+$('cosas').innerHTML=COSAS.map((c,i)=>`<figure class="cosa aparece${c.logo?' logo':''}" style="--r:${GIROS[i%GIROS.length]}deg" tabindex="0" role="button" aria-label="${esc(c.nombre)}: tocá para ver por qué">
   <span class="n">${String(i+1).padStart(2,'0')}</span>
-  <div class="img" style="--fondo:${c.logo?esc(c.color||'#fff'):'#eee'}"><img src="fotos/cosas/${esc(c.imagen)}" alt="${esc(c.nombre)}" loading="lazy"></div>
-  <h3>${rico(c.nombre)}</h3>${c.nota?`<p>${rico(c.nota)}</p>`:''}</figure>`).join('');
+  <div class="gira"><div class="cara"><div class="img" style="--fondo:${c.logo?esc(c.color||'#fff'):'#eee'}"><img src="fotos/cosas/${esc(c.imagen)}" alt="${esc(c.nombre)}" loading="lazy"></div>
+  <h3>${rico(c.nombre)}</h3>${c.nota?'<span class="gira-hint">tocá para ver por qué ↻</span>':''}</div>
+  ${c.nota?`<div class="dorso"><small>por qué me recuerda a vos</small><p>${rico(c.nota)}</p><span class="cor">♥</span></div>`:''}</div></figure>`).join('');
+document.querySelectorAll('#cosas .cosa').forEach(f=>{const t=()=>{if(f.querySelector('.dorso')){f.classList.toggle('vuelta');try{papel()}catch(e){}}};f.addEventListener('click',t);f.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();t()}})});
 $('nCosas').textContent=COSAS.length;
 $('creditos').innerHTML='Imágenes de Wikimedia Commons: '+COSAS.filter(c=>CREDITOS[c.imagen]).map(c=>{const k=CREDITOS[c.imagen];const LIC={'CC BY-SA 4.0':'https://creativecommons.org/licenses/by-sa/4.0/deed.es','CC BY-SA 3.0':'https://creativecommons.org/licenses/by-sa/3.0/deed.es','CC BY 3.0':'https://creativecommons.org/licenses/by/3.0/deed.es'};return `${esc(c.nombre)} — <a href="${k[2]}" target="_blank" rel="noopener">${esc(k[0])}</a> (${LIC[k[1]]?`<a href="${LIC[k[1]]}" target="_blank" rel="noopener">${k[1]}</a>`:k[1]})`}).join(' · ')+'. Texturas, muebles, cielo HDR y linterna de la entrada: <a href="https://polyhaven.com" target="_blank" rel="noopener">Poly Haven</a> (CC0). Fragmentos de canciones: vistas previas de 30 s del catálogo de Apple Music / iTunes; © Soda Stereo, BTS, Álvaro Díaz y sus sellos. Sonidos de la entrada: Squeaky door.ogg — <a href="https://commons.wikimedia.org/wiki/File:Squeaky_door.ogg" target="_blank" rel="noopener">leonmire</a> (Public domain) · Walking on small wooden bridge (Gravity Sound).wav — <a href="https://commons.wikimedia.org/wiki/File:Walking_on_small_wooden_bridge_(Gravity_Sound).wav" target="_blank" rel="noopener">Gravity Sound</a> (<a href="https://creativecommons.org/licenses/by/4.0/deed.es" target="_blank" rel="noopener">CC BY 4.0</a>, recortado y comprimido).';
 
@@ -1389,7 +1449,7 @@ els[0].focus({preventScroll:true});
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/RenderPass.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/ShaderPass.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
-<script src="intro3d.js?v=158"></script>
+<script src="intro3d.js?v=159"></script>
 <script>iniciaIntro()</script>
 </body>
 </html>
