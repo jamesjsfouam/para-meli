@@ -66,6 +66,7 @@ em{font-style:inherit;color:var(--pasion)}
 .sonido-hint{position:absolute;left:0;right:0;bottom:calc(max(40px,env(safe-area-inset-bottom)) + 22px);text-align:center;color:#a39a8d;z-index:6;transition:opacity .6s}
 .sonido-hint.fuera{opacity:0}
 .abriendo .instruccion,.abriendo .sonido-hint,.abriendo .esquina{opacity:0}
+.abriendo .mesa,.abriendo .regalo{opacity:0;pointer-events:none}
 /* luz, niebla y polvo */
 .haz{position:absolute;left:50%;top:-5%;width:760px;height:95%;margin-left:-380px;pointer-events:none;
   background:linear-gradient(#ffe9c42e,#ffe9c40a 70%,transparent);clip-path:polygon(43% 0,57% 0,88% 100%,12% 100%);filter:blur(10px);animation:parpadeo 9s steps(1) infinite,oscila 11s ease-in-out infinite}
@@ -134,7 +135,7 @@ em{font-style:inherit;color:var(--pasion)}
 .luz-interior #luzInterior{opacity:1}
 .luz-interior #hazInterior{opacity:.55}
 /* la carta en papel que se despliega (ya fuera de la caja) */
-#cartaFinal{position:fixed;z-index:60;display:none;perspective:1400px;transform-origin:center;transition:transform .7s var(--fold)}
+#cartaFinal{position:fixed;z-index:80;display:none;perspective:1400px;transform-origin:center;transition:transform .7s var(--fold)}
 #cartaFinal.ver{display:block}
 #cartaFinal .marco3d{position:absolute;inset:0;transform-style:preserve-3d}
 .cf-panel{position:absolute;left:0;right:0;height:33.334%;background:var(--papel);transition:transform .85s var(--fold)}
@@ -252,8 +253,8 @@ body.en-puerta{background:#000}
 #ligero .pt{width:9px;height:9px;border-radius:50%;border:1.5px solid currentColor}
 #ligero[aria-pressed=true]{color:#f2e6d6;border-color:#c1121f}#ligero[aria-pressed=true] .pt{background:#c1121f;border-color:#c1121f}
 #ligero.fuera{opacity:0;pointer-events:none}
-.cerrado #ligero{opacity:0;pointer-events:none}
-#escena.ver ~ #ligero{opacity:0;pointer-events:none}
+.cerrado #ligero{opacity:0;visibility:hidden;pointer-events:none}
+#escena.ver ~ #ligero{opacity:0;visibility:hidden;pointer-events:none}
 #saltar{position:fixed;right:max(18px,env(safe-area-inset-right));bottom:max(18px,env(safe-area-inset-bottom));z-index:70;display:none;align-items:center;gap:10px;padding:8px 14px 8px 8px;border:1px solid #ffffff22;border-radius:999px;background:#0008;color:#cfc6b8;cursor:pointer;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);touch-action:none;user-select:none;-webkit-user-select:none}
 #saltar.ver{display:flex}
 #saltar .anillo{--p:0;width:26px;height:26px;border-radius:50%;background:conic-gradient(#e2323f calc(var(--p)*1turn),#ffffff1f 0);-webkit-mask:radial-gradient(closest-side,transparent 70%,#000 72%);mask:radial-gradient(closest-side,transparent 70%,#000 72%)}
@@ -282,6 +283,7 @@ body.en-puerta{background:#000}
 #escena.sobre3d::after{opacity:.05}
 #escena.sobre3d::before{box-shadow:inset 0 0 160px 50px #000a;animation:none}
 #escena.sobre3d .regalo{animation:none;transition:none}
+#escena.abriendo ~ #ligero,#escena.abriendo ~ #saltar{opacity:0!important;visibility:hidden!important;pointer-events:none!important}
 #escena.r3d #etiqueta{animation:none}
 #ruedasWin.flotante{position:fixed!important;opacity:0;z-index:45;transform:none!important}#zonas.flotante{position:fixed!important;z-index:46;transform:none!important;pointer-events:auto!important}
 @media (pointer:coarse){
@@ -932,7 +934,7 @@ function entrar(){if(entrando||!Intro3D.cargado)return;entrando=true;introEnCurs
   b.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&!t0){e.preventDefault();t0=performance.now();raf=requestAnimationFrame(paso)}});b.addEventListener('keyup',fin)})();
 /* tocar la etiqueta 3D la voltea (frente: para quién; reverso: la pista) */
 document.addEventListener('click',e=>{if(!window.Intro3D||!Intro3D.rectEtiqueta||abierto||!$('escena')||!$('escena').classList.contains('ver'))return;const r=Intro3D.rectEtiqueta();if(r&&e.clientX>=r.x-12&&e.clientX<=r.x+r.w+12&&e.clientY>=r.y-12&&e.clientY<=r.y+r.h+12){Intro3D.voltea();clic()}});
-function ubicaCandado(){let r=(Intro3D.rectRuedas||Intro3D.rectCandado)();if(!r)return;const tactil=!!Intro3D.movil||matchMedia('(pointer:coarse)').matches,w=tactil?240:Math.max(r.w,184),h=tactil?132:Math.max(r.h,120);r={x:tactil?(innerWidth-w)/2:r.x+r.w/2-w/2,y:tactil?(innerHeight-h)/2:r.y+r.h/2-h/2,w,h};r.x=Math.max(12,Math.min(innerWidth-w-12,r.x));r.y=Math.max(12,Math.min(innerHeight-h-12,r.y));['ruedasWin','zonas'].forEach(id=>{const e=$(id);if(e.parentNode!==document.body){e._padre=e.parentNode;e._sig=e.nextSibling;document.body.appendChild(e)}e.classList.add('flotante');
+function ubicaCandado(){let r=(Intro3D.rectRuedas||Intro3D.rectCandado)();if(!r)return;const tactil=!!Intro3D.movil||matchMedia('(pointer:coarse)').matches,w=tactil?240:Math.max(r.w,184),h=tactil?132:Math.max(r.h,120);r={x:r.x+r.w/2-w/2,y:r.y+r.h/2-h/2,w,h};r.x=Math.max(12,Math.min(innerWidth-w-12,r.x));r.y=Math.max(12,Math.min(innerHeight-h-12,r.y));['ruedasWin','zonas'].forEach(id=>{const e=$(id);if(e.parentNode!==document.body){e._padre=e.parentNode;e._sig=e.nextSibling;document.body.appendChild(e)}e.classList.add('flotante');
   Object.assign(e.style,{left:r.x+'px',top:r.y+'px',width:r.w+'px',height:r.h+'px'})})}
 addEventListener('resize',()=>{if(window.Intro3D&&Intro3D.tiene3D&&$('zonas').classList.contains('flotante')&&!abierto)requestAnimationFrame(()=>requestAnimationFrame(ubicaCandado))});
 $('intro').addEventListener('click',entrar);
@@ -963,10 +965,10 @@ async function abrir(){
   // la carta todavía sube: pasa a primer plano sin frenar
   const cf=$('cartaFinal');
   Object.assign(cf.style,{left:r.left+'px',top:(r.top-r.height)+'px',width:r.width+'px',height:(r.height*3)+'px',fontSize:r.width+'px'});
-  cf.classList.add('ver');escn.classList.add('atenua');
+  cf.classList.add('ver');escn.classList.add('atenua','fuera');if($('intro'))$('intro').classList.add('sale');$('saltar').classList.remove('ver');
   const dx=innerWidth/2-(r.left+r.width/2),dy=innerHeight/2-(r.top+r.height/2);
-  const sc=Math.min(innerWidth*.86/r.width,innerHeight*.28/r.height);
-  const mov=cf.animate([{transform:'none'},{transform:`translate(${dx*.4}px,${dy-30}px) scale(${sc*.55}) rotate(-2deg)`,offset:.45},{transform:`translate(${dx}px,${dy}px) scale(${sc})`}],{duration:reducido?1:850,easing:'cubic-bezier(.25,.7,.3,1)',fill:'forwards'});
+  const sc=Math.min(innerWidth*.82/r.width,innerHeight*.28/r.height);
+  const mov=cf.animate([{transform:'none'},{transform:`translate(${dx*.18}px,${dy*.34-42}px) scale(${sc*.42}) rotate(-2deg)`,offset:.48},{transform:`translate(${dx}px,${dy}px) scale(${sc})`}],{duration:reducido?1:1250,easing:'cubic-bezier(.2,.8,.25,1)',fill:'forwards'});
   await espera(900);
   cf.classList.add('rompe-sello');ruido(.12,1200,3,.5);setTimeout(()=>ruido(.08,3000,4,.3),60);
   await espera(260);cf.classList.add('desplegada');ruido(.6,3200,.9,.22,true);
@@ -974,7 +976,7 @@ async function abrir(){
   const cubrir=sc*1.25;
   mov.cancel();cf.style.transform=`translate(${dx}px,${dy}px) scale(${sc})`;void cf.offsetWidth;
   cf.classList.add('cubre');cf.style.transform=`translate(${dx}px,${dy}px) scale(${cubrir})`;
-  escn.classList.add('fuera');if($('intro'))$('intro').classList.add('sale');scrollTo(0,0);$('web').classList.add('visible');
+  scrollTo(0,0);$('web').classList.add('visible');
   await espera(1150);
   }catch(err){console.error(err)}
   const cf=$('cartaFinal');if(cf)cf.remove();escn.remove();['ruedasWin','zonas'].forEach(id=>{const e=$(id);if(e)e.remove()});try{if(lluviaSrc){lluviaSrc.stop();lluviaSrc=null;lluviaG=null}}catch(e){}if($('intro')){try{Intro3D.parar()}catch(e){}$('intro').remove()}document.body.classList.remove('cerrado');$('web').classList.add('visible');$('web').removeAttribute('aria-hidden');observa(document);
