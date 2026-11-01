@@ -325,13 +325,13 @@ body.en-puerta{background:#000}
 
 
 /* ===== el regalo dibujado encima del cuarto 3D ===== */
-#escena.sobre3d{background:transparent;z-index:41;opacity:0;pointer-events:none;transition:opacity 1.4s ease}
+#escena.sobre3d{background:transparent;z-index:41;opacity:0;pointer-events:none;transition:opacity 2.4s ease}
 #escena.sobre3d.ver{opacity:1;pointer-events:auto}
 #escena.sobre3d .sala,#escena.sobre3d .foco,#escena.sobre3d .haz,#escena.sobre3d .niebla,#escena.sobre3d .polvo,#escena.sobre3d .mesita,#escena.sobre3d .marco{display:none}
 #escena.sobre3d::after{opacity:.05}
 #escena.sobre3d::before{box-shadow:inset 0 0 160px 50px #000a;animation:none}
 #escena.sobre3d .regalo{animation:none;transition:none}
-#escena.sobre3d .caja3d{filter:drop-shadow(0 0 30px #c8192b22)}
+#escena.sobre3d .caja3d{filter:brightness(.8) sepia(.12)}
 #intro.sale{opacity:0;pointer-events:none}
 
 /* ============ toque wrapped: piezas comunes ============ */
@@ -1067,7 +1067,7 @@ async function capturaRegalo(){
   const url=URL.createObjectURL(new Blob([new XMLSerializer().serializeToString(cl)],{type:'image/svg+xml'}));
   const img=new Image();await new Promise((ok,no)=>{img.onload=ok;img.onerror=no;img.src=url});
   const c=document.createElement('canvas');c.width=680;c.height=760;const g=c.getContext('2d');
-  g.save();g.beginPath();g.rect(0,0,680,712);g.clip();g.drawImage(img,0,0,680,760);g.restore();
+  g.save();g.beginPath();g.rect(0,0,680,712);g.clip();g.filter='sepia(.12)';g.drawImage(img,0,0,680,760);g.filter='none';g.restore();
   // las ruedas del candado (en la página son HTML): mismas letras, misma ventana
   const W=$('ruedasWin').getBoundingClientRect(),S=org.getBoundingClientRect(),k=680/S.width;
   const x0=(W.left-S.left)*k,y0=(W.top-S.top)*k,w=W.width*k,h=W.height*k;
@@ -1078,13 +1078,13 @@ async function capturaRegalo(){
   g.restore();URL.revokeObjectURL(url);return c}
 let entrando=false;
 function entrar(){if(entrando)return;entrando=true;desbloquea();$('intro').classList.add('andando');
-  Intro3D.correr(apiIntro,()=>{const es=$('escena');alinearRegalo();es.classList.add('ver');Intro3D.fundeRegalo(1400);$('intro').style.cursor='default';
+  Intro3D.correr(apiIntro,()=>{const es=$('escena');alinearRegalo();es.classList.add('ver');Intro3D.fundeRegalo(2400);$('intro').style.cursor='default';
     setTimeout(()=>{document.body.classList.remove('en-puerta');const n=fijas.indexOf(false);if(n>=0)els[n].focus({preventScroll:true})},1400)})}
 /* pone el regalo dibujado exactamente donde está el regalo 3D */
 function alinearRegalo(){const el=$('regalo'),svg=el.querySelector('.caja3d');if(!svg||!window.Intro3D)return;
   el.style.scale='';el.style.translate='';const r=Intro3D.rectRegalo(),b=svg.getBoundingClientRect();
   const base=parseFloat(getComputedStyle(el).scale)||1;
-  const k=(r.w/b.width+r.h/b.height)/2,ex=b.left+b.width/2,ey=b.top+b.height/2;
+  const k=Math.min(r.w/b.width,r.h/b.height),ex=b.left+b.width/2,ey=b.top+b.height/2;
   el.style.scale=base*k;el.style.translate=`${r.x+r.w/2-ex}px ${r.y+r.h/2-ey}px`}
 addEventListener('resize',()=>{if($('escena')&&$('escena').classList.contains('ver')&&!abierto)alinearRegalo()});
 $('intro').addEventListener('click',entrar);
@@ -1242,7 +1242,7 @@ els[0].focus({preventScroll:true});
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/RenderPass.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/ShaderPass.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
-<script src="intro3d.js?v=21"></script>
+<script src="intro3d.js?v=25"></script>
 <script>iniciaIntro()</script>
 </body>
 </html>

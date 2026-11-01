@@ -187,7 +187,10 @@ function construir(cv){
   caja(.06,.06,.32,plastico,-.4,.98,-.78,0,auto).rotation.x=-.42;
   // espejo, viseras, techo, parantes
   caja(.24,.07,.02,plastico,0,1.7,-.66,0,auto);caja(.6,.02,.22,tapiz,-.42,1.76,-.48,0,auto);caja(.6,.02,.22,tapiz,.42,1.76,-.48,0,auto);
-  const techoA=new T.Mesh(new T.PlaneGeometry(1.84,2.6),tapiz);techoA.rotation.x=Math.PI/2;techoA.position.set(0,1.8,.68);auto.add(techoA);
+  const forro=M({color:'#4a4844',roughness:1});const techoA=new T.Mesh(new T.BoxGeometry(1.86,.04,2.7),forro);techoA.position.set(0,1.79,.66);auto.add(techoA);
+  caja(1.86,.1,.12,forro,0,1.75,-.66,0,auto);                                   // franja sobre el parabrisas
+  const domo=caja(.22,.03,.12,new T.MeshBasicMaterial({color:'#ffe2b0'}),0,1.765,.3,0,auto);const luzDomo=new T.PointLight('#ffd9a0',.35,2.2,2);luzDomo.position.set(0,1.7,.3);auto.add(luzDomo);
+  [-1,1].forEach(sd=>{caja(.04,.04,.22,plastico,sd*.86,1.72,.3,0,auto);caja(.04,.5,2.6,forro,sd*.92,1.55,.66,0,auto)});
   [-1,1].forEach(sd=>{const pa=caja(.08,1.0,.08,plastico,sd*.9,1.45,-.98,0,auto);pa.rotation.x=-.78;caja(.1,.7,.12,plastico,sd*.93,1.45,.62,0,auto)});
   // asientos
   [-.45,.45].forEach(x=>{caja(.55,.16,.55,tapiz,x,.92,.35,0,auto);const r=caja(.52,.68,.13,tapiz,x,1.32,.66,0,auto);r.rotation.x=.12;caja(.28,.18,.1,tapiz,x,1.76,.72,0,auto)});
@@ -366,7 +369,7 @@ function construir(cv){
   linterna=new T.SpotLight('#fff0d8',3.2,16,.38,.5,1.4);linterna.castShadow=true;linterna.shadow.mapSize.set(1024,1024);linterna.shadow.bias=-.0005;linterna.shadow.camera.near=.1;
   S.add(linterna);S.add(linterna.target);
   if(T.EffectComposer&&T.UnrealBloomPass&&T.ShaderPass){try{
-    comp=new T.EffectComposer(R);comp.addPass(new T.RenderPass(S,C));comp.addPass(new T.UnrealBloomPass(new T.Vector2(W(),H()),.7,.55,.8));
+    comp=new T.EffectComposer(R);comp.addPass(new T.RenderPass(S,C));comp.addPass(new T.UnrealBloomPass(new T.Vector2(W(),H()),.65,.5,.9));
     comp.addPass(new T.ShaderPass({uniforms:{tDiffuse:{value:null},uT:{value:0}},
       vertexShader:'varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',
       fragmentShader:`uniform sampler2D tDiffuse;uniform float uT;varying vec2 vUv;
@@ -479,7 +482,7 @@ function cuadroLoop(){
   {const ph=Math.floor(performance.now()/140)%4,on=C.position.z>13.3?0:C.position.z>.3?1.4:.35;sirena[0].intensity=(ph===0||ph===2?2.6:0)*on;sirena[1].intensity=(ph===1||ph===3?2.6:0)*on;sirena[2].material.color.set(ph%2?'#300':'#ff1a1a');sirena[3].material.color.set(ph%2?'#2a5bff':'#012')}
   cintaP.position.y+=((cintaObj?1.62:1.18)-cintaP.position.y)*Math.min(1,dt*4);cintaP.rotation.x+=((cintaObj?-.5:0)-cintaP.rotation.x)*Math.min(1,dt*4);
   {lluvia.visible=C.position.z>-.2;const a=lluvia.geometry.attributes.position,arr=a.array,cz=C.position.z;for(let i=0;i<arr.length;i+=6){arr[i+1]-=dt*9;arr[i+4]-=dt*9;if(arr[i+4]<0){const y=rnd(7,9);arr[i+1]=y;arr[i+4]=y-.32;const z=cz+rnd(-8,14);arr[i+2]=z;arr[i+5]=z}}a.needsUpdate=true}
-  if(regaloMat){const luz=focoT<0?.05:Math.max(.05,focoMesa.intensity/3)*.97;regaloMat.color.setScalar(luz)}
+  if(regaloMat){const luz=focoT<0?.04:Math.max(.04,focoMesa.intensity/3)*1.05;regaloMat.color.setScalar(luz)}
   if(fundeT>=0&&regaloMat){fundeT+=dt;regaloMat.opacity=Math.max(0,1-fundeT/fundeDur);if(regaloMat.opacity<=0){regaloPlano.visible=false;fundeT=-1}}
   parpadeo.forEach(([v,b],i)=>{const f=.78+Math.sin(performance.now()*.011+i*2)*.12+rnd(-.12,.12);if(v.isLight)v.intensity=b*f;else if(v.material)v.material.opacity=b*f});
   if(focoT>=0){focoT+=dt;const seq=[[0,1],[.12,0],[.2,1],[.32,.1],[.42,1],[.55,.3],[.65,1]];let v=1;for(const [tt,vv] of seq)if(focoT>=tt)v=vv;focoMesa.intensity=v*3;lampCono.material.opacity=v*.05}
