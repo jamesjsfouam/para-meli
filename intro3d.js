@@ -73,6 +73,7 @@ function expediente(){const [c,g]=lienzo(256,340);g.fillStyle='#c9b48a';g.fillRe
 const TXC={};
 function pbr(n,rep=[1,1],o={}){const tl0=new T.TextureLoader(LM||undefined),tl={load:u=>{const c=u+'|'+rep;return TXC[c]||(TXC[c]=tl0.load(u))}},k=t=>{t.wrapS=t.wrapT=T.RepeatWrapping;t.repeat.set(rep[0],rep[1]);t.anisotropy=MOVIL?2:8;return t};
   const map=k(tl.load('pbr/'+n+(MOVIL?'_col_1k.jpg':'_col.jpg')));map.encoding=T.sRGBEncoding;
+  if(MOVIL)return new T.MeshStandardMaterial(Object.assign({map,roughness:.92,envMapIntensity:.18},o));
   return new T.MeshStandardMaterial(Object.assign({map,normalMap:k(tl.load('pbr/'+n+'_nor.jpg')),roughnessMap:k(tl.load('pbr/'+n+'_rough.jpg')),roughness:1,envMapIntensity:.35},o))}
 
 /* la libreta: cuatro nombres, tres tachados en rojo */
@@ -254,7 +255,7 @@ function abandono(){const P2=Math.PI/2;
 function construir(cv){
   let listoAvisado=false;
   const avisaListo=()=>{if(listoAvisado)return;listoAvisado=true;cargado=true;if(LIGERO)ponLigero(true);cargaListo&&cargaListo()};
-  LM=new T.LoadingManager(()=>{setTimeout(()=>{if(MOVIL)try{achicaTexturas(768)}catch(e){}try{zonificar();compilaZonas()}catch(e){console.warn(e)}try{calentar()}catch(e){console.warn(e)}},0);avisaListo()},(u,l,t)=>{cargaProg&&cargaProg(l/t)});
+  LM=new T.LoadingManager(()=>{setTimeout(()=>{if(MOVIL)try{achicaTexturas(768)}catch(e){}try{zonificar();if(!MOVIL)compilaZonas()}catch(e){console.warn(e)}try{if(!MOVIL)calentar()}catch(e){console.warn(e)}},0);avisaListo()},(u,l,t)=>{cargaProg&&cargaProg(l/t)});
   R=new T.WebGLRenderer({canvas:cv,antialias:false,powerPreference:'high-performance'});
   prMax=Math.min(devicePixelRatio,MOVIL?.8:.8);pr=prMax;R.setPixelRatio(pr);R.setSize(W(),H());R.outputEncoding=T.sRGBEncoding;
   R.toneMapping=T.ACESFilmicToneMapping;R.toneMappingExposure=1.25;R.shadowMap.enabled=true;R.shadowMap.autoUpdate=false;R.shadowMap.type=T.PCFShadowMap;R.physicallyCorrectLights=false;
@@ -603,7 +604,7 @@ function construir(cv){
         void main(){vec3 c=texture2D(tDiffuse,vUv).rgb;c=srgb(max(c,0.));float d=distance(vUv,vec2(.5));c*=smoothstep(.85,.32,d);c+=(h(vUv*800.)-.5)*.045;c*=1.-uF;gl_FragColor=vec4(c,1.);}`}));
     comp.passes[2].renderToScreen=true;R.outputEncoding=T.LinearEncoding}catch(e){console.warn(e);comp=null;R.outputEncoding=T.sRGBEncoding}}
   // modelos fotográficos de Poly Haven (CC0)
-  setTimeout(()=>{if(T.GLTFLoader){const gl=new T.GLTFLoader(LM);
+  setTimeout(()=>{if(T.GLTFLoader&&!MOVIL){const gl=new T.GLTFLoader(LM);
     const MC={},mod=(n,f)=>{if(MC[n]){MC[n].push(f);return}MC[n]=[f];gl.load('pbr/m/'+n+'/'+n+'.gltf',g=>{const o=g.scene;o.traverse(m=>{if(m.isMesh){m.castShadow=m.receiveShadow=true;if(m.material)m.material.envMapIntensity=.35}});MC[n].forEach((cb,i)=>cb(i?o.clone():o))})};
     const P2=Math.PI/2;const pon=(o,x,y,z,ry=0,e=1)=>{o.position.set(x,y,z);o.rotation.y=ry;o.scale.setScalar(e);S.add(o);return o};
     mod('round_wooden_table_01',o=>pon(o,0,.3,-7.0,0,.75));
