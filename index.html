@@ -941,17 +941,20 @@ const apiIntro={
     else if(n==='flash'){if(c){nota(c,bus(),2600,c.currentTime,.05,.08,'square',6000);ruido(.25,4200,1,.08,true,9000)}}
     else if(n==='alivio'){if(resp)resp.alivio();if(respLoop){respLoop.fade(1.6);respLoop=null}}
   }};
-function sin3D(){modo2D=true;try{ESCENAS.nada();apiIntro.sonar('sirena',0);if(lluviaG)lluviaVol(0)}catch(e){}if($('ligero'))$('ligero').classList.add('fuera');try{Intro3D.parar()}catch(e){}if($('intro'))$('intro').remove();introEnCurso=false;$('saltar').classList.remove('ver');document.body.classList.remove('en-puerta');const es=$('escena');if(!es)return;es.classList.remove('sobre3d','r3d');es.classList.add('ver','liviano');setTimeout(()=>{if(!abierto)abrir()},700)}
-addEventListener('intro3d-perdido',()=>{if(!abierto)sin3D()});
+function sin3D(motivo){modo2D=true;try{sessionStorage.setItem('meli2D',motivo||'?')}catch(e){}console.warn('2D:',motivo);try{ESCENAS.nada();apiIntro.sonar('sirena',0);if(lluviaG)lluviaVol(0)}catch(e){}if($('ligero'))$('ligero').classList.add('fuera');try{Intro3D.parar()}catch(e){}if($('intro'))$('intro').remove();introEnCurso=false;$('saltar').classList.remove('ver');document.body.classList.remove('en-puerta');const es=$('escena');if(!es)return;es.classList.remove('sobre3d','r3d');es.classList.add('ver','liviano');setTimeout(()=>{if(!abierto)abrir()},700)}
+addEventListener('intro3d-perdido',()=>{if(abierto)return;let ya=false;try{ya=sessionStorage.getItem('meliRecarga')==='1';sessionStorage.setItem('meliRecarga','1')}catch(e){ya=true}
+  if(ya){sin3D('contexto');return}
+  const recarga=()=>{if(document.visibilityState==='visible')location.reload();else addEventListener('visibilitychange',recarga,{once:true})};recarga()});
+if(/[?&]diag=1/.test(location.search))addEventListener('load',()=>{let m='';try{m=sessionStorage.getItem('meli2D')||'—'}catch(e){}const d=document.createElement('div');d.style.cssText='position:fixed;left:6px;top:6px;z-index:99999;background:#000c;color:#0f0;font:12px monospace;padding:4px 6px;border-radius:4px';d.textContent='2D: '+m+' · ios:'+(window.Intro3D&&Intro3D.ios)+' · bajo:'+(window.Intro3D&&Intro3D.bajo);document.body.appendChild(d)});
 async function iniciaIntro(){
   try{if(sessionStorage.getItem('meliAbierto')==='1'){directo();return}}catch(e){}
   cargaMedia('paso','media/pasos_madera.wav');cargaMedia('rechina','media/puerta_crujido_squeaky-door.ogg');
-  if(!window.THREE||!window.Intro3D){sin3D();return}
+  if(!window.THREE||!window.Intro3D){sin3D('sin-three');return}
   try{await Promise.race([new Promise(r=>setTimeout(r,3000)),Promise.all([document.fonts.load('80px "Reenie Beanie"'),document.fonts.load('500 30px "JetBrains Mono"'),document.fonts.load('800 54px "JetBrains Mono"'),document.fonts.load('600 30px "JetBrains Mono"'),document.fonts.load('900 30px Unbounded'),document.fonts.load('900 40px "Inter Tight"')]).catch(()=>{})]);const txt=$('intro').querySelector('.intro-txt b');txt.textContent='Cargando la escena… 0%';
     setTimeout(()=>{if(!Intro3D.cargado&&$('intro')){cargaLenta=true;txt.textContent='Tocá para abrir tu regalo';$('cargaVelo').classList.add('fuera')}},60000);
     try{localStorage.removeItem('meliIntentos')}catch(e){}
     try{const g=localStorage.getItem('meliLigero');if(g==='1'||(Intro3D.movil&&g!=='0'))Intro3D.ligero_(true)}catch(e){}
-    Intro3D.preparar($('c3d'),k=>{if(Intro3D.cargado||!$('cvBarra')||!$('intro'))return;if(k<0){txt.textContent='Preparando la escena…';$('cvTxt').textContent='Preparando la escena…';$('cvBarra').style.width='100%';return}const v=Math.round(k*100);txt.textContent='Cargando la escena… '+v+'%';$('cvBarra').style.width=v+'%';$('cvTxt').textContent='Cargando… '+v+'%'},()=>{if(!$('intro'))return;txt.textContent='Tocá para entrar';$('cvBarra').style.width='100%';$('cargaVelo').classList.add('fuera')});try{Intro3D.ruedas(ruedas)}catch(e){console.warn('No se pudieron inicializar las ruedas',e)}}catch(e){console.error(e);sin3D()}
+    Intro3D.preparar($('c3d'),k=>{if(Intro3D.cargado||!$('cvBarra')||!$('intro'))return;if(k<0){txt.textContent='Preparando la escena…';$('cvTxt').textContent='Preparando la escena…';$('cvBarra').style.width='100%';return}const v=Math.round(k*100);txt.textContent='Cargando la escena… '+v+'%';$('cvBarra').style.width=v+'%';$('cvTxt').textContent='Cargando… '+v+'%'},()=>{if(!$('intro'))return;txt.textContent='Tocá para entrar';$('cvBarra').style.width='100%';$('cargaVelo').classList.add('fuera')});try{Intro3D.ruedas(ruedas)}catch(e){console.warn('No se pudieron inicializar las ruedas',e)}}catch(e){console.error(e);sin3D('error:'+(e&&e.message||e))}
 }
 let entrando=false,cargaLenta=false,modo2D=false;
 /* modo ligero: se recuerda en esta compu */
@@ -959,7 +962,7 @@ let entrando=false,cargaLenta=false,modo2D=false;
   const etiqueta=b.querySelector('.mono'),pinta=()=>{b.setAttribute('aria-pressed',!on);b.title=on?'Activar calidad alta':'Bajar calidad para ahorrar batería';if(etiqueta)etiqueta.textContent=on?'Mejorar calidad':'Bajar calidad';if(window.Intro3D&&Intro3D.ligero_)Intro3D.ligero_(on)};pinta();
   b.addEventListener('click',e=>{e.stopPropagation();on=!on;try{localStorage.setItem('meliLigero',on?'1':'0')}catch(e){}pinta();if(window.Intro3D&&Intro3D.movil&&!entrando)setTimeout(()=>location.reload(),150)});
   b.addEventListener('keydown',e=>e.stopPropagation())})();
-function entrar(){if(!entrando&&cargaLenta&&!Intro3D.cargado){entrando=true;desbloquea();sin3D();return}if(entrando||!Intro3D.cargado)return;entrando=true;introEnCurso=true;$('saltar').classList.add('ver');desbloquea();$('intro').classList.add('andando');if($('ligero'))$('ligero').classList.add('fuera');{const c0=Intro3D.cuadros||0;setTimeout(()=>{if(introEnCurso&&(Intro3D.cuadros||0)-c0<8)sin3D()},8000)}if(reducido)setTimeout(()=>{try{Intro3D.saltar()}catch(e){}},350);
+function entrar(){if(!entrando&&cargaLenta&&!Intro3D.cargado){entrando=true;desbloquea();sin3D('carga-lenta');return}if(entrando||!Intro3D.cargado)return;entrando=true;introEnCurso=true;$('saltar').classList.add('ver');desbloquea();$('intro').classList.add('andando');if($('ligero'))$('ligero').classList.add('fuera');{let c0=Intro3D.cuadros||0;const vigila=()=>{if(!introEnCurso)return;if(document.visibilityState!=='visible'){c0=Intro3D.cuadros||0;setTimeout(vigila,8000);return}if((Intro3D.cuadros||0)-c0<8)sin3D('sin-cuadros')};setTimeout(vigila,8000)}if(reducido)setTimeout(()=>{try{Intro3D.saltar()}catch(e){}},350);
   Intro3D.correr(apiIntro,()=>{introEnCurso=false;$('saltar').classList.remove('ver');ambiente();setTimeout(()=>{if(!abierto&&window.Intro3D&&Intro3D.voltea)Intro3D.voltea()},12000);const es=$('escena');es.classList.add('r3d');ubicaCandado();es.classList.add('ver');$('intro').style.cursor='default';
     setTimeout(()=>{document.body.classList.remove('en-puerta');const n=fijas.indexOf(false);if(n>=0)els[n].focus({preventScroll:true})},1400)})}
 /* mantener 5 segundos para saltar */
@@ -1030,7 +1033,7 @@ async function abrir(){
   await espera(1150);
   }
   }catch(err){console.error(err)}
-  const cf=$('cartaFinal');if(cf)cf.remove();setTimeout(()=>{const v=$('veloCarta');if(v)v.remove()},1600);escn.remove();['ruedasWin','zonas'].forEach(id=>{const e=$(id);if(e)e.remove()});try{if(lluviaSrc){lluviaSrc.stop();lluviaSrc=null;lluviaG=null}}catch(e){}if($('intro')){try{Intro3D.parar()}catch(e){}$('intro').remove()}document.body.classList.remove('cerrado');$('web').classList.add('visible');$('web').removeAttribute('aria-hidden');observa(document);try{sessionStorage.setItem('meliAbierto','1');localStorage.setItem('meliIntentos','0')}catch(e){}
+  const cf=$('cartaFinal');if(cf)cf.remove();setTimeout(()=>{const v=$('veloCarta');if(v)v.remove()},1600);escn.remove();['ruedasWin','zonas'].forEach(id=>{const e=$(id);if(e)e.remove()});try{if(lluviaSrc){lluviaSrc.stop();lluviaSrc=null;lluviaG=null}}catch(e){}if($('intro')){try{Intro3D.parar()}catch(e){}$('intro').remove()}document.body.classList.remove('cerrado');$('web').classList.add('visible');$('web').removeAttribute('aria-hidden');observa(document);try{sessionStorage.setItem('meliAbierto','1');sessionStorage.removeItem('meliRecarga');localStorage.setItem('meliIntentos','0')}catch(e){}
 }
 // si ya lo abrió en esta pestaña y recarga, vuelve directo a la página
 function directo(){abierto=true;setTimeout(()=>{try{$('musica').classList.add('ver','pausa');$('musicaTxt').textContent=CANCIONES[0][0]}catch(e){}},100);{try{audio.crossOrigin='anonymous';audio.src=CANCIONES[0][2]}catch(e){}const arranca=e=>{removeEventListener('pointerup',arranca);removeEventListener('keydown',arranca);try{ctx();enlazaCancion();if(e&&e.target&&e.target.closest&&e.target.closest('#musica'))return;if(audio.paused)pon(0,true)}catch(e){}};addEventListener('pointerup',arranca);addEventListener('keydown',arranca)}['escena','intro','cartaFinal','veloCarta','ruedasWin','zonas'].forEach(id=>{const e=$(id);if(e)e.remove()});document.body.classList.remove('cerrado','en-puerta');$('web').classList.add('visible');$('web').removeAttribute('aria-hidden');observa(document);if(location.hash){const v=location.hash.slice(1);setTimeout(()=>{if(vistas.includes(v))muestra(v)},80)}}
@@ -1212,7 +1215,7 @@ els[0].focus({preventScroll:true});
 <script src="vendor/RenderPass.js"></script>
 <script src="vendor/ShaderPass.js"></script>
 <script src="vendor/UnrealBloomPass.js"></script>
-<script src="intro3d.js?v=243"></script>
+<script src="intro3d.js?v=244"></script>
 <script>iniciaIntro()</script>
 </body>
 </html>
