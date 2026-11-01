@@ -211,8 +211,8 @@ function construir(cv){
   // ----- el auto del CBI: el Mondeo (modelo real), faros y barra de luces -----
   const auto=new T.Group();autoPuerta=new T.Group();auto.add(autoPuerta);
   const bR=caja(.16,.06,.1,new T.MeshBasicMaterial({color:'#ff1a1a'}),-.22,1.6,.05,0,auto),bA=caja(.16,.06,.1,new T.MeshBasicMaterial({color:'#2a5bff'}),.22,1.6,.05,0,auto);
-  const lR=new T.PointLight('#ff2020',0,14,1.6);lR.position.set(-.4,1.75,0);auto.add(lR);const lA=new T.PointLight('#2a5bff',0,14,1.6);lA.position.set(.4,1.75,0);auto.add(lA);sirena=[lR,lA,bR,bA];
-  [-.68,.68].forEach((x,i)=>{const f=new T.SpotLight('#e8eeff',3.6,32,.32,.45,1.1);f.position.set(x,.68,-2.3);f.castShadow=i===0;f.shadow.mapSize.set(1024,1024);auto.add(f);const tg=new T.Object3D();tg.position.set(x*.6,.3,-16);auto.add(tg);f.target=tg;
+  const lR=new T.PointLight('#ff2020',0,14,1.6);lR.position.set(0,1.75,0);auto.add(lR);const lA={intensity:0,color:new T.Color()};auto.add(lA);sirena=[lR,lA,bR,bA];
+  [-.68,.68].forEach((x,i)=>{const f=i===0?new T.SpotLight('#e8eeff',5.5,32,.42,.45,1.1):new T.Object3D();if(i===0){f.castShadow=true;f.shadow.mapSize.set(1024,1024)}f.position.set(x,.68,-2.3);auto.add(f);const tg=new T.Object3D();tg.position.set(x*.6,.3,-16);auto.add(tg);f.target=tg;
     const gl=new T.Sprite(new T.SpriteMaterial({map:brillo('rgba(235,240,255,1)'),depthWrite:false,fog:false}));gl.position.set(x,.68,-2.36);gl.scale.set(.7,.45,1);auto.add(gl);
     const cono=new T.Mesh(new T.ConeGeometry(2.6,13,24,1,true),new T.MeshBasicMaterial({color:'#cfd8ff',transparent:true,opacity:.03,depthWrite:false,blending:T.AdditiveBlending,side:T.DoubleSide}));cono.rotation.x=Math.PI/2;cono.position.set(x*.8,.5,-8.8);auto.add(cono)});
   if(T.OBJLoader){new T.OBJLoader(LM).load('pbr/mondeo/mondeo.obj',obj=>{
@@ -270,7 +270,7 @@ function construir(cv){
    linMesa.position.set(-.24,.055,.25);linMesa.rotation.y=1.25;E.add(sombra(linMesa));
    // la lámpara de escritorio (fuera de cuadro): luz cálida y cerrada
    lampEsc=new T.SpotLight('#ffd6a0',1.7,3,.6,.8,2);lampEsc.position.set(-.38,.62,-.18);lampEsc.target=lib;lampEsc.castShadow=true;lampEsc.shadow.mapSize.set(1024,1024);lampEsc.shadow.bias=-.0004;E.add(lampEsc);
-   const amb=new T.PointLight('#5a4030',.25,2.5,2);amb.position.set(.4,.6,.5);E.add(amb)}
+   }
 
   // ----- lluvia -----
   {const n=2600,pos=new Float32Array(n*6);for(let i=0;i<n;i++){const x=rnd(-14,14),y=rnd(0,9),z=rnd(-6,22);pos.set([x,y,z,x+.02,y-.32,z],i*6)}
@@ -311,7 +311,7 @@ function construir(cv){
   const vidrio=M({color:'#06080c',roughness:.15,metalness:.7});const tabla=madera({base:[70,60,48],n:1,var_:6},[1,1],1);
   [[-2.8,1.7],[2.8,1.7],[-2.4,4],[2.4,4]].forEach(([x,y],i)=>{caja(1.2,1.4,.05,vidrio,x,y,z0+.1);caja(1.32,.1,.08,marcoM,x,y+.74,z0+.12);caja(1.32,.1,.08,marcoM,x,y-.74,z0+.12);
     const b1=caja(1.6,.16,.04,tabla,x,y,z0+.16);b1.rotation.z=.6+rnd(-.1,.1);const b2=caja(1.6,.16,.04,tabla,x,y+rnd(-.2,.2),z0+.17);b2.rotation.z=-.5+rnd(-.1,.1);
-    if(i===3){const l=new T.PointLight('#ff4a2a',.0,5,2);l.position.set(x,y,-.6);S.add(l);parpadeo.push([l,.7]);const gl=new T.Mesh(new T.PlaneGeometry(1.1,1.3),new T.MeshBasicMaterial({color:'#ff5a30',transparent:true,opacity:.2}));gl.position.set(x,y,z0+.11);S.add(gl);parpadeo.push([gl,.2])}});
+    if(i===3){const gl=new T.Mesh(new T.PlaneGeometry(1.1,1.3),new T.MeshBasicMaterial({color:'#ff5a30',transparent:true,opacity:.2}));gl.position.set(x,y,z0+.11);S.add(gl);parpadeo.push([gl,.2])}});
   calco(redJohn(),1.1,1.1,1.5,1.6,z0+.1,0,0,.9);
   // estructura: cimiento de piedra, esquineros, aleros, chimenea, ventana redonda, bajante
   const piedra=(()=>{const [c,g]=lienzo(512,256);g.fillStyle='#2a2826';g.fillRect(0,0,512,256);for(let y=0;y<256;y+=32)for(let x=-(y/32%2)*30;x<512;x+=60){g.fillStyle=`rgb(${rnd(60,90)},${rnd(58,84)},${rnd(52,74)})`;g.fillRect(x+3,y+3,54,26)}grano(g,512,256,18);return tex(c,[6,1])})();
@@ -331,7 +331,7 @@ function construir(cv){
   // columnas torneadas del porche
   [-1.95,1.95].forEach(x=>{const col=new T.Mesh(new T.LatheGeometry([new T.Vector2(.11,0),new T.Vector2(.11,.1),new T.Vector2(.07,.18),new T.Vector2(.075,1.1),new T.Vector2(.09,1.3),new T.Vector2(.07,1.5),new T.Vector2(.075,2.4),new T.Vector2(.11,2.5),new T.Vector2(.11,2.62)],18),trim);col.position.set(x,.3,2.05);col.castShadow=true;S.add(col)});
   cactus(-1.5,1.6,1.1);cactus(1.55,1.7,.9);
-  const farol=new T.PointLight('#ffb070',.6,6,2);farol.position.set(.9,2.6,.6);S.add(farol);parpadeo.push([farol,.7]);
+  const farol=new T.Object3D();farol.position.set(.9,2.6,.6);
   const bomb=new T.Sprite(new T.SpriteMaterial({map:brillo('rgba(255,190,110,1)'),depthWrite:false}));bomb.position.copy(farol.position);bomb.scale.set(.45,.45,1);S.add(bomb);parpadeo.push([bomb,.8]);
 
   // ----- adentro: la escena del crimen -----
@@ -413,7 +413,7 @@ function construir(cv){
     const cara=new T.Mesh(new T.PlaneGeometry(.26,.18),new T.MeshBasicMaterial({color:'#f4f8ff'}));cara.position.z=.061;cab.add(cara);
     const gl=new T.Sprite(new T.SpriteMaterial({map:brillo('rgba(230,240,255,1)'),depthWrite:false,blending:T.AdditiveBlending}));gl.position.z=.1;gl.scale.set(.7,.6,1);cab.add(gl);
     g.position.set(x,.3,z);S.add(sombra(g));cab.lookAt(mira);
-    const sl=new T.SpotLight('#eaf2ff',2.0,9,.5,.55,1.6);sl.position.set(x,2.08,z);const tg=new T.Object3D();tg.position.copy(mira);S.add(tg);sl.target=tg;if(sombraT){sl.castShadow=true;sl.shadow.mapSize.set(1024,1024)}S.add(sl)};
+    if(!sombraT)return;const sl=new T.SpotLight('#eaf2ff',2.6,10,.6,.55,1.6);sl.position.set(x,2.08,z);const tg=new T.Object3D();tg.position.copy(mira);S.add(tg);sl.target=tg;if(sombraT){sl.castShadow=true;sl.shadow.mapSize.set(1024,1024)}S.add(sl)};
   tripode(-2.0,-6.9,V(-4.6,1.6,-4.6),true);tripode(-1.6,-1.6,V(-4.0,.9,-4.6));
   // bolsas de evidencia y un maletín forense
   [[-2.3,-6.2],[-2.6,-6.35]].forEach(([x,z])=>{const b=caja(.18,.01,.24,new T.MeshStandardMaterial({color:'#e8eef4',roughness:.15,transparent:true,opacity:.55}),x,.31,z);b.rotation.y=rnd(0,1)});
@@ -427,7 +427,7 @@ function construir(cv){
   const hiloM=new T.LineBasicMaterial({color:'#c01020'});[[0,4],[4,1],[1,5],[5,2],[2,3],[3,4],[0,5]].forEach(([a,b])=>S.add(new T.Line(new T.BufferGeometry().setFromPoints([pinPos[a],pinPos[b]]),hiloM)));
   // ----- del otro lado: el rincón de BTS -----
   const morado=new T.MeshBasicMaterial({color:'#a970ff'});caja(.03,.03,7.6,morado,4.8,3.48,-4.1);
-  [[-1.8],[-4.1],[-6.4]].forEach(([z])=>{const l=new T.PointLight('#8a4dff',.55,4.5,2);l.position.set(4.3,3.2,z);S.add(l)});
+  {const l=new T.PointLight('#8a4dff',1.3,7,1.6);l.position.set(3.0,3.1,-4.2);S.add(l)}
   const pared3=(t,w,h,z,y)=>{const m=new T.Mesh(new T.PlaneGeometry(w,h),M({map:t,roughness:.7}));m.position.set(4.82,y,z);m.rotation.y=-Math.PI/2;m.receiveShadow=true;S.add(m);return m};
   pared3(poster('#2a0f4a','#7a3fd0',[['BTS','900 190px Inter Tight, sans-serif',330],['방탄소년단','700 46px sans-serif',420,'#e9dcff'],['ARMY','800 54px Inter Tight, sans-serif',620,'#ffd8f4']]),.62,.86,-1.25,2.05);
   pared3(poster('#140a24','#4a1d7a',[['보라해','900 110px sans-serif',300,'#cfa8ff'],['💜','400 150px sans-serif',520],['BORAHAE','700 40px JetBrains Mono, monospace',640,'#e9dcff']]),.56,.78,-7.25,2.1);
@@ -441,7 +441,7 @@ function construir(cv){
   {const g=new T.Group();const mango=new T.Mesh(new T.CylinderGeometry(.025,.03,.2,16),M({color:'#111',roughness:.4}));mango.position.y=.1;g.add(mango);
    const bola=new T.Mesh(new T.SphereGeometry(.085,24,18),new T.MeshBasicMaterial({color:'#f2e6ff'}));bola.position.y=.29;g.add(bola);
    const halo=new T.Sprite(new T.SpriteMaterial({map:brillo('rgba(190,140,255,1)'),depthWrite:false,blending:T.AdditiveBlending}));halo.position.y=.29;halo.scale.set(.6,.6,1);g.add(halo);
-   const lb=new T.PointLight('#c79bff',.7,3,2);lb.position.y=.3;g.add(lb);g.position.set(2.35,1.67,-7.8);S.add(g)}
+   g.position.set(2.35,1.67,-7.8);S.add(g)}
   ['#5b2a9a','#d8b4ff','#1e1030','#9b5cff'].forEach((col,i)=>{const a=caja(.22,.22,.012,M({color:col,roughness:.4}),2.75+i*.13,1.78,-7.82+i*.01);a.rotation.y=rnd(-.1,.1)});
   // cama con edredón lila, cojines, alfombra peluda rosa, escritorio con la laptop encendida y luces de hada
   {const ed=pbr('rough_linen',[2,2],{color:'#b79ce6'});caja(1.9,.2,.9,M({color:'#e8e2f2',roughness:.95}),3.95,.68,-2.6);
@@ -450,11 +450,11 @@ function construir(cv){
   {const [c,g]=lienzo(512,512);g.fillStyle='#e7a3c4';g.fillRect(0,0,512,512);for(let i=0;i<9000;i++){g.strokeStyle=`rgba(${rnd(220,255)},${rnd(150,190)},${rnd(190,220)},.5)`;g.beginPath();const x=rnd(0,512),y=rnd(0,512);g.moveTo(x,y);g.lineTo(x+rnd(-4,4),y+rnd(-4,4));g.stroke()}
    const a=new T.Mesh(new T.CircleGeometry(.85,48),M({map:new T.CanvasTexture(c),roughness:1}));a.rotation.x=-P2;a.position.set(2.9,.306,-4.0);a.receiveShadow=true;S.add(a)}
   {const mad2=pbr('wood_floor_worn',[1,.5],{color:'#e8dccb'});caja(1.2,.04,.55,mad2,2.7,1.06,-.5);[[-.55,-.22],[.55,-.22],[-.55,.22],[.55,.22]].forEach(([x,z])=>caja(.04,.74,.04,mad2,2.7+x,.68,-.5+z));
-   const pant=new T.PointLight('#b9a2ff',.6,2.5,2);pant.position.set(2.7,1.35,-.75);S.add(pant);parpadeo.push([pant,.6])}
+   }
   {const pts=[];for(let i=0;i<=24;i++){const k=i/24;pts.push(V(1.25+k*3.45,2.95-Math.sin(k*Math.PI)*.35,-8.03))}
    S.add(new T.Line(new T.BufferGeometry().setFromPoints(pts),new T.LineBasicMaterial({color:'#222'})));
    const bm=new T.MeshBasicMaterial({color:'#ffe0a8'});pts.forEach((p2,i)=>{if(i%2)return;const b=new T.Mesh(new T.SphereGeometry(.018,8,6),bm);b.position.copy(p2).add(V(0,-.03,.01));S.add(b)});
-   [[2.1],[3.9]].forEach(([x])=>{const l=new T.PointLight('#ffd49a',.35,2.5,2);l.position.set(x,2.7,-7.8);S.add(l)})}
+   }
   // estante con libros y cactus
   const est=new T.Group();const mad=M({color:'#2a1a0e',roughness:.8});
   [0,.45,.9,1.35].forEach(y=>caja(1.3,.04,.32,mad,0,y,0,0,est));[-.65,.65].forEach(x=>caja(.04,1.4,.32,mad,x,.68,0,0,est));
@@ -473,13 +473,14 @@ function construir(cv){
   focoMesa=new T.SpotLight('#ffe2b8',0,7,.52,.85,2);focoMesa.position.set(0,2.25,-7.05);focoMesa.target=regalo;focoMesa.castShadow=true;focoMesa.shadow.mapSize.set(1024,1024);focoMesa.shadow.bias=-.0004;S.add(focoMesa);
 
 
+  crearRegalo3D();
   lampCono=new T.Mesh(new T.ConeGeometry(.78,1.25,48,1,true),new T.ShaderMaterial({transparent:true,depthWrite:false,blending:T.AdditiveBlending,side:T.DoubleSide,
     uniforms:{uOp:{value:0}},
     vertexShader:'varying float vH;varying vec3 vN;varying vec3 vP;void main(){vH=(position.y+.625)/1.25;vec4 mv=modelViewMatrix*vec4(position,1.);vP=mv.xyz;vN=normalize(normalMatrix*normal);gl_Position=projectionMatrix*mv;}',
     fragmentShader:'uniform float uOp;varying float vH;varying vec3 vN;varying vec3 vP;void main(){float f=abs(dot(normalize(vN),normalize(-vP)));float a=uOp*pow(f,2.2)*pow(vH,1.6)*.55;gl_FragColor=vec4(vec3(1.,.86,.66)*a,a);}'}));
   lampCono.position.set(0,1.66,-7.05);S.add(lampCono);
   lampBulbo=new T.Mesh(new T.SphereGeometry(.045,16,12),new T.MeshBasicMaterial({color:'#fff1d6'}));lampBulbo.position.set(0,2.33,-7.05);S.add(lampBulbo);
-  const rebote=new T.PointLight('#ffcf98',0,3.5,2);rebote.position.set(0,2.2,-7.05);S.add(rebote);lampBulbo.userData.rebote=rebote;
+  const rebote={intensity:0};lampBulbo.userData.rebote=rebote;
 
   // polvo
   const np=600,pos=new Float32Array(np*3);for(let i=0;i<np;i++){pos[i*3]=rnd(-4.6,4.6);pos[i*3+1]=rnd(.4,3.4);pos[i*3+2]=rnd(-8,-.3)}
@@ -700,9 +701,9 @@ function cuadroLoop(){
   camara(Math.min(t,FIN),corriendo?dt:0);
   if(corriendo)ev.forEach(x=>{if(!x.hecho&&t>=x.t){x.hecho=true;x.f()}});
   puerta.rotation.y+=(puertaObj-puerta.rotation.y)*Math.min(1,dt*puertaVel*2.2);
-  pintaManoR(dt);
+  pintaManoR(dt);regalo3DFrame(dt);
   autoPuerta.rotation.y+=(autoObj-autoPuerta.rotation.y)*Math.min(1,dt*(autoObj?1.8:5));
-  {const ph=Math.floor(performance.now()/140)%4,on=C.position.y<-5?0:C.position.z>.3?1.4:.35;sirena[0].intensity=(ph===0||ph===2?2.6:0)*on;sirena[1].intensity=(ph===1||ph===3?2.6:0)*on;sirena[2].material.color.set(ph%2?'#300':'#ff1a1a');sirena[3].material.color.set(ph%2?'#2a5bff':'#012')}
+  {const ph=Math.floor(performance.now()/140)%4,on=C.position.y<-5?0:C.position.z>.3?1.4:.35;sirena[0].intensity=2.4*on;sirena[0].color.set(ph%2?'#2a5bff':'#ff2020');sirena[1].intensity=(ph===1||ph===3?2.6:0)*on;sirena[2].material.color.set(ph%2?'#300':'#ff1a1a');sirena[3].material.color.set(ph%2?'#2a5bff':'#012')}
   cintaP.position.y+=((cintaObj?1.62:1.18)-cintaP.position.y)*Math.min(1,dt*4);cintaP.rotation.x+=((cintaObj?-.5:0)-cintaP.rotation.x)*Math.min(1,dt*4);
   {lluvia.visible=C.position.z>-.2;const a=lluvia.geometry.attributes.position,arr=a.array,cz=C.position.z;for(let i=0;i<arr.length;i+=6){arr[i+1]-=dt*9;arr[i+4]-=dt*9;if(arr[i+4]<0){const y=rnd(7,9);arr[i+1]=y;arr[i+4]=y-.32;const z=cz+rnd(-8,14);arr[i+2]=z;arr[i+5]=z}}a.needsUpdate=true}
   if(apagonT>=0){apagonT+=dt;const seq=[[0,1],[.12,.15],[.22,1],[.42,.05],[.52,.7],[.68,0],[2.3,.5],[2.38,0],[2.52,1]];let v=1;for(const [tt,vv] of seq)if(apagonT>=tt)v=vv;
@@ -718,14 +719,119 @@ function cuadroLoop(){
   if(corriendo&&t>=FIN&&alTerminar){const f=alTerminar;alTerminar=null;f()}
 }
 
+/* =====================================================================
+   El regalo en 3D: caja con papel y listón de satín, moño, etiqueta kraft
+   y un candado de latón con cuatro ruedas de letras que giran de verdad.
+   Se integra a intro3d.js (usa T, S, C, W, H, V, lienzo, grano, sombra).
+   ===================================================================== */
+let R3=null;   // estado del regalo 3D
+function crearRegalo3D(){
+  const ABC='ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  const G=new T.Group();G.position.set(0,1.055,-7.0);G.rotation.y=-.42;S.add(G);
+  const RB=T.RoundedBoxGeometry||null;
+  const cajaR=(w,h,d,r)=>RB?new RB(w,h,d,4,r):new T.BoxGeometry(w,h,d);
+  // papel de regalo: rojo profundo con relieve fino y un monograma apenas marcado
+  const [pc,pg]=lienzo(1024,1024);pg.fillStyle='#a8101e';pg.fillRect(0,0,1024,1024);
+  for(let i=0;i<14000;i++){pg.fillStyle=`rgba(${Math.random()<.5?0:255},0,0,${Math.random()*.05})`;pg.fillRect(Math.random()*1024,Math.random()*1024,2,2)}
+  pg.font='600 30px "JetBrains Mono", monospace';pg.fillStyle='rgba(60,0,8,.22)';for(let y=40;y<1024;y+=96)for(let x=(y/96%2)*80;x<1024;x+=160)pg.fillText('M·E·L·I',x,y);
+  const pt=new T.CanvasTexture(pc);pt.encoding=T.sRGBEncoding;pt.anisotropy=8;
+  const [bc,bg]=lienzo(512,512);bg.fillStyle='#808080';bg.fillRect(0,0,512,512);for(let i=0;i<9000;i++){bg.fillStyle=`rgba(255,255,255,${Math.random()*.25})`;bg.fillRect(Math.random()*512,Math.random()*512,1,1)}
+  const bt=new T.CanvasTexture(bc);bt.wrapS=bt.wrapT=T.RepeatWrapping;bt.repeat.set(3,3);
+  const papel=new T.MeshPhysicalMaterial({map:pt,bumpMap:bt,bumpScale:.0015,roughness:.42,metalness:0,clearcoat:.35,clearcoatRoughness:.4,envMapIntensity:.5});
+  const satin=new T.MeshPhysicalMaterial({color:'#9d9da6',roughness:.32,metalness:.1,clearcoat:.5,clearcoatRoughness:.2,envMapIntensity:.6});
+  if('sheen' in satin)try{satin.sheen=new T.Color('#ffffff')}catch(e){}
+  const W=.34,Hh=.25,D=.34,LH=.07,LW=.365;
+  const cuerpo=new T.Mesh(cajaR(W,Hh,D,.012),papel);cuerpo.position.y=Hh/2;G.add(cuerpo);
+  // el hueco de la caja (se ve cuando sale la tapa) y su luz cálida
+  const hueco=new T.Mesh(new T.PlaneGeometry(W-.03,D-.03),new T.MeshStandardMaterial({color:'#1a0204',emissive:'#ff9a40',emissiveIntensity:0,roughness:1}));hueco.rotation.x=-Math.PI/2;hueco.position.y=Hh+.0015;G.add(hueco);
+  const luzDentro=new T.PointLight('#ffb060',0,1.6,2);luzDentro.position.y=Hh+.06;G.add(luzDentro);
+  // listón alrededor del cuerpo
+  const bandas=new T.Group();G.add(bandas);
+  const b1=new T.Mesh(new T.BoxGeometry(W+.006,.034,D+.006),satin);b1.position.y=Hh*.5;bandas.add(b1);
+  const b2=new T.Mesh(new T.BoxGeometry(.044,Hh+.004,D+.007),satin);b2.position.y=Hh/2;bandas.add(b2);
+  // la tapa, con su banda, el moño y la etiqueta
+  const tapa=new T.Group();tapa.position.y=Hh+LH/2-.012;G.add(tapa);
+  tapa.add(new T.Mesh(cajaR(LW,LH,LW,.014),papel));
+  const b3=new T.Mesh(new T.BoxGeometry(.046,LH+.006,LW+.007),satin);tapa.add(b3);
+  const b4=new T.Mesh(new T.BoxGeometry(LW+.007,LH+.006,.046),satin);tapa.add(b4);
+  const lazo=(sx)=>{const pts=[[0,0,0],[.03*sx,.03,-.012],[.085*sx,.05,-.006],[.115*sx,.03,.004],[.1*sx,.008,.012],[.05*sx,.004,.006],[0,0,0]].map(([x,y,z])=>V(x,y,z));
+    const tb=new T.Mesh(new T.TubeGeometry(new T.CatmullRomCurve3(pts,true,'centripetal'),48,.013,10,true),satin);tb.scale.set(1,1,.55);return tb};
+  const mono=new T.Group();mono.position.y=LH/2+.004;tapa.add(mono);
+  mono.add(lazo(1),lazo(-1));const l3=lazo(1);l3.rotation.y=1.9;l3.scale.multiplyScalar(.85);mono.add(l3);const l4=lazo(-1);l4.rotation.y=-1.9;l4.scale.multiplyScalar(.85);mono.add(l4);
+  const nudo=new T.Mesh(new T.SphereGeometry(.024,20,14),satin);nudo.scale.set(1,.7,1);nudo.position.y=.008;mono.add(nudo);
+  [[.6,1],[-.5,-1]].forEach(([a,sx])=>{const pts=[[0,0,0],[.03*sx,-.004,.05],[.05*sx,-.03,.13],[.06*sx,-.075,.19]].map(([x,y,z])=>V(x,y,z));
+    const c=new T.Mesh(new T.TubeGeometry(new T.CatmullRomCurve3(pts),24,.009,8,false),satin);c.scale.set(1.4,1,1);c.rotation.y=a*.4;mono.add(c)});
+  // etiqueta kraft colgada del nudo
+  const [tc,tg]=lienzo(256,360);tg.fillStyle='#d8c095';tg.fillRect(0,0,256,360);for(let i=0;i<2500;i++){tg.fillStyle=`rgba(90,60,20,${Math.random()*.12})`;tg.fillRect(Math.random()*256,Math.random()*360,2,2)}
+  tg.beginPath();tg.arc(128,40,14,0,7);tg.fillStyle='#6b5530';tg.fill();tg.textAlign='center';tg.fillStyle='#3c2f1c';tg.font='500 28px "JetBrains Mono", monospace';tg.fillText('PARA',128,140);
+  tg.fillStyle='#8e0c16';tg.font='700 40px "JetBrains Mono", monospace';tg.fillText('M.E.L.I.',128,200);tg.fillStyle='#5b4c37';tg.font='26px "Reenie Beanie", cursive';tg.fillText('como te tengo',128,262);tg.fillText('en WhatsApp',128,296);
+  const tt=new T.CanvasTexture(tc);tt.encoding=T.sRGBEncoding;
+  const etiqueta=new T.Mesh(new T.PlaneGeometry(.06,.085),new T.MeshStandardMaterial({map:tt,roughness:.9,side:T.DoubleSide}));
+  const et=new T.Group();et.position.set(-.13,-.005,LW/2+.01);et.add(etiqueta);etiqueta.position.y=-.042;et.rotation.set(.05,.2,.12);tapa.add(et);
+  {const pts=[V(0,LH/2+.01,0),V(-.06,LH/2+.01,.08),V(-.12,LH/2-.01,LW/2+.005),V(-.13,-.005,LW/2+.01)];const h=new T.Mesh(new T.TubeGeometry(new T.CatmullRomCurve3(pts),20,.0012,5,false),new T.MeshStandardMaterial({color:'#e8dcc0',roughness:.9}));tapa.add(h)}
+  // candado de latón con cuatro ruedas
+  const laton=new T.MeshPhysicalMaterial({color:'#e2b867',roughness:.32,metalness:.85,clearcoat:.4,envMapIntensity:2.2,emissive:'#3a2808',emissiveIntensity:.12});
+  const cand=new T.Group();cand.position.set(0,Hh*.42,D/2+.026);G.add(cand);
+  cand.add(new T.Mesh(cajaR(.096,.078,.03,.009),laton));
+  const arco=new T.Group();arco.position.y=.039;cand.add(arco);
+  const tor=new T.Mesh(new T.TorusGeometry(.027,.0058,12,32,Math.PI),laton);tor.position.y=.04;arco.add(tor);
+  [-.027,.027].forEach(x=>{const c=new T.Mesh(new T.CylinderGeometry(.0058,.0058,.04,12),laton);c.position.set(x,.02,0);arco.add(c)});
+  const ven=new T.Mesh(new T.BoxGeometry(.074,.03,.008),new T.MeshStandardMaterial({color:'#120c06',roughness:.6}));ven.position.set(0,-.004,.013);cand.add(ven);
+  // ruedas: una franja con las 26 letras alrededor del cilindro
+  const [rc,rg]=lienzo(26*64,64);const grad=rg.createLinearGradient(0,0,0,64);grad.addColorStop(0,'#d9d2c2');grad.addColorStop(.5,'#f4efe2');grad.addColorStop(1,'#d9d2c2');rg.fillStyle=grad;rg.fillRect(0,0,26*64,64);
+  rg.fillStyle='#1b1712';rg.font='700 46px "JetBrains Mono", monospace';rg.textAlign='center';rg.textBaseline='middle';
+  for(let i=0;i<26;i++){rg.save();rg.translate(i*64+32,32);rg.rotate(-Math.PI/2);rg.fillText(ABC[i],0,2);rg.restore();rg.fillStyle='rgba(0,0,0,.25)';rg.fillRect(i*64,0,1,64);rg.fillStyle='#1b1712'}
+  const rt=new T.CanvasTexture(rc);rt.encoding=T.sRGBEncoding;rt.anisotropy=8;
+  const ruedas=[],leds=[];
+  for(let i=0;i<4;i++){const g=new T.Group();g.position.set(-.0255+i*.017,-.004,.014);cand.add(g);
+    const c=new T.Mesh(new T.CylinderGeometry(.0125,.0125,.014,40),new T.MeshStandardMaterial({map:rt,roughness:.45}));c.rotation.z=Math.PI/2;g.add(c);ruedas.push({g,ang:0,obj:0});
+    const led=new T.Mesh(new T.SphereGeometry(.0026,10,8),new T.MeshStandardMaterial({color:'#3a0a0a',emissive:'#ff2020',emissiveIntensity:0}));led.position.set(-.0255+i*.017,.026,.016);cand.add(led);leds.push(led)}
+  // carta doblada dentro de la caja
+  const [cc,cg]=lienzo(512,320);cg.fillStyle='#efe8d8';cg.fillRect(0,0,512,320);cg.fillStyle='rgba(0,0,0,.06)';cg.fillRect(0,100,512,2);cg.fillRect(0,210,512,2);
+  const rgS=cg.createRadialGradient(240,150,4,256,160,50);rgS.addColorStop(0,'#e2323f');rgS.addColorStop(.62,'#a10d18');rgS.addColorStop(1,'#7a0912');cg.fillStyle=rgS;cg.beginPath();cg.arc(256,160,46,0,7);cg.fill();
+  cg.fillStyle='#f7d6d4';cg.font='900 46px Unbounded, sans-serif';cg.textAlign='center';cg.textBaseline='middle';cg.fillText('M',256,164);
+  const ct2=new T.CanvasTexture(cc);ct2.encoding=T.sRGBEncoding;
+  const carta=new T.Mesh(new T.PlaneGeometry(.2,.125),new T.MeshStandardMaterial({map:ct2,roughness:.85,side:T.DoubleSide}));carta.position.set(0,Hh-.07,0);carta.visible=false;G.add(carta);
+  G.traverse(m=>{if(m.isMesh){m.castShadow=true;m.receiveShadow=true}});hueco.castShadow=false;etiqueta.castShadow=false;
+  R3={G,tapa,bandas,cand,arco,ruedas,leds,hueco,luzDentro,carta,mono,ab:-1,Hh,LH,D};
+}
+function regalo3DFrame(dt){if(!R3)return;
+  R3.ruedas.forEach(r=>{let d=r.obj-r.ang;r.ang+=d*Math.min(1,dt*14);r.g.rotation.x=r.ang});
+  // la etiqueta se mece apenas
+  if(R3.ab<0){R3.tapa.children.forEach(c=>{});}
+  if(R3.ab>=0){R3.ab+=dt;const a=R3.ab,s2=x=>x*x*(3-2*x),c01=x=>Math.max(0,Math.min(1,x));
+    // 0–.15: el arco salta; .25–.85: el candado cae a la mesa
+    R3.arco.position.y=.039+.012*s2(c01(a/.15));
+    const k=c01((a-.25)/.6);R3.cand.position.y=R3.Hh*.42-(R3.Hh*.42-.04)*k*k;R3.cand.position.z=R3.D/2+.026+.12*k;R3.cand.rotation.x=k*1.35;R3.cand.rotation.z=k*.4;
+    // .55–1.0: el listón se suelta y cae
+    const kb=c01((a-.55)/.45);R3.bandas.position.y=-.02*kb;R3.bandas.scale.set(1+.02*kb,1-kb*.98,1+.02*kb);R3.bandas.visible=kb<.99;
+    // .9–1.8: la tapa sube y se va hacia atrás
+    const kt=c01((a-.9)/.9),y0=R3.Hh+R3.LH/2-.012,yf=R3.LH/2+.002;R3.tapa.position.x=-.42*s2(kt);R3.tapa.position.z=.06*kt;R3.tapa.position.y=y0+(yf-y0)*kt*kt+.16*Math.sin(kt*Math.PI);R3.tapa.rotation.z=.35*Math.sin(kt*Math.PI)+.06*kt;R3.tapa.rotation.y=.5*kt;
+    // 1.3–: luz desde adentro; 1.7–2.7: la carta sube
+    const kl=c01((a-1.3)/.6);R3.hueco.material.emissiveIntensity=kl*1.1;R3.luzDentro.intensity=kl*1.6;
+    const kc=c01((a-1.7)/1.0);R3.carta.visible=a>1.7&&!R3.cartaFuera;R3.carta.position.y=R3.Hh-.07+.26*s2(kc);R3.carta.rotation.x=-.3*(1-kc);
+    R3.carta.lookAt(C.position);R3.carta.rotateY(0)}
+}
+const R3api={
+  get tiene3D(){return !!R3},
+  ruedas(arr){if(!R3)return;arr.forEach((v,i)=>{const r=R3.ruedas[i];const obj=-v*Math.PI*2/26;let d=obj-r.obj;while(d>Math.PI)d-=Math.PI*2;while(d<-Math.PI)d+=Math.PI*2;r.obj+=d})},
+  fija(i){if(!R3)return;R3.leds[i].material.emissiveIntensity=2.2},
+  rectCandado(){if(!R3)return null;const b=new T.Box3().setFromObject(R3.cand);let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;
+    [b.min.x,b.max.x].forEach(x=>[b.min.y,b.max.y].forEach(y=>[b.min.z,b.max.z].forEach(z=>{const p=V(x,y,z).project(C);const sx=(p.x*.5+.5)*W(),sy=(-p.y*.5+.5)*H();x0=Math.min(x0,sx);x1=Math.max(x1,sx);y0=Math.min(y0,sy);y1=Math.max(y1,sy)})));return{x:x0,y:y0,w:x1-x0,h:y1-y0}},
+  abrirRegalo(){return new Promise(ok=>{if(!R3)return ok();R3.ab=0;setTimeout(ok,2650)})},
+  ocultaCarta(){if(R3)R3.cartaFuera=true},
+  rectCarta(){if(!R3)return null;const c=R3.carta;let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;[[-.1,-.0625],[.1,-.0625],[-.1,.0625],[.1,.0625]].forEach(([x,y])=>{const p=c.localToWorld(V(x,y,0)).project(C);const sx=(p.x*.5+.5)*W(),sy=(-p.y*.5+.5)*H();x0=Math.min(x0,sx);x1=Math.max(x1,sx);y0=Math.min(y0,sy);y1=Math.max(y1,sy)});return{left:x0,top:y0,width:x1-x0,height:y1-y0}}
+};
+
 window.Intro3D={
   preparar(cv,prog,listo){cargaProg=prog;cargaListo=listo;construir(cv);camara(0,0);reloj.getDelta();cuadroLoop();if(!T.GLTFLoader)setTimeout(()=>{cargado=true;listo&&listo()},50)},
   get cargado(){return cargado},
+  get tiene3D(){return R3api.tiene3D},ruedas:R3api.ruedas,fija:R3api.fija,rectCandado:R3api.rectCandado,abrirRegalo:R3api.abrirRegalo,rectCarta:R3api.rectCarta,ocultaCarta:R3api.ocultaCarta,
   rectRegalo(){if(!regaloPlano)return{x:0,y:0,w:0,h:0};let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;const w=regaloPlano.userData.w/2,h=regaloPlano.userData.h/2;
     [[-w,-h],[w,-h],[-w,h],[w,h]].forEach(([x,y])=>{const p=regaloPlano.localToWorld(V(x,y,0)).project(C);const sx=(p.x*.5+.5)*W(),sy=(-p.y*.5+.5)*H();x0=Math.min(x0,sx);x1=Math.max(x1,sx);y0=Math.min(y0,sy);y1=Math.max(y1,sy)});return{x:x0,y:y0,w:x1-x0,h:y1-y0}},
-  fundeRegalo(ms){fundeDur=ms/1000;fundeT=0;manoL.visible=linternaObj.visible=false},
+  fundeRegalo(ms){if(R3){manoL.visible=linternaObj.visible=false;return}fundeDur=ms/1000;fundeT=0;manoL.visible=linternaObj.visible=false},
   // el regalo dibujado (capturado del SVG de la página) como una tarjeta en la mesa
-  ponRegalo(canvas){const t=new T.CanvasTexture(canvas);t.encoding=T.sRGBEncoding;t.anisotropy=8;
+  ponRegalo(canvas){if(R3)return;const t=new T.CanvasTexture(canvas);t.encoding=T.sRGBEncoding;t.anisotropy=8;
     regaloMat=new T.MeshBasicMaterial({map:t,transparent:true,toneMapped:false,fog:false,depthWrite:false});const w=.5,h=w*380/340;
     regaloPlano=new T.Mesh(new T.PlaneGeometry(w,h),regaloMat);regaloPlano.userData={w,h};
     regaloPlano.position.set(0,1.05+(350-190)/380*h,-7.0);regaloPlano.lookAt(V(0,1.42,-6.28));regaloPlano.renderOrder=5;S.add(regaloPlano);

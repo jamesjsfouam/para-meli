@@ -333,6 +333,8 @@ body.en-puerta{background:#000}
 #escena.sobre3d .regalo{animation:none;transition:none}
 #escena.sobre3d .caja3d{filter:brightness(.8) sepia(.12)}
 #escena.sobre3d .piso2d{display:none}
+#escena.r3d .caja3d,#escena.r3d .mesita{visibility:hidden}
+#ruedasWin.flotante{position:fixed!important;opacity:0;z-index:45;transform:none!important}#zonas.flotante{position:fixed!important;z-index:46;transform:none!important}
 #intro.sale{opacity:0;pointer-events:none}
 
 /* ============ toque wrapped: piezas comunes ============ */
@@ -930,14 +932,14 @@ const ruedas=[0,1,2,3].map(i=>(ABC.indexOf(CLAVE[i])+7+Math.floor(Math.random()*
 const PASO=matchMedia('(pointer:coarse)').matches?10:16;
 $('ventana').innerHTML=ruedas.map((_,i)=>`<div class="rueda" tabindex="0" role="spinbutton" aria-label="Letra ${i+1}"><div class="tira">${(ABC+ABC+ABC).split('').map(l=>`<span>${l}</span>`).join('')}</div></div>`).join('');
 const els=[...document.querySelectorAll('.rueda')];
-function pinta(i,d){const t=els[i].querySelector('.tira');vis[i]=d?vis[i]+d:ruedas[i]+26;t.style.transform=`translateY(${-(vis[i]-1)*H}px)`;els[i].setAttribute('aria-valuetext',ABC[ruedas[i]]);
+function pinta(i,d){const t=els[i].querySelector('.tira');vis[i]=d?vis[i]+d:ruedas[i]+26;t.style.transform=`translateY(${-(vis[i]-1)*H}px)`;els[i].setAttribute('aria-valuetext',ABC[ruedas[i]]);if(window.Intro3D&&Intro3D.ruedas)Intro3D.ruedas(ruedas);
   if(vis[i]<14||vis[i]>38)setTimeout(()=>{t.style.transition='none';vis[i]=ruedas[i]+26;t.style.transform=`translateY(${-(vis[i]-1)*H}px)`;void t.offsetWidth;t.style.transition=''},240)}
 let abierto=false;
 const fijas=[false,false,false,false];
 function mueve(i,d){if(abierto||fijas[i])return;ruedas[i]=(ruedas[i]+d+26)%26;pinta(i,d);clic();revisa(i)}
 function revisa(i){if(!fijas[i]&&ABC[ruedas[i]]===CLAVE[i])fijar(i)}
 function golpecito(){['candadoSvg','ruedasWin'].forEach(id=>{const e=$(id);e.classList.remove('golpe');void e.getBoundingClientRect();e.classList.add('golpe')})}
-function fijar(i){fijas[i]=true;const el=els[i];el.classList.add('fija');el.setAttribute('aria-disabled','true');
+function fijar(i){fijas[i]=true;if(window.Intro3D&&Intro3D.fija)Intro3D.fija(i);const el=els[i];el.classList.add('fija');el.setAttribute('aria-disabled','true');
   document.querySelectorAll('#leds .led')[i].classList.add('on');golpecito();
   sonidoBloqueo(fijas.filter(Boolean).length);
   setTimeout(()=>{const a=els.indexOf(document.activeElement);if(a<0||fijas[a]){const n=fijas.indexOf(false);if(n>=0)els[n].focus({preventScroll:true})}},120);
@@ -1090,7 +1092,7 @@ async function iniciaIntro(){
   cargaMedia('respira','media/respiracion_breathing-man.ogg');cargaMedia('paso','media/pasos_madera.wav');cargaMedia('rechina','media/puerta_crujido_squeaky-door.ogg');
   if(!window.THREE||!window.Intro3D){$('intro').remove();document.body.classList.remove('en-puerta');return}
   try{await Promise.all([document.fonts.load('80px "Reenie Beanie"'),document.fonts.load('500 30px "JetBrains Mono"')]).catch(()=>{});const txt=$('intro').querySelector('.intro-txt b');txt.textContent='Cargando la escena… 0%';
-    Intro3D.preparar($('c3d'),k=>{txt.textContent='Cargando la escena… '+Math.round(k*100)+'%'},()=>{txt.textContent='Tocá para entrar'});capturaRegalo().then(c=>Intro3D.ponRegalo(c)).catch(e=>console.warn(e))}catch(e){console.error(e);$('intro').remove();document.body.classList.remove('en-puerta')}
+    Intro3D.preparar($('c3d'),k=>{txt.textContent='Cargando la escena… '+Math.round(k*100)+'%'},()=>{txt.textContent='Tocá para entrar'});try{Intro3D.ruedas(ruedas)}catch(e){}capturaRegalo().then(c=>Intro3D.ponRegalo(c)).catch(e=>console.warn(e))}catch(e){console.error(e);$('intro').remove();document.body.classList.remove('en-puerta')}
 }
 async function capturaRegalo(){
   const org=document.querySelector('.caja3d'),cl=org.cloneNode(true);
@@ -1112,9 +1114,12 @@ async function capturaRegalo(){
   g.restore();URL.revokeObjectURL(url);return c}
 let entrando=false;
 function entrar(){if(entrando||!Intro3D.cargado)return;entrando=true;introEnCurso=true;desbloquea();$('intro').classList.add('andando');
-  Intro3D.correr(apiIntro,()=>{introEnCurso=false;ambiente();const es=$('escena');alinearRegalo();es.classList.add('ver');Intro3D.fundeRegalo(700);$('intro').style.cursor='default';
+  Intro3D.correr(apiIntro,()=>{introEnCurso=false;ambiente();const es=$('escena');if(Intro3D.tiene3D){es.classList.add('r3d');ubicaCandado()}else alinearRegalo();es.classList.add('ver');Intro3D.fundeRegalo(700);$('intro').style.cursor='default';
     setTimeout(()=>{document.body.classList.remove('en-puerta');const n=fijas.indexOf(false);if(n>=0)els[n].focus({preventScroll:true})},1400)})}
 /* pone el regalo dibujado exactamente donde está el regalo 3D */
+function ubicaCandado(){const r=Intro3D.rectCandado();if(!r)return;['ruedasWin','zonas'].forEach(id=>{const e=$(id);if(e.parentNode!==document.body)document.body.appendChild(e);e.classList.add('flotante');
+  Object.assign(e.style,{left:r.x+'px',top:r.y+'px',width:r.w+'px',height:r.h+'px'})})}
+addEventListener('resize',()=>{if(window.Intro3D&&Intro3D.tiene3D&&$('zonas').classList.contains('flotante')&&!abierto)ubicaCandado()});
 function alinearRegalo(){const el=$('regalo'),svg=el.querySelector('.caja3d');if(!svg||!window.Intro3D)return;
   el.style.scale='';el.style.translate='';const r=Intro3D.rectRegalo(),b=svg.getBoundingClientRect();
   const base=parseFloat(getComputedStyle(el).scale)||1;
@@ -1139,15 +1144,22 @@ async function abrir(){
   if(abierto)return;abierto=true;if(amb)amb.parar();
   const esc=$('escena');
   try{
+  let r;
+  if(window.Intro3D&&Intro3D.tiene3D){
+    esc.classList.add('abriendo');['ruedasWin','zonas'].forEach(id=>{const e=$(id);if(e)e.style.display='none'});clicFuerte();tono(1850,ctx()?ctx().currentTime:0,.003,.03,.25,'triangle');
+    const c=ctx();setTimeout(()=>{golpeGrave(c?c.currentTime:0,140,.45);ruido(.3,2600,6,.25)},800);setTimeout(()=>ruido(.5,1800,1.2,.25,true),560);
+    setTimeout(()=>whoosh(),950);setTimeout(()=>acordeRevelacion(),1300);setTimeout(()=>ruido(.6,3200,.9,.22,true),1750);
+    await Intro3D.abrirRegalo();r=Intro3D.rectCarta();setTimeout(()=>Intro3D.ocultaCarta(),60);
+  }else{
   esc.classList.add('abriendo');clicFuerte();tono(1850,ctx()?ctx().currentTime:0,.003,.03,.25,'triangle');
   await espera(420);esc.classList.add('cae-candado');setTimeout(()=>{golpeGrave(ctx()?ctx().currentTime:0,140,.45);ruido(.3,2600,6,.25)},360);
   await espera(300);esc.classList.add('sin-liston');ruido(.5,1800,1.2,.25,true);
   await espera(320);esc.classList.add('sin-tapa');whoosh();
   await espera(520);esc.classList.add('luz-interior');acordeRevelacion();
   await espera(160);esc.classList.add('sube-carta');setTimeout(()=>ruido(.6,3200,.9,.22,true),150);
-  await espera(720);
+  await espera(720);r=$('papelSvg').getBoundingClientRect()}
   // la carta todavía sube: pasa a primer plano sin frenar
-  const r=$('papelSvg').getBoundingClientRect(),cf=$('cartaFinal');
+  const cf=$('cartaFinal');
   Object.assign(cf.style,{left:r.left+'px',top:(r.top-r.height)+'px',width:r.width+'px',height:(r.height*3)+'px',fontSize:r.width+'px'});
   cf.classList.add('ver');$('papelGrupo').style.opacity=0;esc.classList.add('atenua');
   const dx=innerWidth/2-(r.left+r.width/2),dy=innerHeight/2-(r.top+r.height/2);
@@ -1272,6 +1284,7 @@ els[0].focus({preventScroll:true});
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/OBJLoader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/geometries/RoundedBoxGeometry.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/RGBELoader.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/CopyShader.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/LuminosityHighPassShader.js"></script>
@@ -1279,7 +1292,7 @@ els[0].focus({preventScroll:true});
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/RenderPass.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/ShaderPass.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
-<script src="intro3d.js?v=101"></script>
+<script src="intro3d.js?v=113"></script>
 <script>iniciaIntro()</script>
 </body>
 </html>
