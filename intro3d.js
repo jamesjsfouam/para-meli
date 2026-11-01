@@ -178,6 +178,13 @@ function liberaImagenes(){const ts=new Set();
   S.traverse(o=>{const ms=o.material?(Array.isArray(o.material)?o.material:[o.material]):[];ms.forEach(m=>Object.keys(m).forEach(k=>{const t=m[k];if(t&&t.isTexture&&!t.isDataTexture&&t.image&&t.image.width)ts.add(t)}))});
   const ok=new Set();ts.forEach(t=>{try{R.initTexture(t);ok.add(t)}catch(e){}});               // primero se suben todas (algunas comparten lienzo)
   ok.forEach(t=>{const im=t.image;t.image={width:im.width,height:im.height};if(im instanceof HTMLCanvasElement&&![...ok].some(u=>u.image===im)){try{im.width=im.height=0}catch(e){}}})}
+// Matrices congeladas: los objetos quietos no recalculan su matriz en cada cuadro.
+// Si algo los mueve después (posición, rotación, escala, lookAt…), se despiertan solos y vuelven a actualizarse.
+function congelaEstaticos(){S.traverse(o=>{if(o.isCamera||!o.matrixAutoUpdate||o.userData.vivo)return;let p=o.parent;while(p){if(p.isCamera)return;p=p.parent}congela(o)})}
+function congela(o){o.updateMatrix();o.matrixAutoUpdate=false;let dormido=true;const vs=[o.position,o.scale];
+  const despierta=()=>{if(!dormido)return;dormido=false;o.matrixAutoUpdate=true;vs.forEach(v=>['x','y','z'].forEach(k=>{const n=v[k];delete v[k];v[k]=n}))};
+  vs.forEach(v=>{const d={x:v.x,y:v.y,z:v.z};['x','y','z'].forEach(k=>Object.defineProperty(v,k,{configurable:true,enumerable:true,get(){return d[k]},set(n){if(n!==d[k]){d[k]=n;despierta()}}}))});
+  const r=o.rotation._onChangeCallback,q=o.quaternion._onChangeCallback;o.rotation._onChange(()=>{r();despierta()});o.quaternion._onChange(()=>{q();despierta()})}
 function achicaTexturas(max){const vistas=new Set();S.traverse(o=>{const ms=o.material?(Array.isArray(o.material)?o.material:[o.material]):[];ms.forEach(m=>Object.keys(m).forEach(k=>{const t=m[k];if(!t||!t.isTexture||vistas.has(t))return;vistas.add(t);const im=t.image;
   if(!im||!im.width||Math.max(im.width,im.height)<=max||t.isDataTexture||t.noResize)return;const f=max/Math.max(im.width,im.height),c=document.createElement('canvas');c.width=Math.round(im.width*f);c.height=Math.round(im.height*f);
   try{c.getContext('2d').drawImage(im,0,0,c.width,c.height);t.image=c;t.needsUpdate=true}catch(e){}}))})}
@@ -271,8 +278,8 @@ function construir(cv){
   // se prepara en pasos cortos (con respiros entre uno y otro) para que la página no se congele
   const prepara=()=>{if(preparado)return;preparado=true;cargaProg&&cargaProg(-1);
     const pasos=[()=>{if(MOVIL)achicaTexturas(IOS?512:(BAJO?768:1024))},()=>zonificar(),
-      ...(MOVIL?[]:['escritorio','afuera','adentro'].map(z=>()=>{aplicaZona(z);R.compile(S,C)})),
-      ()=>aplicaZona('escritorio'),()=>{if(IOS)liberaImagenes()},()=>{if(!MOVIL)calentar()},()=>avisaListo()];
+      ...['escritorio','afuera','adentro'].map(z=>()=>{aplicaZona(z);R.compile(S,C)}),
+      ()=>aplicaZona('escritorio'),()=>{if(IOS)liberaImagenes()},()=>{if(!MOVIL)calentar()},()=>congelaEstaticos(),()=>avisaListo()];
     const sigue=()=>{const f=pasos.shift();if(!f)return;try{f()}catch(e){console.warn(e)}setTimeout(sigue,30)};setTimeout(sigue,30)};
   LM=new T.LoadingManager(()=>prepara(),(u,l,t)=>{if(!preparado)cargaProg&&cargaProg(l/t)});
   setTimeout(prepara,40000);   // si algún archivo nunca responde, igual se sigue
