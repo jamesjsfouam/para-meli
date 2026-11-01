@@ -47,7 +47,7 @@ em{font-style:inherit;color:var(--pasion)}
 @keyframes respiraLuz{50%{box-shadow:inset 0 0 220px 90px #000}}
 #escena.fuera{opacity:0;pointer-events:none}
 .foco{position:absolute;left:50%;top:-10%;width:620px;height:110%;margin-left:-310px;background:radial-gradient(50% 60% at 50% 32%,#ffe9c41f,transparent 70%);pointer-events:none}
-.mesa{position:absolute;left:-10%;right:-10%;bottom:0;height:34%;z-index:1;overflow:hidden;
+.mesa{position:absolute;left:-10%;right:-10%;bottom:0;height:26%;z-index:1;overflow:hidden;
   background:
    radial-gradient(34% 30% at 50% 10%,#c7894a40,transparent 70%),
    radial-gradient(60% 55% at 50% 0%,#6b42222e,transparent 75%),
@@ -112,6 +112,8 @@ em{font-style:inherit;color:var(--pasion)}
 @keyframes golpeCand{35%{transform:translateY(3px)}}
 .cae-candado #ruedasWin{transform:translateY(90px) rotate(8deg);opacity:0}
 #ruedasWin{position:absolute;left:116px;top:266px;width:88px;height:48px;transform-origin:50% 0}
+#zonas{position:absolute;left:116px;top:266px;width:88px;height:48px;display:flex;z-index:3;pointer-events:auto}
+#zonas i{flex:1;margin:0;touch-action:none}
 .ventana{position:relative;display:flex;gap:4px;width:100%;height:100%}
 .ventana::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:4;border-radius:2px;background:linear-gradient(172deg,#ffffff30 0%,#ffffff08 40%,transparent 42%)}
 .rueda{position:relative;flex:1;height:48px;border-radius:2px;overflow:hidden;touch-action:none;outline:none;cursor:ns-resize;
@@ -197,7 +199,7 @@ em{font-style:inherit;color:var(--pasion)}
 .cf-meli{display:inline-block;margin-top:.15em;background:var(--pasion);color:var(--papel);padding:.02em .25em .08em;border:.02em solid var(--ink);box-shadow:.04em .04em 0 var(--ink);transform:rotate(-2deg)}
 .cf-firma{font:400 .11em/1 "Reenie Beanie",cursive;color:var(--pasion);align-items:flex-start;padding-top:6%}
 .regalo.sacude{animation:sacude .45s cubic-bezier(.36,.07,.19,.97)}
-#zonas{position:absolute;left:100px;top:240px;width:120px;height:98px;display:grid;grid-template-columns:repeat(4,1fr);z-index:3;touch-action:none;transition:transform .5s,opacity .35s}
+#zonas{position:absolute;left:116px;top:260px;width:88px;height:48px;display:grid;grid-template-columns:repeat(4,1fr);z-index:3;touch-action:none;transition:transform .5s,opacity .35s}
 #zonas i{cursor:ns-resize}
 .instruccion .tactil{display:none}
 @media (pointer:coarse){.instruccion .raton{display:none}.instruccion .tactil{display:inline}}
@@ -290,7 +292,7 @@ body.en-puerta{background:#000}
   #ruedasWin.flotante{width:240px!important;height:132px!important}
   #zonas.flotante{width:240px!important;height:132px!important}
   #zonas.flotante i{margin:0}
-  #escena.sobre3d .mesa{height:42%;background:
+  #escena.sobre3d .mesa{height:24%;background:
     radial-gradient(44% 34% at 50% 8%,#d89b5b55,transparent 70%),
     radial-gradient(70% 65% at 50% 0%,#8a542d44,transparent 75%),
     linear-gradient(#382315,#160c07 70%,#090504);
@@ -299,7 +301,7 @@ body.en-puerta{background:#000}
 @media (max-width:700px){
   #zonas.flotante{width:240px!important;height:132px!important}
   #zonas.flotante i{margin:0}
-  #escena.sobre3d .mesa{height:48%;z-index:1;background:
+  #escena.sobre3d .mesa{height:24%;z-index:1;background:
     radial-gradient(44% 34% at 50% 8%,#d89b5b55,transparent 70%),
     radial-gradient(70% 65% at 50% 0%,#8a542d44,transparent 75%),
     linear-gradient(#382315,#160c07 70%,#090504),#382315}
@@ -934,7 +936,7 @@ function entrar(){if(entrando||!Intro3D.cargado)return;entrando=true;introEnCurs
   b.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&!t0){e.preventDefault();t0=performance.now();raf=requestAnimationFrame(paso)}});b.addEventListener('keyup',fin)})();
 /* tocar la etiqueta 3D la voltea (frente: para quién; reverso: la pista) */
 document.addEventListener('click',e=>{if(!window.Intro3D||!Intro3D.rectEtiqueta||abierto||!$('escena')||!$('escena').classList.contains('ver'))return;const r=Intro3D.rectEtiqueta();if(r&&e.clientX>=r.x-12&&e.clientX<=r.x+r.w+12&&e.clientY>=r.y-12&&e.clientY<=r.y+r.h+12){Intro3D.voltea();clic()}});
-function ubicaCandado(){let r=(Intro3D.rectRuedas||Intro3D.rectCandado)();if(!r)return;const tactil=!!Intro3D.movil||matchMedia('(pointer:coarse)').matches,w=tactil?240:Math.max(r.w,184),h=tactil?132:Math.max(r.h,120);r={x:r.x+r.w/2-w/2,y:r.y+r.h/2-h/2,w,h};r.x=Math.max(12,Math.min(innerWidth-w-12,r.x));r.y=Math.max(12,Math.min(innerHeight-h-12,r.y));['ruedasWin','zonas'].forEach(id=>{const e=$(id);if(e.parentNode!==document.body){e._padre=e.parentNode;e._sig=e.nextSibling;document.body.appendChild(e)}e.classList.add('flotante');
+function ubicaCandado(){let r=(Intro3D.rectRuedas||Intro3D.rectCandado)();const valido=r&&Number.isFinite(r.x)&&Number.isFinite(r.y)&&Number.isFinite(r.w)&&Number.isFinite(r.h)&&r.w>0&&r.h>0&&r.x<innerWidth*2&&r.y<innerHeight*2&&r.x+r.w>-innerWidth&&r.y+r.h>-innerHeight;if(!valido){const v=$('ruedasWin').getBoundingClientRect();if(!v.width||!v.height)return;r={x:v.x,y:v.y,w:v.width,h:v.height}}const tactil=!!Intro3D.movil||matchMedia('(pointer:coarse)').matches,w=tactil?240:Math.max(r.w,184),h=tactil?132:Math.max(r.h,120);r={x:r.x+r.w/2-w/2,y:r.y+r.h/2-h/2,w,h};r.x=Math.max(12,Math.min(innerWidth-w-12,r.x));r.y=Math.max(12,Math.min(innerHeight-h-12,r.y));['ruedasWin','zonas'].forEach(id=>{const e=$(id);if(e.parentNode!==document.body){e._padre=e.parentNode;e._sig=e.nextSibling;document.body.appendChild(e)}e.classList.add('flotante');
   Object.assign(e.style,{left:r.x+'px',top:r.y+'px',width:r.w+'px',height:r.h+'px'})})}
 addEventListener('resize',()=>{if(window.Intro3D&&Intro3D.tiene3D&&$('zonas').classList.contains('flotante')&&!abierto)requestAnimationFrame(()=>requestAnimationFrame(ubicaCandado))});
 $('intro').addEventListener('click',entrar);
