@@ -173,7 +173,7 @@ const MOVIL=/Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent)||(match
 // calidad baja solo en celular y solo si ella la eligió (botón "Bajar calidad")
 // Safari (iPhone/iPad) guarda copias de cada imagen y lienzo aunque ya estén en la GPU y cierra la página mucho antes que Chrome
 const IOS=/[?&]ios=1/.test(location.search)||/iPhone|iPad|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
-const BAJO=MOVIL&&(()=>{try{return localStorage.getItem('meliLigero')!=='0'||(+localStorage.getItem('meliIntentos')||0)>=2}catch(e){return true}})();
+const BAJO=MOVIL&&(()=>{try{return localStorage.getItem('meliLigero')!=='0'}catch(e){return true}})();
 function liberaImagenes(){const ts=new Set();
   S.traverse(o=>{const ms=o.material?(Array.isArray(o.material)?o.material:[o.material]):[];ms.forEach(m=>Object.keys(m).forEach(k=>{const t=m[k];if(t&&t.isTexture&&!t.isDataTexture&&t.image&&t.image.width)ts.add(t)}))});
   const ok=new Set();ts.forEach(t=>{try{R.initTexture(t);ok.add(t)}catch(e){}});               // primero se suben todas (algunas comparten lienzo)

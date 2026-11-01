@@ -949,14 +949,13 @@ async function iniciaIntro(){
   if(!window.THREE||!window.Intro3D){sin3D();return}
   try{await Promise.race([new Promise(r=>setTimeout(r,3000)),Promise.all([document.fonts.load('80px "Reenie Beanie"'),document.fonts.load('500 30px "JetBrains Mono"'),document.fonts.load('800 54px "JetBrains Mono"'),document.fonts.load('600 30px "JetBrains Mono"'),document.fonts.load('900 30px Unbounded'),document.fonts.load('900 40px "Inter Tight"')]).catch(()=>{})]);const txt=$('intro').querySelector('.intro-txt b');txt.textContent='Cargando la escena… 0%';
     setTimeout(()=>{if(!Intro3D.cargado&&$('intro')){cargaLenta=true;txt.textContent='Tocá para abrir tu regalo';$('cargaVelo').classList.add('fuera')}},60000);
-    {let n=0;try{n=+localStorage.getItem('meliIntentos')||0;localStorage.setItem('meliIntentos',n+1)}catch(e){}
-     if(n>=(Intro3D.ios?2:3)){sin3D();return}}
+    try{localStorage.removeItem('meliIntentos')}catch(e){}
     try{const g=localStorage.getItem('meliLigero');if(g==='1'||(Intro3D.movil&&g!=='0'))Intro3D.ligero_(true)}catch(e){}
     Intro3D.preparar($('c3d'),k=>{if(Intro3D.cargado||!$('cvBarra')||!$('intro'))return;if(k<0){txt.textContent='Preparando la escena…';$('cvTxt').textContent='Preparando la escena…';$('cvBarra').style.width='100%';return}const v=Math.round(k*100);txt.textContent='Cargando la escena… '+v+'%';$('cvBarra').style.width=v+'%';$('cvTxt').textContent='Cargando… '+v+'%'},()=>{if(!$('intro'))return;txt.textContent='Tocá para entrar';$('cvBarra').style.width='100%';$('cargaVelo').classList.add('fuera')});try{Intro3D.ruedas(ruedas)}catch(e){console.warn('No se pudieron inicializar las ruedas',e)}}catch(e){console.error(e);sin3D()}
 }
 let entrando=false,cargaLenta=false,modo2D=false;
 /* modo ligero: se recuerda en esta compu */
-(()=>{const b=$('ligero');if(!b)return;const esMovil=/Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent)||(matchMedia('(pointer:coarse)').matches&&Math.min(screen.width,screen.height)<900);let on=esMovil;try{const g=localStorage.getItem('meliLigero');if(g!==null)on=g==='1';if(esMovil&&(+localStorage.getItem('meliIntentos')||0)>=2)on=true}catch(e){}
+(()=>{const b=$('ligero');if(!b)return;const esMovil=/Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent)||(matchMedia('(pointer:coarse)').matches&&Math.min(screen.width,screen.height)<900);let on=esMovil;try{const g=localStorage.getItem('meliLigero');if(g!==null)on=g==='1';}catch(e){}
   const etiqueta=b.querySelector('.mono'),pinta=()=>{b.setAttribute('aria-pressed',!on);b.title=on?'Activar calidad alta':'Bajar calidad para ahorrar batería';if(etiqueta)etiqueta.textContent=on?'Mejorar calidad':'Bajar calidad';if(window.Intro3D&&Intro3D.ligero_)Intro3D.ligero_(on)};pinta();
   b.addEventListener('click',e=>{e.stopPropagation();on=!on;try{localStorage.setItem('meliLigero',on?'1':'0')}catch(e){}pinta();if(window.Intro3D&&Intro3D.movil&&!entrando)setTimeout(()=>location.reload(),150)});
   b.addEventListener('keydown',e=>e.stopPropagation())})();
@@ -1213,7 +1212,7 @@ els[0].focus({preventScroll:true});
 <script src="vendor/RenderPass.js"></script>
 <script src="vendor/ShaderPass.js"></script>
 <script src="vendor/UnrealBloomPass.js"></script>
-<script src="intro3d.js?v=242"></script>
+<script src="intro3d.js?v=243"></script>
 <script>iniciaIntro()</script>
 </body>
 </html>
