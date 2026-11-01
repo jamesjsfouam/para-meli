@@ -252,7 +252,9 @@ function abandono(){const P2=Math.PI/2;
 
 /* ---------- la escena ---------- */
 function construir(cv){
-  LM=new T.LoadingManager(()=>{setTimeout(()=>{if(MOVIL)try{achicaTexturas(768)}catch(e){}try{calentar()}catch(e){console.warn(e)}try{zonificar();compilaZonas()}catch(e){console.warn(e)}if(LIGERO)ponLigero(true);cargado=true;cargaListo&&cargaListo()},60)},(u,l,t)=>{cargaProg&&cargaProg(l/t)});
+  let listoAvisado=false;
+  const avisaListo=()=>{if(listoAvisado)return;listoAvisado=true;cargado=true;if(LIGERO)ponLigero(true);cargaListo&&cargaListo()};
+  LM=new T.LoadingManager(()=>{setTimeout(()=>{if(MOVIL)try{achicaTexturas(768)}catch(e){}try{zonificar();compilaZonas()}catch(e){console.warn(e)}try{calentar()}catch(e){console.warn(e)}},0);avisaListo()},(u,l,t)=>{cargaProg&&cargaProg(l/t)});
   R=new T.WebGLRenderer({canvas:cv,antialias:false,powerPreference:'high-performance'});
   prMax=Math.min(devicePixelRatio,MOVIL?.8:.8);pr=prMax;R.setPixelRatio(pr);R.setSize(W(),H());R.outputEncoding=T.sRGBEncoding;
   R.toneMapping=T.ACESFilmicToneMapping;R.toneMappingExposure=1.25;R.shadowMap.enabled=true;R.shadowMap.autoUpdate=false;R.shadowMap.type=T.PCFShadowMap;R.physicallyCorrectLights=false;
@@ -634,6 +636,7 @@ function construir(cv){
   reloj=new T.Clock();
   addEventListener('resize',()=>{aplicaPR();C.aspect=W()/H();C.fov=W()<H()?76:60;C.updateProjectionMatrix()});
   listo=true;
+  setTimeout(avisaListo,250);
 }
 
 /* ---------- precalentar la escena completa en un buffer oculto ---------- */
