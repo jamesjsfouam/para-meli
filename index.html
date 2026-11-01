@@ -911,7 +911,7 @@ async function iniciaIntro(){
 let entrando=false;
 /* modo ligero: se recuerda en esta compu */
 (()=>{const b=$('ligero');if(!b)return;const movil=matchMedia('(pointer:coarse)').matches||Math.min(screen.width,screen.height)<820;let on=movil;try{const g=localStorage.getItem('meliLigero');if(g!==null&&!movil)on=g==='1'}catch(e){}
-  const etiqueta=b.querySelector('.mono'),pinta=()=>{b.setAttribute('aria-pressed',on);b.title=on?'Activar una calidad visual más alta':'Usar calidad ligera para ahorrar batería';if(etiqueta)etiqueta.textContent=on?'Mejorar calidad':'Calidad alta';if(window.Intro3D&&Intro3D.ligero_)Intro3D.ligero_(on)};pinta();
+  const etiqueta=b.querySelector('.mono'),pinta=()=>{b.setAttribute('aria-pressed',!on);b.title=on?'Activar una calidad visual más alta':'Usar calidad ligera para ahorrar batería';if(etiqueta)etiqueta.textContent=on?'Mejorar calidad':'Calidad alta';if(window.Intro3D&&Intro3D.ligero_)Intro3D.ligero_(on)};pinta();
   b.addEventListener('click',e=>{e.stopPropagation();on=!on;try{localStorage.setItem('meliLigero',on?'1':'0')}catch(e){}pinta()});
   b.addEventListener('keydown',e=>e.stopPropagation())})();
 function entrar(){if(entrando||!Intro3D.cargado)return;entrando=true;introEnCurso=true;$('saltar').classList.add('ver');desbloquea();$('intro').classList.add('andando');if(reducido)setTimeout(()=>{try{Intro3D.saltar()}catch(e){}},350);
