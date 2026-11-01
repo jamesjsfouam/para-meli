@@ -332,6 +332,7 @@ body.en-puerta{background:#000}
 #escena.sobre3d::before{box-shadow:inset 0 0 160px 50px #000a;animation:none}
 #escena.sobre3d .regalo{animation:none;transition:none}
 #escena.sobre3d .caja3d{filter:brightness(.8) sepia(.12)}
+#escena.sobre3d .piso2d{display:none}
 #intro.sale{opacity:0;pointer-events:none}
 
 /* ============ toque wrapped: piezas comunes ============ */
@@ -627,8 +628,8 @@ body.en-puerta{background:#000}
         </defs>
 
         <!-- piso: sombra de contacto y reflejo rojo en la mesa -->
-        <ellipse cx="178" cy="356" rx="182" ry="22" fill="url(#reflejo)"/>
-        <ellipse cx="184" cy="352" rx="176" ry="18" fill="url(#piso)" filter="url(#blur10)"/><ellipse cx="176" cy="349" rx="140" ry="6" fill="#000" opacity=".9" filter="url(#blur2)"/>
+        <ellipse class="piso2d" cx="178" cy="356" rx="182" ry="22" fill="url(#reflejo)"/>
+        <ellipse class="piso2d" cx="184" cy="352" rx="176" ry="18" fill="url(#piso)" filter="url(#blur10)"/><ellipse cx="176" cy="349" rx="140" ry="6" fill="#000" opacity=".9" filter="url(#blur2)"/>
         <path d="M44 348 H280 L320 318" fill="none" stroke="#000" stroke-width="6" stroke-opacity=".85" filter="url(#blur2)"/>
 
         <!-- interior de la caja (se ve cuando sale la tapa) -->
@@ -1278,7 +1279,7 @@ els[0].focus({preventScroll:true});
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/RenderPass.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/ShaderPass.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
-<script src="intro3d.js?v=98"></script>
+<script src="intro3d.js?v=101"></script>
 <script>iniciaIntro()</script>
 </body>
 </html>

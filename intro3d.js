@@ -174,7 +174,7 @@ function crearMano(lado=1){
 function construir(cv){
   LM=new T.LoadingManager(()=>{setTimeout(()=>{try{calentar()}catch(e){console.warn(e)}cargado=true;cargaListo&&cargaListo()},60)},(u,l,t)=>{cargaProg&&cargaProg(l/t)});
   R=new T.WebGLRenderer({canvas:cv,antialias:true,powerPreference:'high-performance'});
-  R.setPixelRatio(Math.min(devicePixelRatio,1.6));R.setSize(W(),H());R.outputEncoding=T.sRGBEncoding;
+  R.setPixelRatio(Math.min(devicePixelRatio,innerWidth<800?1:1.4));R.setSize(W(),H());R.outputEncoding=T.sRGBEncoding;
   R.toneMapping=T.ACESFilmicToneMapping;R.toneMappingExposure=1.25;R.shadowMap.enabled=true;R.shadowMap.type=T.PCFSoftShadowMap;R.physicallyCorrectLights=false;
   S=new T.Scene();S.fog=new T.FogExp2('#0a0e13',.065);
   C=new T.PerspectiveCamera(W()<H()?76:60,W()/H(),.02,90);C.position.set(0,1.62,11);S.add(C);
@@ -331,7 +331,7 @@ function construir(cv){
   // columnas torneadas del porche
   [-1.95,1.95].forEach(x=>{const col=new T.Mesh(new T.LatheGeometry([new T.Vector2(.11,0),new T.Vector2(.11,.1),new T.Vector2(.07,.18),new T.Vector2(.075,1.1),new T.Vector2(.09,1.3),new T.Vector2(.07,1.5),new T.Vector2(.075,2.4),new T.Vector2(.11,2.5),new T.Vector2(.11,2.62)],18),trim);col.position.set(x,.3,2.05);col.castShadow=true;S.add(col)});
   cactus(-1.5,1.6,1.1);cactus(1.55,1.7,.9);
-  const farol=new T.PointLight('#ffb070',.6,6,2);farol.position.set(.9,2.6,.6);farol.castShadow=true;farol.shadow.mapSize.set(512,512);S.add(farol);parpadeo.push([farol,.7]);
+  const farol=new T.PointLight('#ffb070',.6,6,2);farol.position.set(.9,2.6,.6);S.add(farol);parpadeo.push([farol,.7]);
   const bomb=new T.Sprite(new T.SpriteMaterial({map:brillo('rgba(255,190,110,1)'),depthWrite:false}));bomb.position.copy(farol.position);bomb.scale.set(.45,.45,1);S.add(bomb);parpadeo.push([bomb,.8]);
 
   // ----- adentro: la escena del crimen -----
@@ -393,7 +393,7 @@ function construir(cv){
   calco(sangre('salpicadura'),.45,.45,-3.5,.66,-4.1,0,0,.9);                     // chorrea por el costado de la sábana
   // mesita de noche con lámpara tenue
 
-  const luzN=new T.PointLight('#ffb070',.5,3.2,2);luzN.position.set(-4.5,1.25,-5.95);luzN.castShadow=true;luzN.shadow.mapSize.set(512,512);S.add(luzN);parpadeo.push([luzN,.5]);
+  const luzN=new T.PointLight('#ffb070',.5,3.2,2);luzN.position.set(-4.5,1.25,-5.95);S.add(luzN);parpadeo.push([luzN,.5]);
   // marcadores de evidencia junto a la cama
   [[-2.5,-4.0],[-2.45,-5.2],[-3.2,-3.6],[-3.4,-5.6],[-2.2,-4.6]].forEach(([x,z],i)=>{const g=new T.Group();const m=new T.Mesh(new T.CylinderGeometry(.0001,.07,.12,3),M({map:etiquetaNum(i+1),color:'#f0c419',roughness:.5}));m.position.y=.06;g.add(m);g.position.set(x,.3,z);g.rotation.y=rnd(0,3);S.add(sombra(g))});
   // cinta alrededor de la cama, entre dos parantes, sin cruzar el paso
@@ -404,17 +404,17 @@ function construir(cv){
   // ventana tapiada en la pared de afuera: la luna se cuela entre las tablas
   {caja(.05,1.2,1.0,M({color:'#05070a',roughness:.1,metalness:.6}),-4.82,1.9,-1.8);caja(.08,.08,1.12,marcoP,-4.8,2.52,-1.8);caja(.08,.08,1.12,marcoP,-4.8,1.28,-1.8);
    [[.5],[-.45]].forEach(([a])=>{const t=caja(.04,.14,1.3,pbr('weathered_planks',[1,1]),-4.78,1.9+rnd(-.1,.1),-1.8);t.rotation.x=a});
-   const lun=new T.SpotLight('#9fb4ff',1.4,8,.42,.7,1.5);lun.position.set(-5.6,2.6,-1.8);const tg=new T.Object3D();tg.position.set(-3.2,.3,-2.6);S.add(tg);lun.target=tg;lun.castShadow=true;lun.shadow.mapSize.set(1024,1024);S.add(lun)}
+   const lun=new T.SpotLight('#9fb4ff',1.4,8,.42,.7,1.5);lun.position.set(-5.6,2.6,-1.8);const tg=new T.Object3D();tg.position.set(-3.2,.3,-2.6);S.add(tg);lun.target=tg;S.add(lun)}
   // luces de trabajo forense en trípode, frías, apuntando a la cama
-  const tripode=(x,z,mira)=>{const g=new T.Group();const metal=M({color:'#2a2c30',roughness:.4,metalness:.8});
+  const tripode=(x,z,mira,sombraT=false)=>{const g=new T.Group();const metal=M({color:'#2a2c30',roughness:.4,metalness:.8});
     for(let i=0;i<3;i++){const a=i*Math.PI*2/3;const p=new T.Mesh(new T.CylinderGeometry(.012,.012,1.05,8),metal);p.position.set(Math.cos(a)*.22,.48,Math.sin(a)*.22);p.rotation.set(Math.sin(a)*.42,0,-Math.cos(a)*.42);g.add(p)}
     const poste=new T.Mesh(new T.CylinderGeometry(.015,.015,.9,8),metal);poste.position.y=1.3;g.add(poste);
     const cab=new T.Group();cab.position.y=1.78;g.add(cab);const caja2=new T.Mesh(new T.BoxGeometry(.3,.22,.12),M({color:'#c9a400',roughness:.5}));cab.add(caja2);
     const cara=new T.Mesh(new T.PlaneGeometry(.26,.18),new T.MeshBasicMaterial({color:'#f4f8ff'}));cara.position.z=.061;cab.add(cara);
     const gl=new T.Sprite(new T.SpriteMaterial({map:brillo('rgba(230,240,255,1)'),depthWrite:false,blending:T.AdditiveBlending}));gl.position.z=.1;gl.scale.set(.7,.6,1);cab.add(gl);
     g.position.set(x,.3,z);S.add(sombra(g));cab.lookAt(mira);
-    const sl=new T.SpotLight('#eaf2ff',2.0,9,.5,.55,1.6);sl.position.set(x,2.08,z);const tg=new T.Object3D();tg.position.copy(mira);S.add(tg);sl.target=tg;sl.castShadow=true;sl.shadow.mapSize.set(1024,1024);S.add(sl)};
-  tripode(-2.0,-6.9,V(-4.6,1.6,-4.6));tripode(-1.6,-1.6,V(-4.0,.9,-4.6));
+    const sl=new T.SpotLight('#eaf2ff',2.0,9,.5,.55,1.6);sl.position.set(x,2.08,z);const tg=new T.Object3D();tg.position.copy(mira);S.add(tg);sl.target=tg;if(sombraT){sl.castShadow=true;sl.shadow.mapSize.set(1024,1024)}S.add(sl)};
+  tripode(-2.0,-6.9,V(-4.6,1.6,-4.6),true);tripode(-1.6,-1.6,V(-4.0,.9,-4.6));
   // bolsas de evidencia y un maletín forense
   [[-2.3,-6.2],[-2.6,-6.35]].forEach(([x,z])=>{const b=caja(.18,.01,.24,new T.MeshStandardMaterial({color:'#e8eef4',roughness:.15,transparent:true,opacity:.55}),x,.31,z);b.rotation.y=rnd(0,1)});
   {const m=caja(.45,.14,.3,M({color:'#1a1a1c',roughness:.4,metalness:.3}),-1.5,.37,-7.4);caja(.46,.02,.02,M({color:'#c0c4c8',metalness:1,roughness:.2}),-1.5,.44,-7.25)}
@@ -640,8 +640,8 @@ function camara(t,dt){
    const sx=Math.max(-.08,Math.min(.08,camara.sx)),sy=Math.max(-.06,Math.min(.06,camara.sy));
    manoL.position.x=-.13+sx+bobX*.3;linternaObj.position.x=-.12+sx+bobX*.3;manoL.position.y+=sy;linternaObj.position.y+=sy;
    linternaObj.rotation.y=.1+sx*1.5;manoL.rotation.z=1.35+sx*.8;linternaObj.rotation.x=.08;linternaObj.rotation.z=0;linternaObj.scale.setScalar(1);manoL.position.z=-.3;linternaObj.position.z=-.33;manoL.rotation.x=.15;manoL.rotation.y=.12}
-  if(t<2.55&&t>0)agarrarLinterna(t);
-  const enMesa=t<2.55;manoL.visible=(!enMesa||t>.3)&&!fin2;linternaObj.visible=(!enMesa||t>=1.0)&&!fin2;linterna.intensity=enMesa?0:(apagonT<0?3.2:linterna.intensity);
+  if(t>=2.55&&t<3.4){const k=suave(sat((t-2.55)/.85));manoL.position.y-=(1-k)*.32;linternaObj.position.y-=(1-k)*.32;manoL.position.x-=(1-k)*.06;linternaObj.position.x-=(1-k)*.06}
+  const enMesa=t<2.55;manoL.visible=linternaObj.visible=!enMesa&&!fin2;linterna.intensity=enMesa?0:(apagonT<0?3.2:linterna.intensity);
   const cab=linternaObj.localToWorld(V(0,0,-.13));linterna.position.copy(cab);
   const dir=new T.Vector3();C.getWorldDirection(dir);
   linterna.target.position.lerp(C.position.clone().add(dir.multiplyScalar(6)),dt>0?Math.min(1,dt*4):1);
@@ -655,7 +655,6 @@ let apagonT=-1,zoomCam=false,puertaObj=0,puertaVel=1,manoEst='fuera',manoK=0,gir
 function linea(){
   ev.length=0;const e=(t,f)=>ev.push({t,f,hecho:false});
   e(.05,()=>{sonar('lluvia',1);sonar('respira')});
-  e(1.0,()=>sonar('tomar'));
   e(1.95,()=>fadeObj=1);
   e(2.55,()=>{fadeObj=0;lampEsc.intensity=0;sonar('hoja')});
   e(.06,()=>sonar('escena','escritorio'));e(2.6,()=>sonar('escena','afuera'));
@@ -730,7 +729,8 @@ window.Intro3D={
     regaloMat=new T.MeshBasicMaterial({map:t,transparent:true,toneMapped:false,fog:false,depthWrite:false});const w=.5,h=w*380/340;
     regaloPlano=new T.Mesh(new T.PlaneGeometry(w,h),regaloMat);regaloPlano.userData={w,h};
     regaloPlano.position.set(0,1.05+(350-190)/380*h,-7.0);regaloPlano.lookAt(V(0,1.42,-6.28));regaloPlano.renderOrder=5;S.add(regaloPlano);
-    const sh=new T.Mesh(new T.CircleGeometry(.3,32),new T.MeshBasicMaterial({color:'#000',transparent:true,opacity:.55,depthWrite:false}));sh.rotation.x=-Math.PI/2;sh.scale.y=.45;sh.scale.x=.78;sh.position.set(.02,1.053,-6.98);S.add(sh)},
+    const [cs,gs]=lienzo(256,256);const gr=gs.createRadialGradient(128,128,10,128,128,128);gr.addColorStop(0,'rgba(0,0,0,.85)');gr.addColorStop(.45,'rgba(0,0,0,.55)');gr.addColorStop(1,'rgba(0,0,0,0)');gs.fillStyle=gr;gs.fillRect(0,0,256,256);
+    const sh=new T.Mesh(new T.PlaneGeometry(.62,.62),new T.MeshBasicMaterial({map:new T.CanvasTexture(cs),transparent:true,depthWrite:false}));sh.rotation.x=-Math.PI/2;sh.scale.y=.5;sh.scale.x=1.05;sh.position.set(.04,1.054,-6.95);S.add(sh)},
   correr(api,fin){pisada=api.paso||pisada;sonar=api.sonar||sonar;linea();alTerminar=fin;t0=performance.now();tAcum=0;corriendo=true},
   parar(){listo=false;try{R.dispose()}catch(e){}},
   get FIN(){return FIN}
