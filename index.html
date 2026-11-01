@@ -964,12 +964,12 @@ els.forEach((el,i)=>{pinta(i);
 
 /* ---------- ambiente de misterio (sonido generado, sin archivos) ---------- */
 $('polvo').innerHTML=Array.from({length:18},()=>`<i style="left:${(10+Math.random()*80).toFixed(1)}%;top:${(15+Math.random()*80).toFixed(1)}%;--s:${(1+Math.random()*2.4).toFixed(1)}px;--t:${(7+Math.random()*8).toFixed(1)}s;--d:-${(Math.random()*12).toFixed(1)}s;--dx:${(Math.random()*60-30).toFixed(0)}px"></i>`).join('');
-let amb=null;
+let amb=null,introEnCurso=false;
 /* música de suspenso: latido, cuerdas en tensión, caja de música desafinada y golpes graves.
    La tensión sube con cada letra bloqueada. */
 function tension(){return fijas.filter(Boolean).length}
 function ambiente(){
-  if(amb||abierto)return;const c=ctx();if(!c)return;
+  if(amb||abierto||introEnCurso)return;const c=ctx();if(!c)return;
   const t0=c.currentTime,master=c.createGain();master.gain.setValueAtTime(0,t0);master.gain.linearRampToValueAtTime(.42,t0+5);
   const comp=c.createDynamicsCompressor();master.connect(comp).connect(bus());
   const rv=c.createConvolver(),len=c.sampleRate*3.2,ir=c.createBuffer(2,len,c.sampleRate);
@@ -1035,6 +1035,33 @@ const MEDIA={};
 function cargaMedia(n,url){const a=new Audio();a.preload='auto';a.src=url;a.onerror=()=>{delete MEDIA[n]};MEDIA[n]=a}
 function suena(n,vol=1,loop=false){const a=MEDIA[n];if(!a)return false;try{const b=loop?a:a.cloneNode();b.volume=Math.min(1,vol);b.loop=loop;b.play().catch(()=>{});return b}catch(e){return false}}
 let resp=null,respLoop=null,lluviaG=null;
+/* música por escena: capas sintetizadas que entran y salen con fundido */
+const MUS={capas:{},cur:null};
+function capa(nombre,crear){const c=ctx();if(!c)return;const g=c.createGain();g.gain.value=0;g.connect(bus());const st=crear(c,g)||{};MUS.capas[nombre]={g,st};g.gain.setTargetAtTime(1,c.currentTime,1.2);return MUS.capas[nombre]}
+function quita(nombre,t=1.5){const c=ctx(),k=MUS.capas[nombre];if(!c||!k)return;k.g.gain.setTargetAtTime(0,c.currentTime,t/3);setTimeout(()=>{try{(k.st.parar||(()=>{}))();k.g.disconnect()}catch(e){}},t*1000+400);delete MUS.capas[nombre]}
+function pad(c,dest,frecs,vol,corte=500,tipo='sawtooth'){const f=c.createBiquadFilter();f.type='lowpass';f.frequency.value=corte;f.Q.value=.6;const g=c.createGain();g.gain.value=vol;f.connect(g).connect(dest);
+  const os=frecs.flatMap(fr=>[-4,4].map(d=>{const o=c.createOscillator();o.type=tipo;o.frequency.value=fr;o.detune.value=d;o.connect(f);o.start();return o}));
+  const lfo=c.createOscillator(),lg=c.createGain();lfo.frequency.value=.07;lg.gain.value=corte*.35;lfo.connect(lg).connect(f.frequency);lfo.start();
+  return{parar(){os.forEach(o=>o.stop());lfo.stop()},f}}
+function nota(c,dest,f,t,dur,vol,tipo='triangle',corte=2400){const o=c.createOscillator(),g=c.createGain(),lp=c.createBiquadFilter();lp.type='lowpass';lp.frequency.value=corte;o.type=tipo;o.frequency.value=f;
+  g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(vol,t+.01);g.gain.exponentialRampToValueAtTime(.0005,t+dur);o.connect(lp).connect(g).connect(dest);o.start(t);o.stop(t+dur+.05)}
+const ESCENAS={
+  escritorio(){capa('drone',(c,g)=>pad(c,g,[55,82.4],.05,320));
+    capa('reloj',(c,g)=>{const id=setInterval(()=>{const t=c.currentTime;nota(c,g,3200,t,.03,.05,'square',5000);nota(c,g,2400,t+.5,.03,.035,'square',5000)},1000);return{parar(){clearInterval(id)}}})},
+  afuera(){quita('reloj',.6);capa('trueno',(c,g)=>{const id=setInterval(()=>{if(Math.random()<.5){const n=c.createBufferSource(),b=c.createBuffer(1,c.sampleRate*4,c.sampleRate),d=b.getChannelData(0);let u=0;for(let i=0;i<d.length;i++){u=.985*u+.015*(Math.random()*2-1);d[i]=u*6}
+      n.buffer=b;const lp=c.createBiquadFilter();lp.type='lowpass';lp.frequency.value=180;const gg=c.createGain(),t=c.currentTime;gg.gain.setValueAtTime(0,t);gg.gain.linearRampToValueAtTime(.5,t+.4);gg.gain.exponentialRampToValueAtTime(.001,t+3.8);n.connect(lp).connect(gg).connect(g);n.start()}},5200);return{parar(){clearInterval(id)}}})},
+  pasillo(){quita('trueno',2);capa('tension',(c,g)=>{const o=c.createOscillator(),f=c.createBiquadFilter(),gg=c.createGain();o.type='sawtooth';o.frequency.value=660;o.frequency.linearRampToValueAtTime(880,c.currentTime+14);
+      f.type='bandpass';f.frequency.value=1200;f.Q.value=6;gg.gain.value=.025;o.connect(f).connect(gg).connect(g);o.start();
+      const id=setInterval(()=>{if(Math.random()<.45)ruido(.5,320,4,.06)},2600);return{parar(){o.stop();clearInterval(id)}}})},
+  caso(){capa('cluster',(c,g)=>{const p=pad(c,g,[220,233.1,311.1,329.6],.022,1400,'sawtooth');return p})},
+  bts(){quita('cluster',2.5);quita('tension',2.5);
+    capa('cajita',(c,g)=>{const lp=c.createBiquadFilter();lp.type='lowpass';lp.frequency.value=1500;lp.connect(g);
+      const mel=[659.3,784,880,987.8,880,784,659.3,587.3, 659.3,784,987.8,1174.7,987.8,880,784,880];let i=0;
+      const id=setInterval(()=>{const t=c.currentTime;nota(c,lp,mel[i%mel.length],t,1.4,.05,'sine',3000);nota(c,lp,mel[i%mel.length]*2,t,.6,.012,'sine',3000);if(i%4===0)nota(c,lp,mel[i%mel.length]/2,t,2,.035,'triangle',900);i++},420);return{parar(){clearInterval(id)}}});
+    capa('calido',(c,g)=>pad(c,g,[130.8,196,261.6],.02,700,'triangle'))},
+  regalo(){quita('cajita',3);quita('calido',3);quita('drone',3)},
+  nada(){Object.keys(MUS.capas).forEach(k=>quita(k,.25))}
+};
 function lluviaVol(v){const c=ctx();if(!c)return;if(!lluviaG){const b=c.createBuffer(1,c.sampleRate*2,c.sampleRate),d=b.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;
   const src=c.createBufferSource();src.buffer=b;src.loop=true;const hp=c.createBiquadFilter();hp.type='highpass';hp.frequency.value=700;const lp=c.createBiquadFilter();lp.type='lowpass';lp.frequency.value=5200;
   lluviaG=c.createGain();lluviaG.gain.value=0;src.connect(hp).connect(lp).connect(lluviaG).connect(bus());src.start()}
@@ -1053,6 +1080,8 @@ const apiIntro={
     else if(n==='portazo'){if(c){golpeGrave(c.currentTime,70,.55);ruido(.12,600,1,.3)}}
     else if(n==='hoja'){ruido(.35,3800,.8,.12,true,6000)}
     else if(n==='apagon'){if(c){golpeGrave(c.currentTime,48,.4);ruido(.3,140,2,.18)}if(resp)resp.jadeo()}
+    else if(n==='escena'){if(ESCENAS[x])ESCENAS[x]()}
+    else if(n==='flash'){if(c){nota(c,bus(),2600,c.currentTime,.05,.08,'square',6000);ruido(.25,4200,1,.08,true,9000)}}
     else if(n==='alivio'){if(resp)resp.alivio();if(respLoop){const r=respLoop;let v=r.volume;const k=setInterval(()=>{v-=.05;if(v<=0){r.pause();clearInterval(k)}else r.volume=v},80)}}
   }};
 async function iniciaIntro(){
@@ -1080,8 +1109,8 @@ async function capturaRegalo(){
     const L=el.getAttribute('aria-valuetext')||'A',n=ABC.indexOf(L);[[-1,.12],[0,.5],[1,.88]].forEach(([d,f])=>{g.globalAlpha=d?.45:1;g.fillText(ABC[(n+d+26)%26],cx,y0+h*f)});g.globalAlpha=1});
   g.restore();URL.revokeObjectURL(url);return c}
 let entrando=false;
-function entrar(){if(entrando||!Intro3D.cargado)return;entrando=true;desbloquea();$('intro').classList.add('andando');
-  Intro3D.correr(apiIntro,()=>{const es=$('escena');alinearRegalo();es.classList.add('ver');Intro3D.fundeRegalo(700);$('intro').style.cursor='default';
+function entrar(){if(entrando||!Intro3D.cargado)return;entrando=true;introEnCurso=true;desbloquea();$('intro').classList.add('andando');
+  Intro3D.correr(apiIntro,()=>{introEnCurso=false;ambiente();const es=$('escena');alinearRegalo();es.classList.add('ver');Intro3D.fundeRegalo(700);$('intro').style.cursor='default';
     setTimeout(()=>{document.body.classList.remove('en-puerta');const n=fijas.indexOf(false);if(n>=0)els[n].focus({preventScroll:true})},1400)})}
 /* pone el regalo dibujado exactamente donde está el regalo 3D */
 function alinearRegalo(){const el=$('regalo'),svg=el.querySelector('.caja3d');if(!svg||!window.Intro3D)return;
@@ -1248,7 +1277,7 @@ els[0].focus({preventScroll:true});
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/RenderPass.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/ShaderPass.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
-<script src="intro3d.js?v=83"></script>
+<script src="intro3d.js?v=91"></script>
 <script>iniciaIntro()</script>
 </body>
 </html>
