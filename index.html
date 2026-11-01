@@ -986,8 +986,15 @@ async function abrir(){
     escn.classList.add('abriendo');['ruedasWin','zonas'].forEach(id=>{const e=$(id);if(e)e.style.display='none'});clicFuerte();tono(1850,ctx()?ctx().currentTime:0,.003,.03,.25,'triangle');
     const c=ctx(),gg=(v,f)=>golpeGrave(c?c.currentTime:0,f,v);setTimeout(()=>{gg(.45,140);ruido(.3,2600,6,.25)},780);setTimeout(()=>gg(.18,180),980);setTimeout(()=>ruido(.6,1500,1,.2,true),520);
     setTimeout(()=>ruido(.25,700,2,.15),1100);setTimeout(()=>whoosh(),1600);setTimeout(()=>{gg(.3,95)},2380);setTimeout(()=>acordeRevelacion(),1550);setTimeout(()=>ruido(.7,3200,.9,.2,true),2050);
-    await Intro3D.abrirRegalo();r=Intro3D.rectCarta();setTimeout(()=>Intro3D.ocultaCarta(),60);
-  }
+    setTimeout(()=>{clicFuerte();ruido(.15,1500,3,.4)},4850);setTimeout(()=>ruido(.55,3600,.8,.2,true),5050);setTimeout(()=>ruido(.55,3300,.8,.2,true),5450);
+    setTimeout(()=>{const c2=ctx();if(c2){tono(1318.51,c2.currentTime,.01,.035,2);tono(1975.5,c2.currentTime+.14,.01,.025,1.8)}},6100);
+    $('saltar').classList.remove('ver');
+    await Intro3D.abrirRegalo();
+    {const v=$('veloCarta');if(v){v.innerHTML='';v.classList.add('final');requestAnimationFrame(()=>v.classList.add('on'))}}
+    await espera(1150);scrollTo(0,0);$('web').classList.add('visible');if($('intro'))$('intro').classList.add('sale');
+    {const v=$('veloCarta');if(v)v.classList.add('fuera')}
+    await espera(1300);
+  }else{
   if(!r||!Number.isFinite(r.left)||!(r.width>4)){const w=Math.min(innerWidth*.5,260);r={left:innerWidth/2-w/2,top:innerHeight*.55,width:w,height:w*.62}}
   // la carta todavía sube: pasa a primer plano sin frenar
   const cf=$('cartaFinal');
@@ -1009,6 +1016,7 @@ async function abrir(){
   await espera(900);scrollTo(0,0);$('web').classList.add('visible');
   {const v=$('veloCarta');if(v){v.classList.add('fuera');setTimeout(()=>v.remove(),1500)}}
   await espera(1150);
+  }
   }catch(err){console.error(err)}
   const cf=$('cartaFinal');if(cf)cf.remove();setTimeout(()=>{const v=$('veloCarta');if(v)v.remove()},1600);escn.remove();['ruedasWin','zonas'].forEach(id=>{const e=$(id);if(e)e.remove()});try{if(lluviaSrc){lluviaSrc.stop();lluviaSrc=null;lluviaG=null}}catch(e){}if($('intro')){try{Intro3D.parar()}catch(e){}$('intro').remove()}document.body.classList.remove('cerrado');$('web').classList.add('visible');$('web').removeAttribute('aria-hidden');observa(document);try{sessionStorage.setItem('meliAbierto','1')}catch(e){}
 }
@@ -1187,7 +1195,7 @@ els[0].focus({preventScroll:true});
 <script src="vendor/RenderPass.js"></script>
 <script src="vendor/ShaderPass.js"></script>
 <script src="vendor/UnrealBloomPass.js"></script>
-<script src="intro3d.js?v=180"></script>
+<script src="intro3d.js?v=191"></script>
 <script>iniciaIntro()</script>
 </body>
 </html>

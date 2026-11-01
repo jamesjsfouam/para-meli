@@ -577,6 +577,8 @@ function construir(cv){
   const tope=new T.Mesh(new T.CylinderGeometry(.62,.62,.05,48),nogal);tope.position.y=.78;mesa.add(tope);
   const pie=new T.Mesh(new T.LatheGeometry([new T.Vector2(.3,0),new T.Vector2(.28,.04),new T.Vector2(.08,.08),new T.Vector2(.05,.3),new T.Vector2(.07,.5),new T.Vector2(.05,.74),new T.Vector2(.12,.76)],24),nogal);mesa.add(pie);
 
+  if(MOVIL){const madT=pbr('wood_floor_worn',[1,1],{color:'#7a4a2a',roughness:.6});tope.material=madT;tope.position.y=.73;pie.scale.y=.73/.78;pie.material=new T.MeshStandardMaterial({color:'#3a2414',roughness:.55});
+    mesa.position.set(0,.3,-7.0);S.add(sombra(mesa))}
   const regalo=new T.Object3D();regalo.position.set(0,1.25,-7.0);S.add(regalo);
   focoMesa=new T.SpotLight('#ffd9a8',0,7,.7,.75,2);focoMesa.position.set(-.18,2.08,-6.95);focoMesa.target=regalo;focoMesa.castShadow=true;focoMesa.shadow.mapSize.set(512,512);focoMesa.shadow.bias=-.0004;S.add(focoMesa);
 
@@ -710,7 +712,10 @@ const sat=x=>Math.max(0,Math.min(1,x));
 function camara(t,dt){
   if(zoomK>=0){if(!zIni){zIni=C.position.clone();zMir=mirada.clone()}
     const k=suave(Math.min(1,zoomK)),asp=W()/H(),fA=MOVIL?Math.min(1.2,Math.max(1,.62/asp)):Math.min(1.55,Math.max(1,.8/asp)),lzT=V(-.045-.05*(fA-1),1.165,-7.0),pzT=lzT.clone().add(V(.01,.085+.03*(fA-1),.57).multiplyScalar(fA)),pz=zIni.clone().lerp(pzT,k),lz=zMir.clone().lerp(lzT,k);
-    const b=Math.sin(k*Math.PI*2)*.02*(1-k);const ab=R3&&R3.ab>0?R3.ab:0,atras=Math.sin(Math.min(1,ab/2.2)*Math.PI)*.06,em=suave(Math.min(1,Math.max(0,ab-1.9)/1.8))*.06,sube=suave(Math.min(1,Math.max(0,ab-2.2)/1.6));C.position.set(pz.x+b*.6+.02*Math.min(1,ab/2),pz.y-Math.abs(b)+atras*.5+em*.5,pz.z+atras-em);C.position.y+=sube*.08;C.position.z+=sube*.12;C.lookAt(lz.x+.02*Math.min(1,ab/2),lz.y+em*.9+atras*.3+sube*.3,lz.z);return}
+    const b=Math.sin(k*Math.PI*2)*.02*(1-k);const ab=R3&&R3.ab>0?R3.ab:0,atras=Math.sin(Math.min(1,ab/2.2)*Math.PI)*.06,em=suave(Math.min(1,Math.max(0,ab-1.9)/1.8))*.06,sube=suave(Math.min(1,Math.max(0,ab-2.2)/1.6));C.position.set(pz.x+b*.6+.02*Math.min(1,ab/2),pz.y-Math.abs(b)+atras*.5+em*.5,pz.z+atras-em);C.position.y+=sube*.08;C.position.z+=sube*.12;const mira0=V(lz.x+.02*Math.min(1,ab/2),lz.y+em*.9+atras*.3+sube*.3,lz.z);
+    if(R3&&ab>3.4){const tp=R3.carta.getWorldPosition(V(0,0,0)),vis=2*Math.tan(C.fov*Math.PI/360),d=Math.max(.29/(.78*vis),CW_/(.88*vis*C.aspect)),ka=suave(Math.min(1,(ab-3.4)/1.5)),kf=suave(Math.min(1,Math.max(0,ab-8.2)/1.0));
+      const dd=d*(1-kf*.82);C.position.lerp(tp.clone().add(V(0,.004,dd)),ka);C.lookAt(mira0.lerp(tp,ka));return}
+    C.lookAt(mira0);return}
   let i=0;while(i<RUTA.length-2&&t>RUTA[i+1][0])i++;
   const g=k=>RUTA[Math.max(0,Math.min(RUTA.length-1,k))];
   const [ta,pa]=g(i),[tb,pb,,camina]=g(i+1);
@@ -831,7 +836,7 @@ function cuadroLoop(){
    y un candado de latón con cuatro ruedas de letras que giran de verdad.
    Se integra a intro3d.js (usa T, S, C, W, H, V, lienzo, grano, sombra).
    ===================================================================== */
-let R3=null;   // estado del regalo 3D
+const CW_=.2;let R3=null;const reducido3D=matchMedia('(prefers-reduced-motion: reduce)').matches;   // estado del regalo 3D
 function normalDe(c,fuerza=2){const w=c.width,h=c.height,g=c.getContext('2d'),src=g.getImageData(0,0,w,h).data;const [nc,ng]=lienzo(w,h);const out=ng.createImageData(w,h),o=out.data;
   const L=(x,y)=>src[(((y+h)%h)*w+((x+w)%w))*4]/255;
   for(let y=0;y<h;y++)for(let x=0;x<w;x++){const dx=(L(x+1,y)-L(x-1,y))*fuerza,dy=(L(x,y+1)-L(x,y-1))*fuerza,i=(y*w+x)*4,l=Math.hypot(dx,dy,1);o[i]=(-dx/l*.5+.5)*255;o[i+1]=(dy/l*.5+.5)*255;o[i+2]=(1/l*.5+.5)*255;o[i+3]=255}
@@ -937,17 +942,41 @@ function crearRegalo3D(){
   {const [oc,og]=lienzo(64,256);const go=og.createLinearGradient(0,0,0,256);go.addColorStop(0,'rgba(0,0,0,.92)');go.addColorStop(.3,'rgba(0,0,0,.35)');go.addColorStop(.4,'rgba(0,0,0,0)');go.addColorStop(.6,'rgba(0,0,0,0)');go.addColorStop(.7,'rgba(0,0,0,.35)');go.addColorStop(1,'rgba(0,0,0,.92)');og.fillStyle=go;og.fillRect(0,0,64,256);
    const ov=new T.Mesh(new T.PlaneGeometry(.07,.042),new T.MeshBasicMaterial({map:new T.CanvasTexture(oc),transparent:true,depthWrite:false}));ov.position.set(0,-.004,.0292);cand.add(ov);
    [-1,1].forEach(sg=>{const m=new T.Mesh(new T.BoxGeometry(.074,.0018,.003),laton);m.position.set(0,-.004+sg*.0078,.0295);cand.add(m)})}
-  // carta doblada dentro de la caja
-  const [cc,cg]=lienzo(512,320);cg.fillStyle='#efe8d8';cg.fillRect(0,0,512,320);cg.fillStyle='rgba(0,0,0,.06)';cg.fillRect(0,100,512,2);cg.fillRect(0,210,512,2);
-  const rgS=cg.createRadialGradient(240,150,4,256,160,50);rgS.addColorStop(0,'#e2323f');rgS.addColorStop(.62,'#a10d18');rgS.addColorStop(1,'#7a0912');cg.fillStyle=rgS;cg.beginPath();cg.arc(256,160,46,0,7);cg.fill();
-  cg.fillStyle='#f7d6d4';cg.font='900 46px Unbounded, sans-serif';cg.textAlign='center';cg.textBaseline='middle';cg.fillText('M',256,164);
-  const ct2=new T.CanvasTexture(cc);ct2.encoding=T.sRGBEncoding;
-  const carta=new T.Mesh(new T.PlaneGeometry(.2,.125),new T.MeshStandardMaterial({map:ct2,roughness:.85,side:T.DoubleSide}));carta.position.set(0,Hh-.07,0);carta.visible=false;G.add(carta);
+  // la carta: un tríptico de papel doblado, cerrado con un sello de cera; adentro, el mensaje
+  const CW=.2,CP=.09;   // ancho y alto de cada tercio
+  const [ic,ig]=lienzo(1024,1382);{const gr=ig.createLinearGradient(0,0,0,1382);gr.addColorStop(0,'#f8f2e6');gr.addColorStop(1,'#efe6d4');ig.fillStyle=gr;ig.fillRect(0,0,1024,1382);
+    for(let k=0;k<9000;k++){ig.fillStyle=`rgba(120,95,60,${Math.random()*.05})`;ig.fillRect(Math.random()*1024,Math.random()*1382,1+Math.random()*3,1)}
+    [461,921].forEach(y=>{const s=ig.createLinearGradient(0,y-18,0,y+18);s.addColorStop(0,'rgba(0,0,0,0)');s.addColorStop(.5,'rgba(90,70,40,.16)');s.addColorStop(1,'rgba(0,0,0,0)');ig.fillStyle=s;ig.fillRect(0,y-18,1024,36)});
+    ig.textAlign='center';ig.textBaseline='middle';
+    ig.fillStyle='#8a7a66';ig.font='500 44px "JetBrains Mono", monospace';ig.fillText('N° 01 · 11 · 2026',512,300);
+    ig.strokeStyle='#c8b49a';ig.lineWidth=3;ig.beginPath();ig.moveTo(380,370);ig.lineTo(644,370);ig.stroke();
+    ig.fillStyle='#1a1715';ig.font='900 96px Unbounded, sans-serif';ig.fillText('FELIZ CUMPLE,',512,610);
+    ig.save();ig.translate(512,760);ig.rotate(-.04);ig.fillStyle='#0e0e0e';ig.fillRect(-196,-74,404,160);ig.fillStyle='#c1121f';ig.fillRect(-204,-82,404,160);ig.fillStyle='#f2ece1';ig.font='900 124px Unbounded, sans-serif';ig.fillText('MELI',-2,4);ig.restore();
+    ig.fillStyle='#c1121f';ig.font='400 140px "Reenie Beanie", cursive';ig.fillText('— James',512,1100);
+    ig.font='70px serif';ig.fillText('♥',760,1180)}
+  const iTex=new T.CanvasTexture(ic);iTex.encoding=T.sRGBEncoding;iTex.anisotropy=MOVIL?2:8;
+  const tercio=k=>{const t=iTex.clone();t.needsUpdate=true;t.repeat.set(1,1/3);t.offset.set(0,k/3);return new T.MeshStandardMaterial({map:t,roughness:.92,emissive:'#ffffff',emissiveMap:t,emissiveIntensity:.42})};
+  const [oc,og]=lienzo(256,256);og.fillStyle='#efe6d4';og.fillRect(0,0,256,256);for(let k=0;k<1800;k++){og.fillStyle=`rgba(120,95,60,${Math.random()*.06})`;og.fillRect(Math.random()*256,Math.random()*256,2,1)}
+  const papelFuera=new T.MeshStandardMaterial({map:new T.CanvasTexture(oc),roughness:.95,emissive:'#efe6d4',emissiveIntensity:.25}),canto=new T.MeshStandardMaterial({color:'#e6dcc8',roughness:1});
+  const hoja=k=>new T.Mesh(new T.BoxGeometry(CW,CP,.0006),[canto,canto,canto,canto,tercio(k),papelFuera]);
+  const carta=new T.Group();carta.position.set(0,Hh-.07,0);carta.visible=false;G.add(carta);
+  const cMed=hoja(1);carta.add(cMed);
+  const cTop=new T.Group();cTop.position.set(0,CP/2,.0012);carta.add(cTop);const hT=hoja(2);hT.position.y=CP/2;cTop.add(hT);cTop.rotation.x=Math.PI;
+  const cBot=new T.Group();cBot.position.set(0,-CP/2,.0006);carta.add(cBot);const hB=hoja(0);hB.position.y=-CP/2;cBot.add(hB);cBot.rotation.x=-Math.PI;
+  // el sello: cera roja con la M en relieve, sobre la cara de afuera
+  const [sc0,sg0]=lienzo(256,256);{const g2=sg0.createRadialGradient(100,90,10,128,128,128);g2.addColorStop(0,'#e2323f');g2.addColorStop(.6,'#a10d18');g2.addColorStop(1,'#6a0810');sg0.fillStyle=g2;sg0.fillRect(0,0,256,256);
+    sg0.translate(128,128);sg0.rotate(Math.PI);sg0.fillStyle='rgba(60,0,6,.55)';sg0.font='900 120px Unbounded, sans-serif';sg0.textAlign='center';sg0.textBaseline='middle';sg0.fillText('M',4,10);sg0.fillStyle='#f7c9c9';sg0.fillText('M',0,6)}
+  const selloTex=new T.CanvasTexture(sc0);selloTex.encoding=T.sRGBEncoding;selloTex.center.set(.5,.5);selloTex.rotation=-Math.PI/2;
+  const cera=new T.MeshPhysicalMaterial({color:'#a10d18',roughness:.35,clearcoat:.6,clearcoatRoughness:.3});
+  const sello=new T.Mesh(new T.CylinderGeometry(.019,.021,.005,28),[cera,new T.MeshPhysicalMaterial({map:selloTex,roughness:.35,clearcoat:.6}),cera]);
+  sello.rotation.x=-Math.PI/2;sello.position.set(0,CP/2,-.0028);cTop.add(sello);
+  // pedacitos de cera que saltan al romperlo
+  const frags=[];for(let k=0;k<12;k++){const f=new T.Mesh(new T.BoxGeometry(.006,.005,.003),cera);f.visible=false;carta.add(f);frags.push({m:f,v:V(0,0,0)})}
   G.traverse(m=>{if(m.isMesh){m.castShadow=true;m.receiveShadow=true}});hueco.castShadow=false;
   // polvo dorado que sube con la luz al abrir
   const np=60,pp=new Float32Array(np*3);for(let i=0;i<np;i++){pp[i*3]=(Math.random()-.5)*.26;pp[i*3+1]=Hh+Math.random()*.4;pp[i*3+2]=(Math.random()-.5)*.26}
   const pgeo=new T.BufferGeometry();pgeo.setAttribute('position',new T.BufferAttribute(pp,3));const motas=new T.Points(pgeo,new T.PointsMaterial({color:'#ffd9a0',size:.006,transparent:true,opacity:0,depthWrite:false,blending:T.AdditiveBlending}));G.add(motas);
-  R3={G,tapa,bandas,cand,arco,ruedas,leds,hueco,luzDentro,carta,mono,motas,etiqueta,giroE:0,objE:0,ab:-1,Hh,LH,D};
+  R3={G,tapa,bandas,cand,arco,ruedas,leds,hueco,luzDentro,carta,cTop,cBot,sello,frags,mono,motas,etiqueta,giroE:0,objE:0,ab:-1,Hh,LH,D};
 }
 function regalo3DFrame(dt){if(!R3)return;
   {const h=Math.min(dt,.05)/3;R3.ruedas.forEach(r=>{for(let q=0;q<3;q++){r.vel+=((r.obj-r.ang)*700-r.vel*34)*h;r.ang+=r.vel*h}r.g.rotation.x=r.ang;const v=-r.ang*26/(Math.PI*2);r.tx.offset.y=1-(v+2)/26;r.mt.emissiveIntensity=.07+(R3.ab>=0?.4*Math.max(0,Math.sin(Math.min(1,R3.ab/.6)*Math.PI)):0)})}
@@ -973,7 +1002,14 @@ function regalo3DFrame(dt){if(!R3)return;
     // 2.0–3.1: la carta sube despacio, se mece y gira hacia ti
     const kc=c01((a-1.9)/1.7);R3.carta.visible=a>1.9&&!R3.cartaFuera;R3.carta.position.y=R3.Hh-.07+.42*s2(kc);R3.carta.position.x=.012*Math.sin(kc*Math.PI*2);
     // sale acostada (como estaba guardada) y al pasar el borde se endereza hacia ti
-    const kg=s2(c01((kc-.3)/.6));R3.carta.lookAt(C.position);const qF=R3.carta.quaternion.clone();R3.carta.quaternion.setFromEuler(new T.Euler(-Math.PI/2,0,0)).slerp(qF,kg);R3.carta.rotateZ(.05*Math.sin(kc*Math.PI*3)*(1-kc))}
+    const kg=s2(c01((kc-.3)/.6));R3.carta.lookAt(C.position);const qF=R3.carta.quaternion.clone();R3.carta.quaternion.setFromEuler(new T.Euler(-Math.PI/2,0,0)).slerp(qF,kg);R3.carta.rotateZ(.05*Math.sin(kc*Math.PI*3)*(1-kc)+.012*Math.sin(a*1.3)*c01(a-3.6))
+    // 4.6–5.0: el sello se tensa y se parte
+    const ks=c01((a-4.6)/.4);R3.sello.scale.setScalar(ks<.6?1+.18*Math.sin(ks/.6*Math.PI):Math.max(.001,1-(ks-.6)/.4));R3.sello.visible=ks<1;
+    if(a>=4.85&&!R3.partido){R3.partido=true;R3.frags.forEach(f=>{f.m.visible=true;f.m.position.set(rnd(-.01,.01),rnd(-.01,.01),.006);f.v.set(rnd(-.25,.25),rnd(-.05,.3),rnd(.05,.25))})}
+    if(R3.partido)R3.frags.forEach(f=>{if(!f.m.visible)return;f.v.y-=dt*1.2;f.m.position.addScaledVector(f.v,dt);f.m.rotation.x+=dt*9;f.m.rotation.y+=dt*7;if(f.m.position.y<-.4)f.m.visible=false});
+    // 5.0–6.0 se abre el tercio de arriba; 5.4–6.4 el de abajo (con un leve rebote del papel)
+    const kt=c01((a-5.0)/1.0),kd=c01((a-5.4)/1.0),eo=x=>1-Math.pow(1-x,3)+Math.sin(x*Math.PI)*.04;
+    R3.cTop.rotation.x=Math.PI*(1-eo(kt));R3.cBot.rotation.x=-Math.PI*(1-eo(kd))}
 }
 const R3api={
   get tiene3D(){return !!R3},
@@ -983,7 +1019,7 @@ const R3api={
     [b.min.x,b.max.x].forEach(x=>[b.min.y,b.max.y].forEach(y=>[b.min.z,b.max.z].forEach(z=>{const p=V(x,y,z).project(C);const sx=(p.x*.5+.5)*W(),sy=(-p.y*.5+.5)*H();x0=Math.min(x0,sx);x1=Math.max(x1,sx);y0=Math.min(y0,sy);y1=Math.max(y1,sy)})));return{x:x0,y:y0,w:x1-x0,h:y1-y0}},
   get cuadros(){return cuadros},
   rectRuedas(){if(!R3)return null;let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;C.updateProjectionMatrix();S.updateMatrixWorld(true);R3.G.updateMatrixWorld(true);[[-.039,-.027],[.039,-.027],[-.039,.019],[.039,.019]].forEach(([x,y])=>{const p=R3.cand.localToWorld(V(x,y,.03)).project(C);const sx=(p.x*.5+.5)*W(),sy=(-p.y*.5+.5)*H();x0=Math.min(x0,sx);x1=Math.max(x1,sx);y0=Math.min(y0,sy);y1=Math.max(y1,sy)});return{x:x0,y:y0,w:x1-x0,h:y1-y0}},
-  abrirRegalo(){return new Promise(ok=>{if(!R3)return ok();R3.ab=0;setTimeout(ok,MOVIL?3200:3950)})},
+  abrirRegalo(){return new Promise(ok=>{if(!R3)return ok();R3.ab=0;setTimeout(ok,reducido3D?6600:9300)})},
   voltea(){if(R3)R3.objE=R3.objE?0:Math.PI},
   rectEtiqueta(){if(!R3)return null;const b=new T.Box3().setFromObject(R3.etiqueta);let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;[b.min.x,b.max.x].forEach(x=>[b.min.y,b.max.y].forEach(y=>[b.min.z,b.max.z].forEach(z=>{const p=V(x,y,z).project(C);const sx=(p.x*.5+.5)*W(),sy=(-p.y*.5+.5)*H();x0=Math.min(x0,sx);x1=Math.max(x1,sx);y0=Math.min(y0,sy);y1=Math.max(y1,sy)})));return{x:x0,y:y0,w:x1-x0,h:y1-y0}},
   ocultaCarta(){if(R3)R3.cartaFuera=true},
