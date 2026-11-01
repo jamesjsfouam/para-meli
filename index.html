@@ -18,7 +18,7 @@
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;800;900&family=Inter+Tight:wght@400;500;600;800;900&family=JetBrains+Mono:wght@500;600;700;800&family=Reenie+Beanie&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;800;900&family=Inter+Tight:wght@400;500;600;800;900&family=JetBrains+Mono:wght@500;600;700;800&family=Reenie+Beanie&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&display=swap" rel="stylesheet">
 <style>
 :root{
   --mesa:#0f0d0c; --papel:#f2ece1; --papel2:#e9e1d3; --tinta:#1a1715; --pasion:#c1121f; --emo:#8a8a91; --laton:#c9a35b;
@@ -420,25 +420,58 @@ body:has(.vista.abierta) #web::after{display:none}
 @media (min-width:760px){.linea{padding-left:0}.linea::before{left:50%;margin-left:-1px}.hito{width:calc(50% - 34px)}.hito:nth-child(even){margin-left:auto}.hito::before{left:auto;right:-43px}.hito:nth-child(even)::before{right:auto;left:-43px}.hito{margin-bottom:-40px}.hito:last-child{margin-bottom:0}}
 
 /* carta */
-#v-carta{--vbg:var(--beige,#efe6cf);--ox:50%;--oy:85%}
-.sobre{display:grid;place-items:center;min-height:48vh;text-align:center}
-.sobre button{position:relative;width:min(320px,82vw);aspect-ratio:3/2;background:#fff;border:3px solid var(--ink);box-shadow:var(--sombra);overflow:hidden;transform:rotate(-2deg);transition:transform .2s}
+#v-carta{--vbg:#120e18;--ox:50%;--oy:85%;color:#f2ece1}
+#v-carta .vista-barra .volver{background:#f2ece1;color:#120e18}
+#v-carta .titulo-vista{color:#f2ece1}
+.cielo{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0;background:radial-gradient(ellipse at 50% 120%,#3a1a2a 0,#1a1222 45%,#0c0a12 100%)}
+.cielo i{position:absolute;width:2px;height:2px;border-radius:50%;background:#fff;opacity:.2;animation:titila var(--d,3s) ease-in-out var(--r,0s) infinite}
+.cielo i.g{width:3px;height:3px;box-shadow:0 0 6px 1px #fff8}
+@keyframes titila{50%{opacity:var(--o,.9)}}
+.cielo b{position:absolute;width:90px;height:1px;background:linear-gradient(90deg,#fff,transparent);opacity:0;transform:rotate(-24deg);animation:fugaz 9s ease-in var(--r,2s) infinite}
+@keyframes fugaz{0%,92%{opacity:0;translate:0 0}94%{opacity:.9}100%{opacity:0;translate:-260px 120px}}
+#v-carta .vista-cuerpo{position:relative;z-index:1}
+.sobre{display:grid;place-items:center;min-height:52vh;text-align:center}
+.sobre button{position:relative;width:min(340px,84vw);aspect-ratio:3/2;background:linear-gradient(160deg,#f6efe2,#e3d6bf);border-radius:4px;box-shadow:0 30px 60px -20px #000c,0 0 0 1px #0002;transform:rotate(-2deg);transition:transform .3s;overflow:visible;perspective:900px}
 .sobre button:hover{transform:rotate(0) scale(1.02)}
-.sobre button::before{content:"";position:absolute;left:-3px;right:-3px;top:-3px;height:62%;background:var(--papel);border-bottom:3px solid var(--ink);clip-path:polygon(0 0,100% 0,50% 100%)}
-.sobre button::after{content:"";position:absolute;left:0;right:0;top:0;height:62%;background:linear-gradient(to bottom right,transparent calc(50% - 2px),var(--ink) calc(50% - 1px),var(--ink) calc(50% + 1px),transparent calc(50% + 2px)) left/50% 100% no-repeat,linear-gradient(to bottom left,transparent calc(50% - 2px),var(--ink) calc(50% - 1px),var(--ink) calc(50% + 1px),transparent calc(50% + 2px)) right/50% 100% no-repeat}
-.sobre .sello{position:absolute;z-index:2;left:50%;top:62%;width:62px;height:62px;margin:-31px 0 0 -31px;border-radius:50%;background:var(--pasion);border:3px solid var(--ink);display:grid;place-items:center;color:var(--papel);font:900 24px/1 var(--display);animation:late 1.6s ease-in-out infinite}
-@keyframes late{50%{transform:scale(1.08)}}
-.sobre p{margin-top:22px;font-weight:800}
-.carta{display:none;max-width:36em;background:#fff;border:3px solid var(--ink);box-shadow:var(--sombra);padding:30px 24px 34px;transform:rotate(-.4deg)}
-@media (min-width:760px){.carta{padding:44px 48px 48px}}
-.carta.abierta{display:block;animation:subeC .8s cubic-bezier(.2,.9,.25,1.2) both}
-@keyframes subeC{from{opacity:0;transform:translateY(40px) rotate(-3deg)}to{opacity:1;transform:rotate(-.4deg)}}
-.carta .saludo{font:900 clamp(30px,7vw,44px)/1 var(--display);text-transform:uppercase;letter-spacing:-.03em;margin-bottom:24px}
-.carta p{font-size:18.5px;line-height:1.66}
-.carta p+p{margin-top:20px}
+.sobre .solapa{position:absolute;left:0;right:0;top:0;height:60%;background:linear-gradient(170deg,#efe5d2,#dccdb2);clip-path:polygon(0 0,100% 0,50% 100%);transform-origin:top;transition:transform .7s cubic-bezier(.5,0,.3,1);z-index:2;filter:drop-shadow(0 3px 2px #0002)}
+.sobre .lados{position:absolute;inset:0;background:linear-gradient(to top right,#e8dcc6 50%,transparent 50%) left/50% 100% no-repeat,linear-gradient(to top left,#e3d6bf 50%,transparent 50%) right/50% 100% no-repeat;border-radius:4px}
+.sobre .para{position:absolute;left:0;right:0;bottom:16%;font:italic 500 20px/1 "Cormorant Garamond",serif;color:#5a4636;z-index:1}
+.sobre .sello{position:absolute;z-index:3;left:50%;top:60%;width:64px;height:64px;margin:-32px 0 0 -32px;border-radius:47% 53% 51% 49%/52% 48% 52% 48%;background:radial-gradient(circle at 38% 34%,#e2323f,#a10d18 62%,#6a0810);box-shadow:0 3px 6px #0006,inset 0 -3px 6px #0005;display:grid;place-items:center;color:#f7d6d4;font:900 24px/1 var(--display);animation:late 1.6s ease-in-out infinite;transition:transform .5s,opacity .5s}
+@keyframes late{50%{transform:scale(1.07)}}
+.sobre.abre .sello{animation:none;transform:translateY(30px) rotate(25deg) scale(.7);opacity:0}
+.sobre.abre .solapa{transform:rotateX(180deg)}
+.sobre.abre button{transform:translateY(40px) scale(.96);transition:transform .9s .5s}
+.sobre p{margin-top:26px;font:italic 500 20px/1 "Cormorant Garamond",serif;color:#d9cfbf;letter-spacing:.02em}
+.carta{display:none;position:relative;max-width:34em;margin:10px auto 40px;background:#f7f0e3;color:#2b211a;padding:56px 26px 48px;border-radius:3px;transform:rotate(-.3deg);
+  box-shadow:0 40px 80px -30px #000d,0 0 0 1px #0001,inset 0 0 90px #c8a97a33;
+  background-image:radial-gradient(ellipse at 20% 10%,#fffaf0 0,transparent 60%),repeating-linear-gradient(0deg,transparent 0 31px,#7a9cc414 31px 32px),url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.09'/%3E%3C/svg%3E")}
+@media (min-width:760px){.carta{padding:72px 70px 64px}}
+.carta.abierta{display:block;animation:subeC 1.1s cubic-bezier(.2,.9,.25,1) both}
+@keyframes subeC{from{opacity:0;transform:translateY(80px) rotate(-2deg) scale(.96)}to{opacity:1;transform:rotate(-.3deg)}}
+.carta .fecha{font:italic 500 17px/1 "Cormorant Garamond",serif;color:#7a6550;text-align:right;margin-bottom:34px}
+.carta .foto{position:absolute;right:-14px;top:-26px;width:118px;padding:7px 7px 24px;background:#fff;box-shadow:0 10px 20px -6px #0007;transform:rotate(6deg)}
+.carta .foto img{display:block;width:100%;aspect-ratio:1;object-fit:cover}
+.carta .foto::before{content:"";position:absolute;left:30%;top:-10px;width:56px;height:20px;background:#ffd9e6bb;transform:rotate(-8deg)}
+@media (max-width:520px){.carta .foto{width:88px;right:-6px;top:-34px}}
+.carta .saludo{font:italic 600 34px/1 "Cormorant Garamond",serif;color:var(--pasion);margin-bottom:22px}
+.carta p{font:500 clamp(19px,2.4vw,22px)/1.72 "Cormorant Garamond",Georgia,serif;opacity:0;transform:translateY(16px);transition:opacity 1s ease,transform 1s ease}
+.carta p.ve{opacity:1;transform:none}
+.carta p+p{margin-top:22px}
+.carta p.primero::first-letter{float:left;font:600 74px/.8 "Cormorant Garamond",serif;color:var(--pasion);margin:8px 10px 0 0}
+.carta .estrella{position:relative;color:#8a6a1a;white-space:nowrap}
+.carta .estrella::after{content:"✦";position:absolute;right:-.55em;top:-.55em;font-size:.6em;color:#d4a83a;animation:brilla 2.4s ease-in-out infinite}
+@keyframes brilla{50%{opacity:.25;transform:scale(.7)}}
+.carta .sol{background:linear-gradient(transparent 55%,#ffd36a88 55%)}
 .carta .despedida{margin-top:30px}
-.firma{display:block;margin-top:4px;font:400 56px/1 "Reenie Beanie",cursive;color:var(--pasion);transform:rotate(-3deg);transform-origin:left}
+.carta .cierre{margin-top:40px;display:flex;align-items:flex-end;justify-content:space-between;gap:16px}
+.firma{display:block;margin-top:4px;font:400 64px/1 "Reenie Beanie",cursive;color:var(--pasion);transform:rotate(-3deg);transform-origin:left}
+.carta .corazon{width:46px;opacity:0;transition:opacity 1.2s .4s}
+.carta .cierre.ve .corazon{opacity:1}
+.carta .corazon path{stroke-dasharray:180;stroke-dashoffset:180;transition:stroke-dashoffset 2.2s ease .3s}
+.carta .cierre.ve .corazon path{stroke-dashoffset:0}
 .carta .posdata{margin-top:34px;color:var(--emo)}
+.carta .otra{display:block;margin:34px auto 0;font:italic 500 18px/1 "Cormorant Garamond",serif;color:#7a6550;text-decoration:underline;text-underline-offset:4px}
+@media (prefers-reduced-motion:reduce){.carta p{opacity:1;transform:none}.cielo i,.cielo b,.sobre .sello{animation:none}}
 
 
 /* cosas que me recuerdan a ti */
@@ -460,8 +493,30 @@ body:has(.vista.abierta) #web::after{display:none}
 .creditos a{color:inherit}
 
 /* música */
-#v-musica{--vbg:var(--orange);--ox:80%;--oy:80%}
-#v-musica .vista-cuerpo{color:var(--ink)}
+#v-musica{--vbg:var(--t-bg,#dc6f2a);--ox:80%;--oy:80%;--t-ink:#1a0d06;transition:background-color .9s}
+#v-musica .vista-cuerpo{position:relative;z-index:1;color:var(--t-ink);transition:color .6s}
+#v-musica .titulo-vista,#v-musica .cita,#v-musica .cita-de{color:var(--t-ink)}
+.tema-capa{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;background:var(--c-bg)}
+.tema-capa.entra{animation:entraTema 1.1s cubic-bezier(.7,0,.2,1) both}
+@keyframes entraTema{from{clip-path:circle(0 at var(--cx,50%) var(--cy,50%))}to{clip-path:circle(150% at var(--cx,50%) var(--cy,50%))}}
+.tema-capa .muro{position:absolute;left:-20%;top:-15%;width:140%;transform:rotate(var(--giro,-8deg));display:flex;flex-direction:column;gap:.1em}
+.tema-capa .muro span{display:block;white-space:nowrap;font:900 var(--tam,15vw)/.95 var(--c-font,var(--display));letter-spacing:var(--esp,-.03em);text-transform:uppercase;
+  color:var(--c-bg);-webkit-text-stroke:var(--trazo,2px) var(--c-linea);text-shadow:-3px -3px 0 var(--c-luz),5px 6px 0 var(--c-sombra);opacity:.95}
+.tema-capa .muro span:nth-child(odd){transform:translateX(-12%)}
+.tema-capa .muro span.desliza{animation:muroDesliza 40s linear infinite}
+.tema-capa .muro span.desliza.rev{animation-direction:reverse}
+@keyframes muroDesliza{to{translate:-30% 0}}
+.tema-capa::after{content:"";position:absolute;inset:0;background-image:var(--grano);opacity:.18;mix-blend-mode:multiply}
+.tema-capa .halo{position:absolute;left:50%;top:38%;width:min(90vw,720px);aspect-ratio:1;translate:-50% -50%;border-radius:50%;background:radial-gradient(closest-side,var(--c-halo),transparent)}
+#v-musica .lista button{background:var(--c-card,#fff);border-color:var(--t-ink);box-shadow:4px 4px 0 var(--t-ink);color:var(--t-ink);transition:background .6s,border-color .6s}
+#v-musica .lista .s{color:inherit;opacity:.7}
+#v-musica .lista .estado{border-color:var(--t-ink)}
+#v-musica .lista li.sonando .estado{background:var(--t-ink);color:var(--t-bg)}
+#v-musica .vinilo .disco{box-shadow:0 0 0 6px var(--t-ink),6px 6px 0 var(--t-ink)}
+#v-musica .vinilo .etq{border-color:var(--t-ink)}
+#v-musica .ahora{display:block;text-align:center;margin:-10px 0 22px;font:900 clamp(26px,6vw,46px)/1 var(--c-font,var(--display));text-transform:uppercase;letter-spacing:-.02em}
+#v-musica .ahora small{display:block;margin-top:8px;font:700 11px/1 var(--mono);letter-spacing:.24em;opacity:.75}
+@media (prefers-reduced-motion:reduce){.tema-capa.entra,.tema-capa .muro span.desliza{animation:none}}
 .vinilo{position:relative;width:220px;height:220px;margin:6px auto 30px}
 .vinilo .disco{position:absolute;inset:0;border-radius:50%;background:repeating-radial-gradient(#0e0e0e 0 2px,#262626 3px 5px);box-shadow:0 0 0 6px var(--ink),var(--sombra);animation:gira 2.4s linear infinite}
 .vinilo .etq{position:absolute;inset:64px;border-radius:50%;overflow:hidden;border:3px solid var(--ink);animation:gira 2.4s linear infinite}
@@ -849,12 +904,13 @@ body:has(.vista.abierta) #web::after{display:none}
 </section>
 
 <section class="vista" id="v-carta" aria-hidden="true">
+  <div class="cielo" id="cielo" aria-hidden="true"></div>
   <div class="vista-barra"><button class="volver">← Volver</button><span class="tag">03 / 04</span></div>
   <div class="vista-cuerpo">
     <h2 class="H titulo-vista" style="text-align:center">Solo para vos</h2>
     <div class="sobre" id="sobre">
       <div>
-        <button aria-label="Abrir la carta"><span class="sello">M</span></button>
+        <button aria-label="Abrir la carta"><span class="lados"></span><span class="solapa"></span><span class="para">para Melissa</span><span class="sello">M</span></button>
         <p>Tocá el sello</p>
       </div>
     </div>
@@ -867,8 +923,9 @@ body:has(.vista.abierta) #web::after{display:none}
   <div class="vista-cuerpo">
     <h2 class="H titulo-vista" style="text-align:center;margin-bottom:28px">Nuestras canciones favoritas</h2>
     <div class="vinilo"><div class="disco"></div><div class="etq"><img id="etqImg" alt=""></div></div>
-    <p class="cita">“te juro q entre caníbales es una de las mejores canciones q he escuchado. tipo, el feeling”</p>
-    <span class="cita-de">— vos, 7 de junio</span>
+    <p class="ahora" id="ahora" aria-live="polite"></p>
+    <p class="cita">“te juro q entre caníbales es una de las mejores canciones q he escuchado”</p>
+    <span class="cita-de">7 de junio</span>
     <ul class="lista" id="lista"></ul>
   </div>
 </section>
@@ -877,7 +934,7 @@ body:has(.vista.abierta) #web::after{display:none}
 
 <script>/* carga contenido.js sin caché, para que los cambios se vean al recargar */
 </script>
-<script src="contenido.js?v=140"></script>
+<script src="contenido.js?v=150"></script>
 <script>
 const $=id=>document.getElementById(id);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -1191,7 +1248,7 @@ function observa(raiz){
 }
 
 /* ---------- contador desde el "si ok" ---------- */
-const inicio=new Date('2025-10-07T21:59:00');
+const inicio=new Date('2025-10-06T22:00:00');
 function cuenta(){const s=Math.max(0,Math.floor((Date.now()-inicio)/1000));
   $('cDias').textContent=Math.floor(s/86400);$('cHoras').textContent=String(Math.floor(s/3600)%24).padStart(2,'0');
   $('cMin').textContent=String(Math.floor(s/60)%60).padStart(2,'0');$('cSeg').textContent=String(s%60).padStart(2,'0')}
@@ -1211,7 +1268,7 @@ const SITIOS=[
 ];
 $('pegatinas').innerHTML=FOTOS_DECORACION.slice(0,SITIOS.length).map((f,i)=>{const s=SITIOS[i];
   return `<figure class="pegatina${s.pc?' pc':''}" style="--x:${s.x};--y:${s.y};--r:${s.r}deg;--w:${s.w};--mx:${s.mx||s.x};--my:${s.my||s.y};--d:${(.5+i*.12).toFixed(2)}s;animation-duration:.7s,${5+i%3}s"><img src="fotos/${esc(f)}" alt="" loading="lazy" onerror="this.parentElement.remove()"></figure>`}).join('');
-$('cintaTxt').textContent=Array(2).fill('Feliz cumple Meli ★ Rojo pasión ★ Gris emo ★ Sí ok ★ Entre Caníbales ★ M.E.L.I. ★ ').join('');
+$('cintaTxt').textContent=Array(2).fill('Feliz cumple Meli ★ Rojo pasión ★ Entre Caníbales ★ M.E.L.I. ★ 19 ★ ').join('');
 
 /* ---------- contenido (viene de contenido.js) ---------- */
 const figura=(f,a='')=>`<figure><img src="fotos/${esc(f)}" alt="${esc(a.replace(/\*/g,''))}" loading="lazy" onerror="this.parentElement.remove()"></figure>`;
@@ -1225,9 +1282,21 @@ $('linea').innerHTML=LINEA.map(h=>`<li class="hito aparece${h.clave?' clave':''}
 </div></li>`).join('');
 $('nMomentos').textContent=LINEA.length;
 const salRep=CARTA.saludo&&CARTA.parrafos[0]&&CARTA.parrafos[0].toLowerCase().startsWith(CARTA.saludo.replace(/[:,.\s]+$/,'').toLowerCase());
-$('carta').innerHTML=`${CARTA.saludo&&!salRep?`<p class="saludo">${rico(CARTA.saludo)}</p>`:''}${CARTA.parrafos.map(p=>`<p>${rico(p)}</p>`).join('')}
-  ${CARTA.despedida?`<p class="despedida">${rico(CARTA.despedida)}</p>`:''}<span class="firma">— ${esc(CARTA.firma)}</span>
-  ${CARTA.posdata?`<p class="posdata mono">${esc(CARTA.posdata)}</p>`:''}`;
+// detalles en el papel: las estrellas brillan y el solecito se subraya con resaltador (el texto no cambia)
+const adorna=t=>rico(t).replace(/\b(estrellas?)\b/g,'<span class="estrella">$1</span>').replace(/\b(solecito)\b/g,'<span class="sol">$1</span>');
+$('carta').innerHTML=`<figure class="foto"><img src="fotos/meli-sonrisa.jpg" alt="Meli sonriendo"></figure>
+  <p class="fecha ve">1 de noviembre de 2026</p>
+  ${CARTA.saludo&&!salRep?`<p class="saludo ve">${rico(CARTA.saludo)}</p>`:''}${CARTA.parrafos.map((p,i)=>`<p class="${i?'':'primero'}">${adorna(p)}</p>`).join('')}
+  ${CARTA.despedida?`<p class="despedida">${rico(CARTA.despedida)}</p>`:''}
+  <div class="cierre"><span class="firma">— ${esc(CARTA.firma)}</span><svg class="corazon" viewBox="0 0 50 46" aria-hidden="true"><path d="M25 42C10 31 3 23 3 14 3 7 8 3 14 3c5 0 9 3 11 8 2-5 6-8 11-8 6 0 11 4 11 11 0 9-7 17-22 28z" fill="none" stroke="#c1121f" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+  ${CARTA.posdata?`<p class="posdata mono">${esc(CARTA.posdata)}</p>`:''}
+  <button class="otra" type="button">Leerla otra vez desde el principio</button>`;
+{const ob=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('ve');ob.unobserve(e.target)}}),{threshold:.25});
+ $('carta').querySelectorAll('p:not(.ve),.cierre').forEach(p=>ob.observe(p));
+ $('carta').querySelector('.otra').onclick=()=>{$('v-carta').scrollTo({top:0,behavior:'smooth'})}}
+// el cielo detrás de la carta
+{const c=$('cielo');let h='';for(let i=0;i<110;i++){const g=Math.random()<.12;h+=`<i class="${g?'g':''}" style="left:${(Math.random()*100).toFixed(1)}%;top:${(Math.random()*100).toFixed(1)}%;--d:${(2+Math.random()*4).toFixed(1)}s;--r:${(-Math.random()*5).toFixed(1)}s;--o:${(.5+Math.random()*.5).toFixed(2)}"></i>`}
+ h+='<b style="left:80%;top:12%;--r:3s"></b><b style="left:60%;top:30%;--r:11s"></b>';c.innerHTML=h}
 
 
 /* ---------- cosas que me recuerdan a ti ---------- */
@@ -1267,7 +1336,7 @@ document.querySelectorAll('.volver').forEach(b=>b.onclick=()=>{location.hash?his
 addEventListener('hashchange',()=>{if(abierto)muestra(vistas.includes(location.hash.slice(1))?location.hash.slice(1):null)});
 addEventListener('keydown',e=>{if(e.key==='Escape'&&location.hash)history.back()});
 if(location.hash)history.replaceState(null,'',location.pathname);
-$('sobre').querySelector('button').onclick=()=>{papel();$('sobre').style.display='none';$('carta').classList.add('abierta')};
+$('sobre').querySelector('button').onclick=()=>{papel();const sb=$('sobre');if(sb.classList.contains('abre'))return;sb.classList.add('abre');setTimeout(()=>{sb.style.display='none';$('carta').classList.add('abierta')},reducido?0:1300)};
 
 /* ---------- música (previews de 30 s de iTunes) ---------- */
 const P='https://audio-ssl.itunes.apple.com/itunes-assets/',ART='https://is1-ssl.mzstatic.com/image/thumb/';
@@ -1277,12 +1346,29 @@ const CANCIONES=[
   ['No podemos ser amigos','OMAKASE · 2026',P+'AudioPreview211/v4/2c/b1/7f/2cb17ff1-d78f-63a7-de73-353eaea93470/mzaf_5995714279816360865.plus.aac.p.m4a',ART+'Music211/v4/53/3a/bd/533abda9-b144-defd-84d8-bc203757c32a/26UMGIM52886.rgb.jpg/300x300bb.jpg','Álvaro Díaz'],
   ['Prófugos','Signos · 1986',P+'AudioPreview221/v4/5a/db/2d/5adb2db8-07da-5291-32af-e6ed5a15e0c5/mzaf_12974375574856683232.plus.aac.p.m4a',ART+'Music114/v4/05/e3/65/05e365e6-c318-e16d-0a27-1d896ba231f2/mzi.hvktyhmz.jpg/300x300bb.jpg'],
   ['Final Caja Negra','Signos · 1986',P+'AudioPreview221/v4/a1/69/88/a1698828-c296-54ec-2289-5e3ad56b43c7/mzaf_602680185580868013.plus.aac.p.m4a',ART+'Music114/v4/05/e3/65/05e365e6-c318-e16d-0a27-1d896ba231f2/mzi.hvktyhmz.jpg/300x300bb.jpg']];
+const TEMAS=[
+  {bg:'#dc6f2a',ink:'#1e0e05',linea:'#3a1a08',luz:'#f39a5c',sombra:'#9a4512',halo:'#ffb07055',card:'#f6d2b2',font:'"Inter Tight",sans-serif',tam:'16vw',palabras:['SODA STEREO','ENTRE CANÍBALES','SODA STEREO','CANCIÓN ANIMAL']},
+  {bg:'#f3d36b',ink:'#2a2005',linea:'#7a5a0c',luz:'#fff2b8',sombra:'#c9a432',halo:'#ffffff66',card:'#fff6cf',font:'Unbounded,sans-serif',tam:'19vw',esp:'.08em',palabras:['BTS','BUTTER','BTS','BUTTER','BTS']},
+  {bg:'#b0706d',ink:'#1e1414',linea:'#4a2626',luz:'#dbaaa6',sombra:'#814949',halo:'#29232355',card:'#e9c9c5',font:'Unbounded,sans-serif',tam:'13vw',giro:'6deg',palabras:['ÁLVARO DÍAZ','NO PODEMOS SER AMIGOS','OMAKASE','ÁLVARO DÍAZ']},
+  {bg:'#efc997',ink:'#2e2014',linea:'#6a4c2a',luz:'#f7e4b0',sombra:'#ba946a',halo:'#ffffff55',card:'#f8e6c4',font:'"Inter Tight",sans-serif',tam:'16vw',palabras:['SODA STEREO','PRÓFUGOS','SIGNOS','SODA STEREO']},
+  {bg:'#1c1712',ink:'#efc997',linea:'#efc997',luz:'#3a2e22',sombra:'#000',halo:'#efc99722',card:'#2a221a',font:'"Inter Tight",sans-serif',tam:'16vw',giro:'-4deg',palabras:['SODA STEREO','FINAL CAJA NEGRA','SIGNOS','SODA STEREO']}];
+let temaAct=-1;
+function tema(i,desde){const t=TEMAS[i],v=$('v-musica');if(!t||!v)return;
+  v.style.setProperty('--t-bg',t.bg);v.style.setProperty('--t-ink',t.ink);v.style.setProperty('--c-card',t.card);
+  const c=document.createElement('div');c.className='tema-capa'+(desde?' entra':'');c.setAttribute('aria-hidden','true');
+  Object.entries({'--c-bg':t.bg,'--c-linea':t.linea,'--c-luz':t.luz,'--c-sombra':t.sombra,'--c-halo':t.halo,'--c-font':t.font,'--tam':t.tam,'--esp':t.esp||'-.03em','--giro':t.giro||'-8deg'}).forEach(([k,x])=>c.style.setProperty(k,x));
+  if(desde){const r=desde.getBoundingClientRect();c.style.setProperty('--cx',(r.left+r.width/2)+'px');c.style.setProperty('--cy',(r.top+r.height/2)+'px')}
+  c.innerHTML='<div class="halo"></div><div class="muro">'+[...t.palabras,...t.palabras].map((w,k)=>`<span class="desliza${k%2?' rev':''}">${(w+' · ').repeat(4)}</span>`).join('')+'</div>';
+  const viejas=[...v.querySelectorAll('.tema-capa')];v.insertBefore(c,v.firstElementChild);temaAct=i;
+  setTimeout(()=>viejas.forEach(o=>o.remove()),desde?1200:0);
+  document.querySelectorAll('#v-musica .cita,#v-musica .cita-de').forEach(e=>e.hidden=i!==0);$('ahora').innerHTML=`${esc(CANCIONES[i][0])}<small>${esc(CANCIONES[i][4]||'Soda Stereo')}</small>`;$('ahora').style.fontFamily=t.font}
 const audio=new Audio();audio.loop=true;audio.volume=.55;let actual=0;
 $('lista').innerHTML=CANCIONES.map(c=>`<li><button><img src="${c[3]}" alt=""><span><span class="t">${c[0]}</span><span class="s">${c[4]||'Soda Stereo'} · ${c[1]}</span></span><span class="estado">Escuchar</span></button></li>`).join('');
 const filas=[...document.querySelectorAll('#lista li')];
-function pon(i,fade){actual=i;if(songG&&ac){const t=ac.currentTime;songG.gain.cancelScheduledValues(t);songG.gain.setValueAtTime(fade?0:.5,t);if(fade)songG.gain.linearRampToValueAtTime(.5,t+2.5)}if(audio.src!==CANCIONES[i][2])audio.src=CANCIONES[i][2];else audio.currentTime=0;$('etqImg').src=CANCIONES[i][3];audio.play().catch(()=>{$('musica').classList.add('pausa');$('musica').setAttribute('aria-label','Reproducir música')});$('musicaTxt').textContent=CANCIONES[i][0];$('musica').classList.add('ver');marca()}
+function pon(i,fade){if(temaAct!==i)tema(i);actual=i;if(songG&&ac){const t=ac.currentTime;songG.gain.cancelScheduledValues(t);songG.gain.setValueAtTime(fade?0:.5,t);if(fade)songG.gain.linearRampToValueAtTime(.5,t+2.5)}if(audio.src!==CANCIONES[i][2])audio.src=CANCIONES[i][2];else audio.currentTime=0;$('etqImg').src=CANCIONES[i][3];audio.play().catch(()=>{$('musica').classList.add('pausa');$('musica').setAttribute('aria-label','Reproducir música')});$('musicaTxt').textContent=CANCIONES[i][0];$('musica').classList.add('ver');marca()}
 function marca(){filas.forEach((f,k)=>{const on=k===actual&&!audio.paused;f.classList.toggle('sonando',on);f.querySelector('.estado').textContent=on?'Sonando':'Escuchar'});document.body.classList.toggle('pausa-global',audio.paused)}
-filas.forEach((f,i)=>f.querySelector('button').onclick=()=>{if(i===actual)audio.paused?audio.play():audio.pause();else pon(i)});
+filas.forEach((f,i)=>f.querySelector('button').onclick=e=>{if(i===actual)audio.paused?audio.play():audio.pause();else{tema(i,e.currentTarget);pon(i)}});
+tema(0);
 $('musica').onclick=()=>{audio.paused?audio.play():audio.pause()};
 audio.addEventListener('play',()=>{$('musica').classList.remove('pausa');$('musica').setAttribute('aria-label','Pausar música');marca()});
 audio.addEventListener('pause',()=>{$('musica').classList.add('pausa');$('musica').setAttribute('aria-label','Reproducir música');marca()});

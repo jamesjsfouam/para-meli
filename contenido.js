@@ -23,9 +23,16 @@
 
 const LINEA = [
   {
-    fecha: "07 · 10 · 2025",
+    fecha: "01 · 11 · 2007",
+    titulo: "Una persona muy especial nació",
+    mensaje: "Hoy va a cumplir 19.",
+    fotos: ["meli-chiquita.jpg"],
+    clave: true,
+  },
+  {
+    fecha: "06 · 10 · 2025 · 10:00 p. m.",
     titulo: "El comienzo de todo",
-    mensaje: "Ese día no imaginaba conocer a alguien tan especial para mí: una personita a la que le comencé a hablar solo porque no tenía a quién hablarle en el club ambiental.",
+    mensaje: "Nos comenzamos a hablar el 6 de octubre de 2025 a las 10 de la noche. Ese día no imaginaba conocer a alguien tan especial para mí: una personita a la que le comencé a hablar solo porque no tenía a quién hablarle en el club ambiental.",
     clave: true,
   },
   {
@@ -116,11 +123,11 @@ const FOTOS_DECORACION = [
    color:  color de fondo del logo (opcional)                          */
 
 const COSAS = [
-  { nombre: "Substack",       imagen: "substack.png",  logo: true, color: "#ff6a1f", nota: "" },
-  { nombre: "Los cactus",     imagen: "cactus.jpg",    nota: "" },
-  { nombre: "BTS",            imagen: "bts.jpg",       nota: "" },
-  { nombre: "La psicología",  imagen: "psi.png",       logo: true, color: "#c8ff3d", nota: "" },
-  { nombre: "Álvaro Díaz",    imagen: "alvaro.jpg",    nota: "" },
-  { nombre: "Cerati",         imagen: "cerati.jpg",    nota: "" },
-  { nombre: "El Mentalista",  imagen: "mentalista.jpg", nota: "" },
+  { nombre: "Substack",       imagen: "substack.png",  logo: true, color: "#ff6a1f", nota: "Porque escribís bonito y te atreviste: abriste el tuyo y al día siguiente ya estabas publicando." },
+  { nombre: "Los cactus",     imagen: "cactus.jpg",    nota: "Porque son como vos: aguantan lo que sea y aun así florecen." },
+  { nombre: "BTS",            imagen: "bts.jpg",       nota: "Porque sos ARMY de corazón, y no hay forma de pensar en vos sin que aparezcan los siete." },
+  { nombre: "La psicología",  imagen: "psi.png",       logo: true, color: "#c8ff3d", nota: "Porque entendés a la gente como nadie. Me acompañaste en más de una noche de sobrepensar sin juzgarme." },
+  { nombre: "Álvaro Díaz",    imagen: "alvaro.jpg",    nota: "Porque cada vez que suena me acuerdo de vos, y «No podemos ser amigos» ya quedó en nuestra lista." },
+  { nombre: "Cerati",         imagen: "cerati.jpg",    nota: "Porque Soda Stereo suena distinto desde que te conozco. «Entre Caníbales» siempre va a ser tuya." },
+  { nombre: "El Mentalista",  imagen: "mentalista.jpg", nota: "Porque es tu serie, y por eso este regalo empezó como un caso de Red John." },
 ];
